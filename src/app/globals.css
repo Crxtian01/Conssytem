@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f4f1ea;
   --foreground: #171717;
 }
 
@@ -11,13 +11,6 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-instrument-serif);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -98,12 +91,140 @@ body {
   animation: cms-scroll-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
+/* ------------------------------------------------------------------ */
+/* Liquid Glass Design System (Dashboard & All 15 Modules)            */
+/* ------------------------------------------------------------------ */
+
+@keyframes liquid-orb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(28px, -22px, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-20px, 18px, 0) scale(0.96);
+  }
+}
+
+.liquid-orb {
+  animation: liquid-orb-drift 18s ease-in-out infinite;
+}
+
+.liquid-glass-sidebar {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.48) 100%
+  );
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 20px 50px -12px rgba(15, 23, 42, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.liquid-glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.74) 0%,
+    rgba(255, 255, 255, 0.52) 100%
+  );
+  backdrop-filter: blur(24px) saturate(185%);
+  -webkit-backdrop-filter: blur(24px) saturate(185%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 12px 36px -8px rgba(15, 23, 42, 0.07),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.45);
+}
+
+/* Automatically elevate all module cards, tables, modals & inputs inside AppShell */
+.liquid-workspace .bg-white.rounded-2xl,
+.liquid-workspace .bg-white.rounded-3xl {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.5) 100%
+  ) !important;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border-color: rgba(255, 255, 255, 0.82) !important;
+  box-shadow:
+    0 14px 38px -10px rgba(15, 23, 42, 0.08),
+    0 2px 6px rgba(15, 23, 42, 0.03),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.45) !important;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease;
+}
+
+.liquid-workspace a.bg-white.rounded-2xl:hover,
+.liquid-workspace button.bg-white.rounded-2xl:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  box-shadow:
+    0 20px 44px -12px rgba(217, 119, 6, 0.14),
+    inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+}
+
+.liquid-workspace .bg-white.rounded-xl {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.68) 0%,
+    rgba(255, 255, 255, 0.46) 100%
+  ) !important;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.78) !important;
+  box-shadow:
+    0 8px 24px -6px rgba(15, 23, 42, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+.liquid-workspace .bg-gray-50.rounded-xl,
+.liquid-workspace .bg-gray-50.rounded-2xl {
+  background: rgba(255, 255, 255, 0.44) !important;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
+}
+
+.liquid-workspace input:not([type="checkbox"]):not([type="radio"]),
+.liquid-workspace select,
+.liquid-workspace textarea {
+  background-color: rgba(255, 255, 255, 0.68) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.85) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(15, 23, 42, 0.04),
+    0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.liquid-workspace input:not([type="checkbox"]):not([type="radio"]):focus,
+.liquid-workspace select:focus,
+.liquid-workspace textarea:focus {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(245, 158, 11, 0.7) !important;
+  box-shadow:
+    0 0 0 3px rgba(251, 191, 36, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cms-line-in,
   .cms-fade-in,
   .cms-float,
   .cms-marquee,
-  .cms-scroll-cue {
+  .cms-scroll-cue,
+  .liquid-orb {
     animation: none !important;
   }
 }
