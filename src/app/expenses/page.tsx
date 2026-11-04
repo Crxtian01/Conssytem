@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -7,7 +8,7 @@ import ExpensesClient from '@/components/modules/ExpensesClient'
 
 export default function ExpensesPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading expenses…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading expenses..." />}>
       <ExpensesContent />
     </Suspense>
   )
@@ -47,4 +48,5 @@ async function ExpensesContent() {
     </AppShell>
   )
 }
+
 

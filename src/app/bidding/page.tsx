@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readBiddingStore } from '@/lib/bidding-store'
 import AppShell from '@/components/layout/AppShell'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import BiddingWorkspace from '@/components/bidding/BiddingWorkspace'
 
 export const metadata = {
@@ -10,7 +11,7 @@ export const metadata = {
 
 export default function BiddingPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading Bidding Management…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Bidding Management…" />}>
       <BiddingContent />
     </Suspense>
   )

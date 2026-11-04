@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
 import AppShell from '@/components/layout/AppShell'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { USER_STORIES, DATABASE_TABLES } from '@/types/database'
 
 export const metadata = {
@@ -10,13 +11,7 @@ export const metadata = {
 
 export default function ArchitecturePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 text-sm text-gray-500">
-          Loading Requirements &amp; Database Design…
-        </div>
-      }
-    >
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Requirements & ERD…" />}>
       <ArchitectureContent />
     </Suspense>
   )

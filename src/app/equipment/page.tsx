@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -6,7 +7,7 @@ import EquipmentClient from '@/components/modules/EquipmentClient'
 
 export default function EquipmentPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading equipment…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading equipment..." />}>
       <EquipmentContent />
     </Suspense>
   )
@@ -30,4 +31,5 @@ async function EquipmentContent() {
     </AppShell>
   )
 }
+
 

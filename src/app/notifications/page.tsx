@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readSentEmails } from '@/lib/email'
 import AppShell from '@/components/layout/AppShell'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import EmailNotificationsClient from '@/components/notifications/EmailNotificationsClient'
 
 export const metadata = {
@@ -10,9 +11,7 @@ export const metadata = {
 
 export default function NotificationsPage() {
   return (
-    <Suspense
-      fallback={<div className="p-8 text-sm text-gray-500">Loading email notifications…</div>}
-    >
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Email Notifications…" />}>
       <NotificationsContent />
     </Suspense>
   )

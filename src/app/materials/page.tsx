@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -6,7 +7,7 @@ import MaterialsClient from '@/components/modules/MaterialsClient'
 
 export default function MaterialsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading materials…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading materials..." />}>
       <MaterialsContent />
     </Suspense>
   )
@@ -35,4 +36,5 @@ async function MaterialsContent() {
     </AppShell>
   )
 }
+
 

@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -7,7 +8,7 @@ import ProjectsClient from '@/components/modules/ProjectsClient'
 
 export default function ProjectsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading projects…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading projects..." />}>
       <ProjectsContent />
     </Suspense>
   )
@@ -36,4 +37,5 @@ async function ProjectsContent() {
     </AppShell>
   )
 }
+
 

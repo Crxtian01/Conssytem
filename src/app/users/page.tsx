@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
 import { normalizeRole } from '@/lib/roles'
 import AppShell from '@/components/layout/AppShell'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import RoleManager from '@/components/users/RoleManager'
 
 export const metadata = {
@@ -11,7 +12,7 @@ export const metadata = {
 
 export default function UsersPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading users &amp; roles…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Users & Roles…" />}>
       <UsersContent />
     </Suspense>
   )

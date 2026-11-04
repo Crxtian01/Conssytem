@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -6,7 +7,7 @@ import DailyLogsClient from '@/components/modules/DailyLogsClient'
 
 export default function DailyLogsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading daily logs…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading daily-logs..." />}>
       <DailyLogsContent />
     </Suspense>
   )
@@ -34,4 +35,5 @@ async function DailyLogsContent() {
     </AppShell>
   )
 }
+
 

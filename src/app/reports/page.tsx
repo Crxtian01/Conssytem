@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -6,7 +7,7 @@ import ReportsClient from '@/components/modules/ReportsClient'
 
 export default function ReportsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading reports…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading reports..." />}>
       <ReportsContent />
     </Suspense>
   )
@@ -30,4 +31,5 @@ async function ReportsContent() {
     </AppShell>
   )
 }
+
 

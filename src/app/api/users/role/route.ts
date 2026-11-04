@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient as createServerSupabase } from '@/lib/supabase-server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { ROLES, normalizeRole, type UserRole } from '@/lib/roles'
+import { setCachedUserRole } from '@/lib/auth'
 
 // POST /api/users/role
 // Updates a user's role to one of the 4 project roles:
@@ -70,5 +71,6 @@ export async function POST(request: NextRequest) {
       .eq('id', targetUserId)
   }
 
+  setCachedUserRole(targetUserId, newRole)
   return NextResponse.json({ ok: true, role: newRole })
 }

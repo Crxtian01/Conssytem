@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import AppShell from '@/components/layout/AppShell'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import ScreenDesignShowcase from '@/components/design/ScreenDesignShowcase'
 
 export const metadata = {
@@ -9,13 +10,7 @@ export const metadata = {
 
 export default function ScreenDesignPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 text-sm text-gray-500">
-          Loading Screen Design, Tech Stack &amp; Project Setup…
-        </div>
-      }
-    >
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Screens, Stack & Setup…" />}>
       <ScreenDesignContent />
     </Suspense>
   )

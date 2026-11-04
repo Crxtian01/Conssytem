@@ -4,13 +4,14 @@ import { requireAuth } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
 import { readStore } from '@/lib/module-store'
 import AppShell from '@/components/layout/AppShell'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import NotificationEmailCard from '@/components/auth/NotificationEmailCard'
 import DashboardAnalytics from '@/components/dashboard/DashboardAnalytics'
 import { ROLES, getModulesForRole } from '@/lib/roles'
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading your dashboard…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Dashboard…" />}>
       <DashboardContent />
     </Suspense>
   )

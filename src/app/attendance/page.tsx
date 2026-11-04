@@ -1,3 +1,4 @@
+﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
@@ -6,7 +7,7 @@ import AttendanceClient from '@/components/modules/AttendanceClient'
 
 export default function AttendancePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-sm text-gray-500">Loading attendance…</div>}>
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading attendance..." />}>
       <AttendanceContent />
     </Suspense>
   )
@@ -34,4 +35,5 @@ async function AttendanceContent() {
     </AppShell>
   )
 }
+
 

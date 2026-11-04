@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -52,10 +52,16 @@ export default function AppShell({ user, children }: AppShellProps) {
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [switchingRole, setSwitchingRole] = useState(false)
+  const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
+
+  useEffect(() => {
+    setNavigatingTo(null)
+  }, [pathname])
 
   const roleInfo = ROLES[user.role] ?? ROLES.contractor
   const allowedModules = getModulesForRole(user.role)
   const hasAccessToCurrentPath = canRoleAccessPath(user.role, pathname)
+  const isTransitioning = Boolean(navigatingTo) || switchingRole
 
   async function handleQuickRoleSwitch(newRole: UserRole) {
     setSwitchingRole(true)
@@ -70,6 +76,13 @@ export default function AppShell({ user, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Top animated progress bar when switching modules or roles */}
+      {isTransitioning && (
+        <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-amber-100 overflow-hidden">
+          <div className="h-full w-2/3 animate-pulse bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
+        </div>
+      )}
+
       {/* Mobile top bar */}
       <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 md:hidden">
         <div className="flex items-center gap-2.5">
@@ -164,13 +177,19 @@ export default function AppShell({ user, children }: AppShellProps) {
           {allowedModules.map((mod) => {
             const active =
               mod.href === '/' ? pathname === '/' : pathname.startsWith(mod.href)
+            const isLoadingThis = navigatingTo === mod.name && !active
             return (
               <Link
                 key={mod.id}
                 href={mod.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  if (!active) {
+                    setNavigatingTo(mod.name)
+                  }
+                }}
                 className={`group flex items-center justify-between rounded-lg px-2.5 py-2 text-sm font-medium transition ${
-                  active
+                  active || isLoadingThis
                     ? 'bg-amber-50 text-amber-900 font-semibold shadow-2xs'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
@@ -178,15 +197,24 @@ export default function AppShell({ user, children }: AppShellProps) {
                 <span className="flex items-center gap-2.5">
                   <span
                     className={`flex h-7 w-7 items-center justify-center rounded-md border transition ${
-                      active
+                      active || isLoadingThis
                         ? 'border-amber-300 bg-amber-100 text-amber-900'
                         : 'border-gray-200 bg-gray-50 text-gray-700 group-hover:border-amber-200 group-hover:bg-amber-50/60'
                     }`}
                   >
-                    <SidebarModuleIcon id={mod.id} fallback={mod.icon} />
+                    {isLoadingThis ? (
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-amber-700 border-t-transparent" />
+                    ) : (
+                      <SidebarModuleIcon id={mod.id} fallback={mod.icon} />
+                    )}
                   </span>
                   <span>{mod.name}</span>
                 </span>
+                {isLoadingThis && (
+                  <span className="text-[10px] font-semibold text-amber-700">
+                    Opening…
+                  </span>
+                )}
               </Link>
             )
           })}
@@ -205,46 +233,60 @@ export default function AppShell({ user, children }: AppShellProps) {
       </aside>
 
       {/* Main content area — strictly blocks unauthorized modules */}
-      <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8 overflow-y-auto">
-        {hasAccessToCurrentPath ? (
-          children
-        ) : (
-          <div className="mx-auto max-w-2xl rounded-2xl border border-red-200 bg-white p-8 shadow-sm text-center space-y-4 mt-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-2xl">
-              🔒
-            </div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Access Denied — Module Restricted for {roleInfo.label}
-            </h1>
-            <p className="text-sm text-gray-600">
-              Your current role (<strong>{roleInfo.label}</strong>) does not have permission to open{' '}
-              <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-mono text-red-700">
-                {pathname}
-              </code>
-              . You only have access to <strong>{allowedModules.length} permitted modules</strong>:
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 pt-2">
-              {allowedModules.map((m) => (
-                <Link
-                  key={m.id}
-                  href={m.href}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
-                >
-                  <span>{m.icon}</span>
-                  <span>{m.name}</span>
-                </Link>
-              ))}
-            </div>
-            <div className="pt-2">
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-700"
-              >
-                ← Return to Dashboard
-              </Link>
-            </div>
+      <main className="relative flex-1 p-4 pb-24 md:p-8 md:pb-8 overflow-y-auto">
+        {isTransitioning && (
+          <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-2.5 text-xs font-semibold text-amber-900 flex items-center gap-2.5 shadow-2xs">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-amber-700 border-t-transparent" />
+            <span>
+              {switchingRole
+                ? 'Switching role & updating module permissions…'
+                : `Opening ${navigatingTo}…`}
+            </span>
           </div>
         )}
+
+        <div className={isTransitioning ? 'opacity-60 transition-opacity duration-150' : ''}>
+          {hasAccessToCurrentPath ? (
+            children
+          ) : (
+            <div className="mx-auto max-w-2xl rounded-2xl border border-red-200 bg-white p-8 shadow-sm text-center space-y-4 mt-8">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-2xl">
+                🔒
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">
+                Access Denied — Module Restricted for {roleInfo.label}
+              </h1>
+              <p className="text-sm text-gray-600">
+                Your current role (<strong>{roleInfo.label}</strong>) does not have permission to
+                open{' '}
+                <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-mono text-red-700">
+                  {pathname}
+                </code>
+                . You only have access to <strong>{allowedModules.length} permitted modules</strong>:
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 pt-2">
+                {allowedModules.map((m) => (
+                  <Link
+                    key={m.id}
+                    href={m.href}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+                  >
+                    <span>{m.icon}</span>
+                    <span>{m.name}</span>
+                  </Link>
+                ))}
+              </div>
+              <div className="pt-2">
+                <Link
+                  href="/"
+                  className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-700"
+                >
+                  ← Return to Dashboard
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Phone-first bottom quick bar */}
@@ -256,6 +298,9 @@ export default function AppShell({ user, children }: AppShellProps) {
             <Link
               key={mod.id}
               href={mod.href}
+              onClick={() => {
+                if (!active) setNavigatingTo(mod.name)
+              }}
               className={`flex flex-col items-center justify-center py-2 text-[11px] font-medium ${
                 active ? 'text-amber-600 font-bold' : 'text-gray-600'
               }`}
