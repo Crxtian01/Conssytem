@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f1ea;
-  --foreground: #171717;
+  --background: #dbeafe;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -92,130 +92,207 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Liquid Glass Design System (Dashboard & All 15 Modules)            */
+/* TRUE LIQUID GLASSMORPHISM SYSTEM (Dashboard & All 15 Modules)       */
 /* ------------------------------------------------------------------ */
 
-@keyframes liquid-orb-drift {
+@keyframes liquid-blob-flow {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   }
   33% {
-    transform: translate3d(28px, -22px, 0) scale(1.06);
+    transform: translate3d(45px, -35px, 0) scale(1.12) rotate(8deg);
   }
   66% {
-    transform: translate3d(-20px, 18px, 0) scale(0.96);
+    transform: translate3d(-35px, 30px, 0) scale(0.92) rotate(-6deg);
+  }
+}
+
+@keyframes liquid-sheen-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-18deg);
   }
 }
 
 .liquid-orb {
-  animation: liquid-orb-drift 18s ease-in-out infinite;
+  animation: liquid-blob-flow 16s ease-in-out infinite;
 }
 
+/* Rich multi-tone liquid mesh background so glass refraction is vivid */
+.liquid-mesh-bg {
+  background:
+    radial-gradient(at 12% 15%, rgba(251, 146, 60, 0.55) 0px, transparent 48%),
+    radial-gradient(at 85% 12%, rgba(56, 189, 248, 0.58) 0px, transparent 50%),
+    radial-gradient(at 78% 82%, rgba(167, 139, 250, 0.55) 0px, transparent 52%),
+    radial-gradient(at 18% 85%, rgba(52, 211, 153, 0.45) 0px, transparent 48%),
+    radial-gradient(at 50% 48%, rgba(253, 224, 71, 0.35) 0px, transparent 55%),
+    linear-gradient(135deg, #e0e7ff 0%, #dbeafe 35%, #fef3c7 70%, #ede9fe 100%);
+}
+
+/* Floating Liquid Glass Sidebar */
 .liquid-glass-sidebar {
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.48) 100%
+    rgba(255, 255, 255, 0.46) 0%,
+    rgba(255, 255, 255, 0.18) 55%,
+    rgba(255, 255, 255, 0.32) 100%
   );
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(32px) saturate(230%) brightness(1.04);
+  -webkit-backdrop-filter: blur(32px) saturate(230%) brightness(1.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    0 20px 50px -12px rgba(15, 23, 42, 0.1),
-    inset 0 1px 1px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.4);
+    0 24px 60px -12px rgba(15, 23, 42, 0.18),
+    0 4px 16px rgba(59, 130, 246, 0.08),
+    inset 0 2px 3px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.45),
+    inset 2px 0 3px rgba(255, 255, 255, 0.6);
 }
 
+/* Explicit Liquid Glass Card */
 .liquid-glass-card {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.74) 0%,
-    rgba(255, 255, 255, 0.52) 100%
+    rgba(255, 255, 255, 0.48) 0%,
+    rgba(255, 255, 255, 0.2) 52%,
+    rgba(255, 255, 255, 0.34) 100%
   );
-  backdrop-filter: blur(24px) saturate(185%);
-  -webkit-backdrop-filter: blur(24px) saturate(185%);
-  border: 1px solid rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(28px) saturate(230%) brightness(1.04);
+  -webkit-backdrop-filter: blur(28px) saturate(230%) brightness(1.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.76);
   box-shadow:
-    0 12px 36px -8px rgba(15, 23, 42, 0.07),
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.45);
+    0 20px 50px -12px rgba(15, 23, 42, 0.15),
+    0 4px 14px rgba(56, 189, 248, 0.08),
+    inset 0 2px 3px rgba(255, 255, 255, 0.98),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.45),
+    inset 2px 0 3px rgba(255, 255, 255, 0.55);
 }
 
-/* Automatically elevate all module cards, tables, modals & inputs inside AppShell */
+/* Curved wet-glass top specular reflection arc on every card in Dashboard & all modules */
 .liquid-workspace .bg-white.rounded-2xl,
 .liquid-workspace .bg-white.rounded-3xl {
+  position: relative;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.5) 100%
+    rgba(255, 255, 255, 0.46) 0%,
+    rgba(255, 255, 255, 0.18) 52%,
+    rgba(255, 255, 255, 0.32) 100%
   ) !important;
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
-  border-color: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(28px) saturate(230%) brightness(1.05);
+  -webkit-backdrop-filter: blur(28px) saturate(230%) brightness(1.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
   box-shadow:
-    0 14px 38px -10px rgba(15, 23, 42, 0.08),
-    0 2px 6px rgba(15, 23, 42, 0.03),
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.45) !important;
+    0 20px 45px -12px rgba(15, 23, 42, 0.16),
+    0 4px 12px rgba(59, 130, 246, 0.07),
+    inset 0 2px 3px rgba(255, 255, 255, 0.98),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.45),
+    inset 2px 0 4px rgba(255, 255, 255, 0.6) !important;
   transition:
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.28s ease;
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.32s ease,
+    background 0.32s ease;
 }
 
-.liquid-workspace a.bg-white.rounded-2xl:hover,
-.liquid-workspace button.bg-white.rounded-2xl:hover {
-  transform: translateY(-2px);
-  border-color: rgba(245, 158, 11, 0.55) !important;
+.liquid-workspace a.rounded-2xl:hover,
+.liquid-workspace button.rounded-2xl:hover {
+  transform: translateY(-3px) scale(1.008);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.28) 52%,
+    rgba(255, 255, 255, 0.44) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
   box-shadow:
-    0 20px 44px -12px rgba(217, 119, 6, 0.14),
-    inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+    0 26px 55px -12px rgba(15, 23, 42, 0.22),
+    0 6px 20px rgba(245, 158, 11, 0.18),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -2px 5px rgba(255, 255, 255, 0.6) !important;
 }
 
 .liquid-workspace .bg-white.rounded-xl {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.68) 0%,
-    rgba(255, 255, 255, 0.46) 100%
+    rgba(255, 255, 255, 0.44) 0%,
+    rgba(255, 255, 255, 0.2) 100%
   ) !important;
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border-color: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(22px) saturate(210%);
+  -webkit-backdrop-filter: blur(22px) saturate(210%);
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
   box-shadow:
-    0 8px 24px -6px rgba(15, 23, 42, 0.06),
-    inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+    0 12px 28px -8px rgba(15, 23, 42, 0.12),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.92),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.4) !important;
 }
 
-.liquid-workspace .bg-gray-50.rounded-xl,
-.liquid-workspace .bg-gray-50.rounded-2xl {
-  background: rgba(255, 255, 255, 0.44) !important;
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border-color: rgba(255, 255, 255, 0.7) !important;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
+.liquid-workspace .bg-gray-50,
+.liquid-workspace .bg-gray-100 {
+  background: rgba(255, 255, 255, 0.32) !important;
+  backdrop-filter: blur(16px) saturate(190%);
+  -webkit-backdrop-filter: blur(16px) saturate(190%);
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Tinted glass panels (amber, blue, purple, emerald, red) */
+.liquid-workspace .bg-amber-50,
+.liquid-workspace .bg-amber-50\/50,
+.liquid-workspace .bg-amber-50\/60,
+.liquid-workspace .bg-amber-50\/70 {
+  background: linear-gradient(
+    135deg,
+    rgba(254, 243, 199, 0.55) 0%,
+    rgba(253, 230, 138, 0.28) 100%
+  ) !important;
+  backdrop-filter: blur(22px) saturate(210%);
+  -webkit-backdrop-filter: blur(22px) saturate(210%);
+  border-color: rgba(255, 255, 255, 0.78) !important;
+  box-shadow:
+    0 10px 28px -8px rgba(217, 119, 6, 0.14),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.92) !important;
 }
 
 .liquid-workspace input:not([type="checkbox"]):not([type="radio"]),
 .liquid-workspace select,
 .liquid-workspace textarea {
-  background-color: rgba(255, 255, 255, 0.68) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.48) !important;
+  backdrop-filter: blur(16px) saturate(190%);
+  -webkit-backdrop-filter: blur(16px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
   box-shadow:
-    inset 0 1px 2px rgba(15, 23, 42, 0.04),
-    0 1px 2px rgba(255, 255, 255, 0.8);
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.9),
+    0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
 .liquid-workspace input:not([type="checkbox"]):not([type="radio"]):focus,
 .liquid-workspace select:focus,
 .liquid-workspace textarea:focus {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  border-color: rgba(245, 158, 11, 0.7) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(255, 255, 255, 1) !important;
   box-shadow:
-    0 0 0 3px rgba(251, 191, 36, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 1);
+    0 0 0 3px rgba(56, 189, 248, 0.28),
+    inset 0 2px 3px rgba(255, 255, 255, 1);
+}
+
+/* 3D Liquid Glass Droplet Pill */
+.liquid-droplet-pill {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  backdrop-filter: blur(20px) saturate(220%);
+  -webkit-backdrop-filter: blur(20px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 8px 20px -4px rgba(15, 23, 42, 0.12),
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {

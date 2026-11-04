@@ -4,7 +4,7 @@ export default function ModuleLoadingSkeleton({
   title?: string
 }) {
   return (
-    <div className="relative min-h-screen flex flex-col md:flex-row overflow-hidden bg-[#f2efe9] text-gray-900">
+    <div className="liquid-mesh-bg relative min-h-screen flex flex-col md:flex-row overflow-hidden text-slate-900">
       {/* Ambient Liquid Glass Mesh & Orbs */}
       <div
         aria-hidden="true"
