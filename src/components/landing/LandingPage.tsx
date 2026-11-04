@@ -1,8 +1,66 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 interface LandingPageProps {
   isSignedIn?: boolean
   userEmail?: string | null
+}
+
+function ScrollReveal({
+  children,
+  delayMs = 0,
+  direction = 'up',
+  className = '',
+}: {
+  children: React.ReactNode
+  delayMs?: number
+  direction?: 'up' | 'left' | 'right' | 'scale'
+  className?: string
+}) {
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisible(true)
+          }
+        })
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -40px 0px' }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const hiddenTransform =
+    direction === 'left'
+      ? '-translate-x-10 opacity-0'
+      : direction === 'right'
+        ? 'translate-x-10 opacity-0'
+        : direction === 'scale'
+          ? 'scale-95 translate-y-6 opacity-0'
+          : 'translate-y-10 opacity-0'
+
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delayMs}ms` }}
+      className={` transition-all duration-700 ease-out will-change-transform ${
+        visible ? 'translate-x-0 translate-y-0 scale-100 opacity-100' : hiddenTransform
+      } ${className}`}
+    >
+      {children}
+    </div>
+  )
 }
 
 const FEATURE_CARDS = [
@@ -82,13 +140,30 @@ const ROLE_CARDS = [
 ]
 
 export default function LandingPage({ isSignedIn = false, userEmail }: LandingPageProps) {
+  const [scrollProgress, setScrollProgress] = useState(0)
+
+  useEffect(() => {
+    function handleScroll() {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      if (docHeight <= 0) {
+        setScrollProgress(0)
+        return
+      }
+      setScrollProgress(Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)))
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 flex flex-col">
-      {/* Sticky Top Navigation */}
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col scroll-smooth overflow-x-hidden">
+      {/* Sticky Top Navigation + Live Scroll Progress Indicator */}
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-xl shadow-sm">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-xl shadow-sm transition-transform duration-300 hover:scale-105">
               🏗️
             </span>
             <div>
@@ -140,6 +215,14 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
             )}
           </div>
         </div>
+
+        {/* Scroll Progress Bar */}
+        <div className="h-0.5 w-full bg-gray-100">
+          <div
+            className="h-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400 transition-all duration-150"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
       </header>
 
       {/* Hero Section */}
@@ -147,7 +230,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
             {/* Left Column: Headline & CTAs */}
-            <div className="lg:col-span-7 space-y-6">
+            <ScrollReveal direction="left" className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-100/80 px-3.5 py-1 text-xs font-bold text-amber-950">
                 <span>⚖️ Built for Philippine Construction &amp; RA 12009 Procurement</span>
               </div>
@@ -168,7 +251,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                 {isSignedIn ? (
                   <Link
                     href="/"
-                    className="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3.5 text-sm font-bold text-white shadow-md hover:bg-amber-700 transition"
+                    className="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3.5 text-sm font-bold text-white shadow-md hover:-translate-y-0.5 hover:bg-amber-700 transition"
                   >
                     Open Your Dashboard ({userEmail}) →
                   </Link>
@@ -176,13 +259,13 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                   <>
                     <Link
                       href="/login"
-                      className="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3.5 text-sm font-bold text-white shadow-md hover:bg-amber-700 transition"
+                      className="inline-flex items-center justify-center rounded-xl bg-amber-600 px-6 py-3.5 text-sm font-bold text-white shadow-md hover:-translate-y-0.5 hover:bg-amber-700 transition"
                     >
                       Sign In to ConstructMS →
                     </Link>
                     <Link
                       href="/register"
-                      className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-6 py-3.5 text-sm font-bold text-gray-800 hover:bg-gray-50 transition"
+                      className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-6 py-3.5 text-sm font-bold text-gray-800 hover:-translate-y-0.5 hover:bg-gray-50 transition"
                     >
                       Create New Account
                     </Link>
@@ -205,11 +288,11 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                   <p className="text-gray-500">Strict RLS Protection</p>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             {/* Right Column: Live System Preview Card */}
-            <div className="lg:col-span-5">
-              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-xl space-y-4">
+            <ScrollReveal direction="right" delayMs={150} className="lg:col-span-5">
+              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-xl space-y-4 transition-transform duration-500 hover:-translate-y-1">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <div className="flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full bg-red-400" />
@@ -289,7 +372,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                   </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -297,7 +380,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       {/* Core Modules Grid */}
       <section id="features" className="py-16 sm:py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
+          <ScrollReveal direction="up" className="text-center max-w-3xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-amber-600">
               Complete Construction ERP
             </span>
@@ -307,27 +390,28 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
             <p className="mt-2 text-sm text-gray-600">
               Designed for phones on the jobsite and large monitors in the engineering office.
             </p>
-          </div>
+          </ScrollReveal>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURE_CARDS.map((card) => (
-              <div
-                key={card.title}
-                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs hover:border-amber-400 hover:shadow-md transition flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-2xl">
-                      {card.icon}
-                    </span>
-                    <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-semibold text-gray-700">
-                      {card.badge}
-                    </span>
+            {FEATURE_CARDS.map((card, index) => (
+              <ScrollReveal key={card.title} direction="scale" delayMs={index * 90}>
+                <div className="h-full rounded-2xl border border-gray-200 bg-white p-6 shadow-xs hover:-translate-y-1.5 hover:border-amber-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-2xl">
+                        {card.icon}
+                      </span>
+                      <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-semibold text-gray-700">
+                        {card.badge}
+                      </span>
+                    </div>
+                    <h3 className="mt-4 text-base font-bold text-gray-900">{card.title}</h3>
+                    <p className="mt-2 text-xs text-gray-600 leading-relaxed">
+                      {card.description}
+                    </p>
                   </div>
-                  <h3 className="mt-4 text-base font-bold text-gray-900">{card.title}</h3>
-                  <p className="mt-2 text-xs text-gray-600 leading-relaxed">{card.description}</p>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -337,7 +421,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       <section id="bidding" className="py-16 bg-gray-900 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
-            <div className="lg:col-span-6 space-y-4">
+            <ScrollReveal direction="left" className="lg:col-span-6 space-y-4">
               <span className="inline-block rounded-full bg-amber-500/20 border border-amber-400/40 px-3 py-1 text-xs font-bold text-amber-300">
                 New Module • RA 12009 Procurement Workflow
               </span>
@@ -350,37 +434,34 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                 Contract (ABC), computes your NFCC, and converts awarded bids into active projects
                 in one click.
               </p>
-            </div>
+            </ScrollReveal>
 
             <div className="lg:col-span-6 grid gap-3 sm:grid-cols-2 text-xs">
-              <div className="rounded-2xl border border-gray-800 bg-gray-800/80 p-4">
-                <p className="font-bold text-amber-400">1. ABC &amp; NFCC Guardrails</p>
-                <p className="mt-1 text-gray-300">
-                  Warns you immediately if your computed bid exceeds the ABC ceiling or if NFCC is
-                  below requirement.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-gray-800 bg-gray-800/80 p-4">
-                <p className="font-bold text-amber-400">2. DUPA / BOQ Cost Estimator</p>
-                <p className="mt-1 text-gray-300">
-                  Calculates Direct Costs (Materials, Labor, Equipment) + configurable OCM %,
-                  Profit %, and VAT %.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-gray-800 bg-gray-800/80 p-4">
-                <p className="font-bold text-amber-400">3. Two-Envelope Checklist</p>
-                <p className="mt-1 text-gray-300">
-                  Pre-loaded with PhilGEPS Platinum, PCAB, SLCC, NFCC, Bid Security, OSS, Priced
-                  BOQ, and Cash Flow.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-gray-800 bg-gray-800/80 p-4">
-                <p className="font-bold text-amber-400">4. Award → Project Conversion</p>
-                <p className="mt-1 text-gray-300">
-                  Once Admin / Engineer records the Notice of Award, convert the bid into an active
-                  project in 1 click.
-                </p>
-              </div>
+              {[
+                {
+                  title: '1. ABC & NFCC Guardrails',
+                  desc: 'Warns you immediately if your computed bid exceeds the ABC ceiling or if NFCC is below requirement.',
+                },
+                {
+                  title: '2. DUPA / BOQ Cost Estimator',
+                  desc: 'Calculates Direct Costs (Materials, Labor, Equipment) + configurable OCM %, Profit %, and VAT %.',
+                },
+                {
+                  title: '3. Two-Envelope Checklist',
+                  desc: 'Pre-loaded with PhilGEPS Platinum, PCAB, SLCC, NFCC, Bid Security, OSS, Priced BOQ, and Cash Flow.',
+                },
+                {
+                  title: '4. Award → Project Conversion',
+                  desc: 'Once Admin / Engineer records the Notice of Award, convert the bid into an active project in 1 click.',
+                },
+              ].map((item, idx) => (
+                <ScrollReveal key={item.title} direction="up" delayMs={idx * 100}>
+                  <div className="h-full rounded-2xl border border-gray-800 bg-gray-800/80 p-4 hover:border-amber-500/50 transition">
+                    <p className="font-bold text-amber-400">{item.title}</p>
+                    <p className="mt-1 text-gray-300">{item.desc}</p>
+                  </div>
+                </ScrollReveal>
+              ))}
             </div>
           </div>
         </div>
@@ -389,7 +470,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       {/* 4 System Roles Section */}
       <section id="roles" className="py-16 sm:py-20 bg-gray-50 border-t border-gray-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
+          <ScrollReveal direction="up" className="text-center max-w-3xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-amber-600">
               Strict Role-Based Access Control (RBAC + RLS)
             </span>
@@ -400,31 +481,34 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
               Every user only sees and accesses the modules permitted for their role—enforced in
               the sidebar, URL routes, backend APIs, and Supabase Row Level Security.
             </p>
-          </div>
+          </ScrollReveal>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {ROLE_CARDS.map((r) => (
-              <div
-                key={r.role}
-                className={`rounded-2xl border p-5 shadow-xs flex flex-col justify-between ${r.color}`}
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`rounded-full border px-3 py-0.5 text-xs font-bold ${r.badge}`}>
-                      {r.role}
-                    </span>
-                    <span className="text-[11px] font-bold opacity-80">{r.modules}</span>
+            {ROLE_CARDS.map((r, index) => (
+              <ScrollReveal key={r.role} direction="up" delayMs={index * 110}>
+                <div
+                  className={`h-full rounded-2xl border p-5 shadow-xs hover:-translate-y-1.5 hover:shadow-md transition-all duration-300 flex flex-col justify-between ${r.color}`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={`rounded-full border px-3 py-0.5 text-xs font-bold ${r.badge}`}
+                      >
+                        {r.role}
+                      </span>
+                      <span className="text-[11px] font-bold opacity-80">{r.modules}</span>
+                    </div>
+                    <p className="mt-3 text-xs leading-relaxed opacity-90">{r.desc}</p>
                   </div>
-                  <p className="mt-3 text-xs leading-relaxed opacity-90">{r.desc}</p>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <footer className="border-t border-gray-200 bg-white py-10 mt-auto">
+      {/* Footer (Log In / Create Account removed as requested) */}
+      <footer className="border-t border-gray-200 bg-white py-8 mt-auto">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-base">
@@ -434,17 +518,11 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
               ConstructMS — Construction Management &amp; RA 12009 Bidding System
             </span>
           </div>
-          <div className="flex items-center gap-4 text-xs font-semibold text-gray-600">
-            <Link href="/login" className="hover:text-amber-600">
-              Log In
-            </Link>
-            <Link href="/register" className="hover:text-amber-600">
-              Create Account
-            </Link>
-          </div>
+          <p className="text-xs text-gray-400">
+            © {new Date().getFullYear()} ConstructMS. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
   )
 }
-
