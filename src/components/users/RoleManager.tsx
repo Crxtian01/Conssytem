@@ -2,14 +2,19 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ROLES, type UserRole } from '@/lib/roles'
+import {
+  ROLES,
+  getModulesForRole,
+  normalizeRole,
+  type UserRole,
+} from '@/lib/roles'
 
 interface ProfileRow {
   id: string
   email: string
   full_name: string | null
   avatar_url: string | null
-  role: UserRole
+  role: string
   email_verified: boolean
   created_at: string
 }
@@ -49,7 +54,7 @@ export default function RoleManager({
       return
     }
 
-    setMessage(`Role updated to ${ROLES[newRole].label}. Navigation & permissions refreshed!`)
+    setMessage(`Role updated to ${ROLES[newRole].label}. Sidebar modules & access updated!`)
     router.refresh()
   }
 
@@ -66,16 +71,16 @@ export default function RoleManager({
         </div>
       )}
 
-      {/* Quick Role Switcher for Testing all 6 Roles from Section 2 */}
+      {/* Quick Role Switcher for the 4 Project Roles */}
       <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-base font-bold text-gray-900">
-              Test Role View (Your Current Role: {ROLES[currentUserRole]?.label})
+              Switch Your Role (Current: {ROLES[currentUserRole]?.label})
             </h2>
             <p className="text-xs text-gray-600">
-              Click any role below to switch your account role and see how the sidebar modules and
-              permissions change for each user type in Section 2.
+              Click any of the 4 system roles below to see the sidebar strictly limit the modules
+              for that role.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -87,13 +92,13 @@ export default function RoleManager({
                   type="button"
                   disabled={updatingId === currentUserId}
                   onClick={() => handleRoleChange(currentUserId, r)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  className={`rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
                     active
                       ? 'bg-amber-600 text-white shadow-sm'
                       : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
                   }`}
                 >
-                  {ROLES[r].label}
+                  {ROLES[r].label} ({getModulesForRole(r).length} modules)
                 </button>
               )
             })}
@@ -101,13 +106,13 @@ export default function RoleManager({
         </div>
       </div>
 
-      {/* Section 2 Roles & Typical Access Matrix */}
+      {/* 4 Roles & Strictly Limited Modules Matrix */}
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-bold text-gray-900">
-          Section 2: Roles &amp; Typical Access Matrix
+          4 System Roles &amp; Strictly Limited Module Access
         </h2>
         <p className="mt-1 text-sm text-gray-500">
-          Each role is enforced both in the UI navigation and on the backend.
+          Every role can only see and open the modules assigned to it.
         </p>
 
         <div className="mt-4 overflow-x-auto">
@@ -115,34 +120,36 @@ export default function RoleManager({
             <thead>
               <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
                 <th className="py-3 pr-4">Role</th>
-                <th className="py-3 px-4">Typical Access (from Guide)</th>
-                <th className="py-3 pl-4">Key Permissions</th>
+                <th className="py-3 px-4">Access Scope</th>
+                <th className="py-3 pl-4">Allowed Modules in Sidebar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {(Object.keys(ROLES) as UserRole[]).map((key) => {
                 const r = ROLES[key]
+                const mods = getModulesForRole(key)
                 return (
-                  <tr key={key}>
-                    <td className="py-3 pr-4 whitespace-nowrap">
+                  <tr key={key} className="align-top">
+                    <td className="py-4 pr-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${r.badgeColor}`}
+                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${r.badgeColor}`}
                       >
                         {r.label}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-gray-700">{r.typicalAccess}</td>
-                    <td className="py-3 pl-4 text-xs text-gray-500">
-                      {r.permissions.manageUsers && 'Users/Roles • '}
-                      {r.permissions.manageProjects && 'Projects • '}
-                      {r.permissions.viewBudgets && 'Budgets • '}
-                      {r.permissions.approveExpenses && 'Approvals • '}
-                      {r.permissions.manageTasks && 'Tasks • '}
-                      {r.permissions.logDailyProgress && 'Daily Logs • '}
-                      {r.permissions.manageMaterials && 'Materials • '}
-                      {r.permissions.recordAttendance && 'Attendance • '}
-                      {r.permissions.readOnly && 'Read-Only'}
-                      {key === 'worker' && 'Own Attendance & Assigned Tasks'}
+                    <td className="py-4 px-4 text-xs text-gray-700">{r.typicalAccess}</td>
+                    <td className="py-4 pl-4">
+                      <div className="flex flex-wrap gap-1.5">
+                        {mods.map((m) => (
+                          <span
+                            key={m.id}
+                            className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-800"
+                          >
+                            <span>{m.icon}</span>
+                            <span>{m.name}</span>
+                          </span>
+                        ))}
+                      </div>
                     </td>
                   </tr>
                 )
@@ -152,14 +159,14 @@ export default function RoleManager({
         </div>
       </div>
 
-      {/* Team Members & Role Assignment Table */}
+      {/* Registered Users Table */}
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-bold text-gray-900">
           Registered Users ({profiles.length})
         </h2>
         <p className="mt-1 text-sm text-gray-500">
-          New Google or email sign-ups start with the default <strong>Worker</strong> role until an
-          Admin changes it.
+          Assign each user one of the 4 project roles: <strong>Admin / Engineer</strong>,{' '}
+          <strong>Assistant</strong>, <strong>Contractor</strong>, or <strong>Client</strong>.
         </p>
 
         <div className="mt-4 overflow-x-auto">
@@ -174,8 +181,10 @@ export default function RoleManager({
             </thead>
             <tbody className="divide-y divide-gray-100">
               {profiles.map((p) => {
-                const rInfo = ROLES[p.role] ?? ROLES.worker
-                const canEdit = currentUserRole === 'admin' || p.id === currentUserId
+                const normalized = normalizeRole(p.role)
+                const rInfo = ROLES[normalized]
+                const canEdit =
+                  currentUserRole === 'admin_engineer' || p.id === currentUserId
                 return (
                   <tr key={p.id}>
                     <td className="py-3 pr-4">
@@ -205,9 +214,11 @@ export default function RoleManager({
                     </td>
                     <td className="py-3 pl-4">
                       <select
-                        value={p.role}
+                        value={normalized}
                         disabled={!canEdit || updatingId === p.id}
-                        onChange={(e) => handleRoleChange(p.id, e.target.value as UserRole)}
+                        onChange={(e) =>
+                          handleRoleChange(p.id, e.target.value as UserRole)
+                        }
                         className="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-900 focus:border-amber-500 focus:outline-none disabled:opacity-50"
                       >
                         {(Object.keys(ROLES) as UserRole[]).map((roleKey) => (
@@ -227,4 +238,3 @@ export default function RoleManager({
     </div>
   )
 }
-

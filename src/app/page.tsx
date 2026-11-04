@@ -26,8 +26,9 @@ async function DashboardContent() {
   const pendingNotificationEmail = (meta.pending_notification_email as string) || null
 
   const store = readStore()
-  const roleInfo = ROLES[user.role] ?? ROLES.worker
+  const roleInfo = ROLES[user.role] ?? ROLES.contractor
   const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
+  const canManageUsers = user.role === 'admin_engineer' || user.role === 'assistant'
 
   return (
     <AppShell user={user}>
@@ -51,12 +52,14 @@ async function DashboardContent() {
               </p>
             </div>
 
-            <Link
-              href="/users"
-              className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700"
-            >
-              Manage / Switch Role
-            </Link>
+            {canManageUsers && (
+              <Link
+                href="/users"
+                className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700"
+              >
+                Manage Users &amp; Roles
+              </Link>
+            )}
           </div>
         </div>
 
@@ -74,10 +77,10 @@ async function DashboardContent() {
         <div>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-bold text-gray-900">
-              Core Modules Available to {roleInfo.label} ({allowedModules.length})
+              Allowed Modules for {roleInfo.label} ({allowedModules.length})
             </h2>
             <span className="text-xs text-gray-500">
-              Filtered automatically by your role permissions
+              Strictly limited to your assigned role
             </span>
           </div>
 

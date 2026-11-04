@@ -1,13 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient as createServerSupabase } from '@/lib/supabase-server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
-import { ROLES, type UserRole } from '@/lib/roles'
+import { ROLES, normalizeRole, type UserRole } from '@/lib/roles'
 
 // POST /api/users/role
-// Updates a user's role.
-// - Admins can update any user's role.
-// - If there are no admins in the system yet (initial bootstrap), or a user is switching their own role
-//   during testing, we allow self-update when allowSelfSwitch is true or user is admin.
+// Updates a user's role to one of the 4 project roles:
+// 'admin_engineer' | 'assistant' | 'contractor' | 'client'
 export async function POST(request: NextRequest) {
   const supabase = await createServerSupabase()
   const {
@@ -31,39 +29,46 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Check caller's current role and whether any admin exists yet
-  const { data: callerProfile } = await adminSupabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const { count: adminCount } = await adminSupabase
-    .from('profiles')
-    .select('id', { count: 'exact', head: true })
-    .eq('role', 'admin')
-
-  const isCallerAdmin = callerProfile?.role === 'admin'
+  const callerRole = normalizeRole(
+    (user.user_metadata?.app_role as string) || undefined
+  )
   const isSelf = targetUserId === user.id
 
-  // Only Admin can change other people's roles.
-  // Allow changing own role so the user can test all 6 roles easily or bootstrap the first Admin.
-  if (!isCallerAdmin && !isSelf && (adminCount ?? 0) > 0) {
+  if (callerRole !== 'admin_engineer' && !isSelf) {
     return NextResponse.json(
-      { error: 'Only an Admin can change another user’s role.' },
+      { error: 'Only Admin / Engineer can change another user’s role.' },
       { status: 403 }
     )
   }
 
-  const { error } = await adminSupabase
+  // 1. Save in auth.users.user_metadata.app_role so it works immediately
+  const { data: targetAuthUser } = await adminSupabase.auth.admin.getUserById(targetUserId)
+  await adminSupabase.auth.admin.updateUserById(targetUserId, {
+    user_metadata: {
+      ...(targetAuthUser?.user?.user_metadata ?? {}),
+      app_role: newRole,
+    },
+  })
+
+  // 2. Also update public.profiles.role (if column is text or enum)
+  const { error: directErr } = await adminSupabase
     .from('profiles')
     .update({ role: newRole, updated_at: new Date().toISOString() })
     .eq('id', targetUserId)
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (directErr) {
+    // Fallback if the user hasn't run 004_four_roles_update.sql yet and profiles.role is still old enum
+    const legacyEnumMap: Record<UserRole, string> = {
+      admin_engineer: 'admin',
+      assistant: 'project_manager',
+      contractor: 'foreman',
+      client: 'client',
+    }
+    await adminSupabase
+      .from('profiles')
+      .update({ role: legacyEnumMap[newRole], updated_at: new Date().toISOString() })
+      .eq('id', targetUserId)
   }
 
   return NextResponse.json({ ok: true, role: newRole })
 }
-

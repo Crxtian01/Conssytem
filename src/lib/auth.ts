@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getSessionDb, getAdminDb } from '@/lib/db'
-import { ROLES, type UserRole } from '@/lib/roles'
+import { ROLES, normalizeRole, type UserRole } from '@/lib/roles'
 
 export interface AuthenticatedUser {
   id: string
@@ -13,7 +13,8 @@ export interface AuthenticatedUser {
 
 /**
  * Section 7: Reusable Authentication & Role Helper
- * Ensures the caller is signed in and returns their profile + role.
+ * Ensures the caller is signed in and returns their profile + normalized 4-tier role:
+ * ('admin_engineer' | 'assistant' | 'contractor' | 'client')
  */
 export async function requireAuth(): Promise<AuthenticatedUser> {
   const supabase = await getSessionDb()
@@ -32,8 +33,9 @@ export async function requireAuth(): Promise<AuthenticatedUser> {
     .eq('id', user.id)
     .single()
 
-  const role: UserRole =
-    profile?.role && profile.role in ROLES ? (profile.role as UserRole) : 'worker'
+  // Prefer user_metadata.app_role if set, otherwise normalize profile.role
+  const rawRole = (user.user_metadata?.app_role as string) || profile?.role
+  const role: UserRole = normalizeRole(rawRole)
 
   return {
     id: user.id,
@@ -57,4 +59,3 @@ export async function requireRole(allowedRoles: UserRole[]): Promise<Authenticat
   }
   return currentUser
 }
-
