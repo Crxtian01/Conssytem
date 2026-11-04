@@ -22,3 +22,4 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
     </main>
   )
 }
+
