@@ -1,21 +1,16 @@
 -- =====================================================================
--- Step 2: Profiles table (the "users" table from the guide, section 4 & 8.3)
--- Run this ONCE in Supabase Dashboard -> SQL Editor -> New query -> Run
+-- Step 2: Profiles table & 4-Role Model
+-- Roles: admin_engineer, assistant, contractor, client
 -- =====================================================================
 
--- 1. Roles allowed in the system
-do $$ begin
-  create type public.user_role as enum
-    ('admin', 'project_manager', 'engineer', 'foreman', 'worker', 'client');
-exception when duplicate_object then null; end $$;
-
--- 2. Profiles table (1 row per auth user)
+-- 1. Profiles table (1 row per auth user, strictly restricted to the 4 roles)
 create table if not exists public.profiles (
   id             uuid primary key references auth.users(id) on delete cascade,
   email          text not null,
   full_name      text,
   avatar_url     text,
-  role           public.user_role not null default 'worker',
+  role           text not null default 'contractor'
+                   check (role in ('admin_engineer', 'assistant', 'contractor', 'client')),
   email_verified boolean not null default false,
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now()
@@ -23,7 +18,7 @@ create table if not exists public.profiles (
 
 create index if not exists profiles_role_idx on public.profiles(role);
 
--- 3. Auto-create a profile whenever a new user signs up (Google or email).
+-- 2. Auto-create a profile whenever a new user signs up (Google or email).
 --    Google accounts are marked verified because Google already verified the address.
 create or replace function public.handle_new_user()
 returns trigger
@@ -50,7 +45,7 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- 4. Keep email_verified in sync when a user confirms their email later
+-- 3. Keep email_verified in sync when a user confirms their email later
 create or replace function public.handle_user_email_confirmed()
 returns trigger
 language plpgsql
@@ -70,7 +65,7 @@ create trigger on_auth_user_confirmed
   after update on auth.users
   for each row execute function public.handle_user_email_confirmed();
 
--- 5. Row Level Security: users can read their own profile, admins can read/update all.
+-- 4. Row Level Security: users can read their own profile, Admin/Engineer & Assistant can read/update all.
 alter table public.profiles enable row level security;
 
 create or replace function public.is_admin()
@@ -79,7 +74,11 @@ language sql
 stable
 security definer set search_path = public
 as $$
-  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid()
+      and role in ('admin_engineer', 'assistant')
+  );
 $$;
 
 drop policy if exists "Read own profile" on public.profiles;
@@ -89,6 +88,3 @@ create policy "Read own profile" on public.profiles
 drop policy if exists "Admins update profiles" on public.profiles;
 create policy "Admins update profiles" on public.profiles
   for update using (public.is_admin());
-
--- Note: users can NOT change their own role (no self-update policy on purpose).
-
