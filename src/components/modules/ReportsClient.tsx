@@ -81,3 +81,4 @@ export default function ReportsClient({ store }: { store: StoreData }) {
     </div>
   )
 }
+

@@ -163,6 +163,7 @@ export async function POST(
       await sendEmail({
         to: user.email,
         subject: `New Task Assigned: ${newTask.title}`,
+        category: 'task_assignment',
         html: buildBrandedEmailHtml({
           heading: 'New Construction Task Assigned',
           bodyHtml: `<p>Task <strong>${newTask.title}</strong> has been assigned to <strong>${newTask.assigned_user_name}</strong> (Due: ${newTask.due_date}).</p>`,
@@ -279,6 +280,7 @@ export async function POST(
         await sendEmail({
           to: user.email,
           subject: `⚠️ Low-Stock Alert: ${mat.name}`,
+          category: 'low_stock_alert',
           html: buildBrandedEmailHtml({
             heading: `Low-Stock Warning: ${mat.name}`,
             bodyHtml: `<p>Current stock for <strong>${mat.name}</strong> has dropped to <strong>${mat.current_stock} ${mat.unit}</strong> (Reorder level: ${mat.reorder_level} ${mat.unit}). Please reorder soon.</p>`,
@@ -433,6 +435,7 @@ export async function POST(
       await sendEmail({
         to: exp.submitted_by_email,
         subject: `Expense ${exp.approval_status.toUpperCase()}: ${exp.description}`,
+        category: 'approval_notice',
         html: buildBrandedEmailHtml({
           heading: `Expense ${exp.approval_status.toUpperCase()}`,
           bodyHtml: `<p>Your expense <strong>${exp.description}</strong> (₱${exp.amount.toLocaleString()}) was <strong>${exp.approval_status}</strong> by ${user.email}.</p>`,
@@ -512,3 +515,4 @@ export async function POST(
 
   return NextResponse.json({ error: 'Invalid module or action' }, { status: 400 })
 }
+

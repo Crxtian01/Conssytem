@@ -36,3 +36,4 @@ async function ProjectsContent() {
     </AppShell>
   )
 }
+

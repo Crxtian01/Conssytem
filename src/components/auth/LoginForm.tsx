@@ -15,11 +15,30 @@ export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resetSent, setResetSent] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(
     urlError === 'auth_failed'
       ? 'Authentication failed or link expired. Please try signing in again.'
       : null
   )
+
+  async function handleForgotPassword() {
+    if (!email.trim()) {
+      setError('Enter your email address above first, then click Forgot password.')
+      return
+    }
+    setError(null)
+    setResetSent(null)
+    const supabase = createClient()
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/auth/confirm`,
+    })
+    if (resetErr) {
+      setError(resetErr.message)
+      return
+    }
+    setResetSent(`Password reset link sent to ${email.trim()}! Check your inbox.`)
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -59,6 +78,12 @@ export default function LoginForm() {
         </div>
       )}
 
+      {resetSent && (
+        <div className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+          {resetSent}
+        </div>
+      )}
+
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {error}
@@ -93,9 +118,18 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-xs font-medium text-amber-600 hover:text-amber-700"
+            >
+              Forgot password?
+            </button>
+          </div>
           <input
             id="password"
             type="password"

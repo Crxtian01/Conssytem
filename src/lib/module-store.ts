@@ -491,3 +491,4 @@ export async function trySupabaseInsert(table: string, payload: Record<string, u
     // Ignore if table not created yet in Supabase; local store has it
   }
 }
+

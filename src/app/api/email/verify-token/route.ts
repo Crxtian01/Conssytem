@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getAdminDb } from '@/lib/db'
+import { sendEmail, buildBrandedEmailHtml } from '@/lib/email'
 
 // POST /api/email/verify-token
 // Section 10:
@@ -64,6 +65,19 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Section 12.1: Automatically send Welcome email after confirmation
+    await sendEmail({
+      to: row.target_email,
+      subject: 'Welcome to ConstructMS — Your Email is Confirmed!',
+      category: 'welcome_after_confirmation',
+      html: buildBrandedEmailHtml({
+        heading: 'Welcome to ConstructMS! 🎉',
+        bodyHtml: `<p>Your notification email address (<strong>${row.target_email}</strong>) is now verified and active for all project alerts and reports.</p>`,
+        ctaLabel: 'Open Dashboard',
+        ctaUrl: `${request.nextUrl.origin}/`,
+      }),
+    })
+
     return NextResponse.json({
       ok: true,
       verifiedEmail: row.target_email,
@@ -113,6 +127,19 @@ export async function POST(request: NextRequest) {
     .from('profiles')
     .update({ email_verified: true, updated_at: now.toISOString() })
     .eq('id', matchedUser.id)
+
+  // Section 12.1: Automatically send Welcome email after confirmation
+  await sendEmail({
+    to: targetEmail,
+    subject: 'Welcome to ConstructMS — Your Email is Confirmed!',
+    category: 'welcome_after_confirmation',
+    html: buildBrandedEmailHtml({
+      heading: 'Welcome to ConstructMS! 🎉',
+      bodyHtml: `<p>Your notification email address (<strong>${targetEmail}</strong>) is now verified and active for all project alerts and reports.</p>`,
+      ctaLabel: 'Open Dashboard',
+      ctaUrl: `${request.nextUrl.origin}/`,
+    }),
+  })
 
   return NextResponse.json({
     ok: true,

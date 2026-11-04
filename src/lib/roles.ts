@@ -245,6 +245,15 @@ export const CORE_MODULES: CoreModule[] = [
     phase: 6,
   },
   {
+    id: 'notifications',
+    name: 'Email Notifications',
+    href: '/notifications',
+    icon: '✉️',
+    description: 'Welcome, password reset, task notices, low-stock alerts, approvals & weekly reports',
+    allowedRoles: ['admin', 'project_manager', 'engineer', 'foreman', 'worker', 'client'],
+    phase: 7,
+  },
+  {
     id: 'users',
     name: 'Users & Roles',
     href: '/users',

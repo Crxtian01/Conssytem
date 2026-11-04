@@ -30,3 +30,4 @@ async function EquipmentContent() {
     </AppShell>
   )
 }
+
