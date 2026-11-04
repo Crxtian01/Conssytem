@@ -1,7 +1,9 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { requireAuth } from '@/lib/auth'
+import { getAdminDb } from '@/lib/db'
 import AppShell from '@/components/layout/AppShell'
+import NotificationEmailCard from '@/components/auth/NotificationEmailCard'
 import { ROLES, getModulesForRole } from '@/lib/roles'
 
 export default function HomePage() {
@@ -14,6 +16,13 @@ export default function HomePage() {
 
 async function DashboardContent() {
   const user = await requireAuth()
+  const adminDb = getAdminDb()
+  const { data: authUserData } = await adminDb.auth.admin.getUserById(user.id)
+  const meta = authUserData?.user?.user_metadata ?? {}
+
+  const verifiedNotificationEmail = (meta.verified_notification_email as string) || null
+  const pendingNotificationEmail = (meta.pending_notification_email as string) || null
+
   const roleInfo = ROLES[user.role] ?? ROLES.worker
   const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
 
@@ -47,6 +56,13 @@ async function DashboardContent() {
             </Link>
           </div>
         </div>
+
+        {/* Section 10: Email for Notifications & Confirmation Flow */}
+        <NotificationEmailCard
+          primaryEmail={user.email}
+          verifiedNotificationEmail={verifiedNotificationEmail}
+          pendingNotificationEmail={pendingNotificationEmail}
+        />
 
         {/* Core Modules available to this user's role */}
         <div>

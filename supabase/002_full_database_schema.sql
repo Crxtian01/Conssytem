@@ -242,9 +242,14 @@ create index if not exists documents_project_idx on public.documents(project_id)
 
 
 -- ---------------------------------------------------------------------
--- 13. TABLE: email_verifications
+-- 13. TABLE: email_verifications + notification_email columns on profiles
 --     Purpose: Token, user, target email, expiry, used flag (Section 4 & 10)
 -- ---------------------------------------------------------------------
+alter table public.profiles
+  add column if not exists notification_email text,
+  add column if not exists notification_email_verified boolean not null default false,
+  add column if not exists pending_notification_email text;
+
 create table if not exists public.email_verifications (
   id           uuid primary key default gen_random_uuid(),
   user_id      uuid not null references public.profiles(id) on delete cascade,

@@ -8,12 +8,50 @@ import { createClient } from '@/lib/supabase-browser'
 export default function VerifyEmailNotice() {
   const searchParams = useSearchParams()
   const initialEmail = searchParams.get('email') ?? ''
+  const token = searchParams.get('token')
 
   const [email, setEmail] = useState(initialEmail)
   const [cooldown, setCooldown] = useState(0)
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
+  const [verifyingToken, setVerifyingToken] = useState(Boolean(token))
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null)
+
+  // Section 10: If URL has ?token=..., verify the 24h single-use token automatically
+  useEffect(() => {
+    if (!token) return
+    let cancelled = false
+
+    async function verifyCustomToken() {
+      setVerifyingToken(true)
+      setError(null)
+      try {
+        const res = await fetch('/api/email/verify-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        })
+        const data = await res.json()
+        if (cancelled) return
+        if (!res.ok) {
+          setError(data.error || 'Verification failed.')
+        } else {
+          setVerifiedEmail(data.verifiedEmail)
+          setStatus(`Email address ${data.verifiedEmail} is now verified!`)
+        }
+      } catch {
+        if (!cancelled) setError('Could not verify token.')
+      } finally {
+        if (!cancelled) setVerifyingToken(false)
+      }
+    }
+
+    verifyCustomToken()
+    return () => {
+      cancelled = true
+    }
+  }, [token])
 
   useEffect(() => {
     if (cooldown <= 0) return
@@ -43,7 +81,42 @@ export default function VerifyEmailNotice() {
     }
 
     setStatus('A fresh confirmation link has been sent to your email.')
-    setCooldown(60) // 60-second rate limit per Section 10 of guide
+    setCooldown(60)
+  }
+
+  if (token) {
+    return (
+      <div className="space-y-5 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl">
+          {verifyingToken ? '⏳' : verifiedEmail ? '✅' : '⚠️'}
+        </div>
+
+        {verifyingToken && (
+          <p className="text-sm text-gray-600">Verifying your confirmation token…</p>
+        )}
+
+        {status && (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            {status}
+          </div>
+        )}
+
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <div className="pt-2">
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700"
+          >
+            Go to Dashboard →
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -106,4 +179,3 @@ export default function VerifyEmailNotice() {
     </div>
   )
 }
-
