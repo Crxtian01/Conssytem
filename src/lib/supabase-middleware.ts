@@ -48,8 +48,22 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Already signed in and opening the login page -> go to dashboard
-  if (user && pathname.startsWith('/login')) {
+  // Signed in with email/password but email is not confirmed yet -> block dashboard access
+  if (user && !user.email_confirmed_at && !isPublicRoute) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/verify'
+    if (user.email) {
+      url.searchParams.set('email', user.email)
+    }
+    return NextResponse.redirect(url)
+  }
+
+  // Already signed in (and verified) and opening login or register -> go to dashboard
+  if (
+    user &&
+    user.email_confirmed_at &&
+    (pathname.startsWith('/login') || pathname.startsWith('/register'))
+  ) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
