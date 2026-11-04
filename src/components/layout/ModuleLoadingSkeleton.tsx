@@ -1,3 +1,5 @@
+import ScatteredMaterialsBackdrop from '@/components/layout/ScatteredMaterialsBackdrop'
+
 export default function ModuleLoadingSkeleton({
   title = 'Loading module…',
 }: {
@@ -5,26 +7,7 @@ export default function ModuleLoadingSkeleton({
 }) {
   return (
     <div className="liquid-mesh-bg relative min-h-screen flex flex-col md:flex-row overflow-hidden text-slate-900">
-      {/* Ambient Liquid Glass Mesh & Orbs */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
-      >
-        <div
-          className="liquid-orb absolute -top-28 -left-24 h-[28rem] w-[28rem] rounded-full opacity-70 blur-3xl"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(251,191,36,0.42) 0%, rgba(245,158,11,0.18) 55%, transparent 75%)',
-          }}
-        />
-        <div
-          className="liquid-orb absolute top-[18%] right-[-8%] h-[32rem] w-[32rem] rounded-full opacity-65 blur-3xl"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(147,197,253,0.42) 0%, rgba(196,181,253,0.24) 55%, transparent 75%)',
-          }}
-        />
-      </div>
+      <ScatteredMaterialsBackdrop />
 
       {/* Top animated progress bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-white/40 backdrop-blur-md overflow-hidden">

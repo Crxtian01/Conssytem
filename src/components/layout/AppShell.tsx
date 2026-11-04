@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import ScatteredMaterialsBackdrop from '@/components/layout/ScatteredMaterialsBackdrop'
 import {
   ROLES,
   getModulesForRole,
@@ -128,134 +129,8 @@ export default function AppShell({ user, children }: AppShellProps) {
         </defs>
       </svg>
 
-      {/* Construction Site Skyline, CAD Blueprint Grid, Tower Cranes & Liquid Orbs Behind Glass */}
-      <div
-        aria-hidden="true"
-        className="construction-blueprint-grid pointer-events-none fixed inset-0 z-0 overflow-hidden"
-      >
-        {/* Cursor-following liquid refraction spotlight */}
-        <div
-          className="fixed inset-0 transition-opacity duration-300"
-          style={{
-            background:
-              'radial-gradient(560px circle at var(--lx, 50%) var(--ly, 30%), rgba(255,255,255,0.6), rgba(251,191,36,0.22) 45%, transparent 75%)',
-          }}
-        />
-
-        {/* Golden-Hour Construction Amber & Blueprint Cyan Liquid Orbs */}
-        <div
-          className="liquid-orb absolute -top-24 -left-20 h-[32rem] w-[32rem] rounded-full opacity-80 blur-3xl"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(245,158,11,0.65) 0%, rgba(217,119,6,0.32) 52%, transparent 75%)',
-          }}
-        />
-        <div
-          className="liquid-orb absolute top-[8%] right-[-6%] h-[36rem] w-[36rem] rounded-full opacity-75 blur-3xl"
-          style={{
-            animationDelay: '-5s',
-            background:
-              'radial-gradient(circle, rgba(14,165,233,0.55) 0%, rgba(251,146,60,0.38) 55%, transparent 75%)',
-          }}
-        />
-        <div
-          className="liquid-orb absolute bottom-[-12%] left-[25%] h-[34rem] w-[34rem] rounded-full opacity-75 blur-3xl"
-          style={{
-            animationDelay: '-10s',
-            background:
-              'radial-gradient(circle, rgba(251,191,36,0.58) 0%, rgba(14,116,144,0.35) 55%, transparent 75%)',
-          }}
-        />
-
-        {/* Architectural Construction Skyline: Tower Cranes, Steel Girder High-Rises & Blueprint Elevation Lines */}
-        <svg
-          className="absolute inset-x-0 bottom-0 h-[72vh] w-full text-slate-900/20"
-          viewBox="0 0 1600 600"
-          fill="none"
-          preserveAspectRatio="xMidYMax slice"
-        >
-          {/* Blueprint Elevation Reference Lines */}
-          <line x1="0" y1="120" x2="1600" y2="120" stroke="currentColor" strokeDasharray="6 6" strokeWidth="1" />
-          <line x1="0" y1="260" x2="1600" y2="260" stroke="currentColor" strokeDasharray="6 6" strokeWidth="1" />
-          <line x1="0" y1="420" x2="1600" y2="420" stroke="currentColor" strokeDasharray="6 6" strokeWidth="1" />
-
-          {/* Left Tower Crane #1 */}
-          <g stroke="currentColor" strokeWidth="2.2">
-            {/* Crane Mast */}
-            <rect x="290" y="95" width="22" height="505" />
-            <path d="M290 120 L312 145 L290 170 L312 195 L290 220 L312 245 L290 270 L312 295 L290 320 L312 345 L290 370 L312 395 L290 420 L312 445 L290 470" />
-            {/* Crane Peak & Jib Boom */}
-            <polygon points="290,95 301,48 312,95" />
-            <line x1="160" y1="95" x2="620" y2="95" strokeWidth="3" />
-            <line x1="160" y1="95" x2="301" y2="48" />
-            <line x1="301" y1="48" x2="560" y2="95" />
-            <line x1="312" y1="80" x2="620" y2="95" />
-            {/* Counterweight & Trolley Hook */}
-            <rect x="172" y="95" width="38" height="24" fill="currentColor" />
-            <line x1="510" y1="95" x2="510" y2="210" strokeDasharray="4 3" />
-            <rect x="492" y="210" width="36" height="14" fill="currentColor" />
-          </g>
-
-          {/* Right Giant Tower Crane #2 */}
-          <g stroke="currentColor" strokeWidth="2.2">
-            <rect x="1180" y="60" width="24" height="540" />
-            <path d="M1180 85 L1204 115 L1180 145 L1204 175 L1180 205 L1204 235 L1180 265 L1204 295 L1180 325 L1204 355 L1180 385 L1204 415 L1180 445" />
-            <polygon points="1180,60 1192,12 1204,60" />
-            <line x1="820" y1="60" x2="1360" y2="60" strokeWidth="3.2" />
-            <line x1="870" y1="60" x2="1192" y2="12" />
-            <line x1="1192" y1="12" x2="1340" y2="60" />
-            <rect x="1305" y="60" width="44" height="26" fill="currentColor" />
-            {/* Suspended Steel Beam Load */}
-            <line x1="940" y1="60" x2="940" y2="175" />
-            <line x1="900" y1="195" x2="940" y2="175" />
-            <line x1="980" y1="195" x2="940" y2="175" />
-            <rect x="885" y="195" width="110" height="10" fill="currentColor" />
-          </g>
-
-          {/* High-Rise Structural Steel & Concrete Buildings Under Construction */}
-          <g stroke="currentColor" strokeWidth="1.8">
-            {/* Building A (Left-Center Structural Frame) */}
-            <rect x="350" y="210" width="190" height="390" fill="currentColor" fillOpacity="0.08" />
-            <line x1="395" y1="210" x2="395" y2="600" />
-            <line x1="445" y1="210" x2="445" y2="600" />
-            <line x1="495" y1="210" x2="495" y2="600" />
-            <line x1="350" y1="250" x2="540" y2="250" />
-            <line x1="350" y1="290" x2="540" y2="290" />
-            <line x1="350" y1="330" x2="540" y2="330" />
-            <line x1="350" y1="370" x2="540" y2="370" />
-            <line x1="350" y1="410" x2="540" y2="410" />
-            <line x1="350" y1="450" x2="540" y2="450" />
-            <line x1="350" y1="490" x2="540" y2="490" />
-
-            {/* Building B (Center-Right Commercial Tower Frame) */}
-            <rect x="690" y="150" width="230" height="450" fill="currentColor" fillOpacity="0.1" />
-            <line x1="745" y1="150" x2="745" y2="600" />
-            <line x1="805" y1="150" x2="805" y2="600" />
-            <line x1="865" y1="150" x2="865" y2="600" />
-            <line x1="690" y1="195" x2="920" y2="195" />
-            <line x1="690" y1="240" x2="920" y2="240" />
-            <line x1="690" y1="285" x2="920" y2="285" />
-            <line x1="690" y1="330" x2="920" y2="330" />
-            <line x1="690" y1="375" x2="920" y2="375" />
-            <line x1="690" y1="420" x2="920" y2="420" />
-            <line x1="690" y1="465" x2="920" y2="465" />
-            {/* Cross-bracing X girders */}
-            <line x1="690" y1="150" x2="745" y2="195" />
-            <line x1="745" y1="150" x2="690" y2="195" />
-            <line x1="865" y1="195" x2="920" y2="240" />
-            <line x1="920" y1="195" x2="865" y2="240" />
-
-            {/* Building C (Right Tower Under Construction) */}
-            <rect x="980" y="250" width="170" height="350" fill="currentColor" fillOpacity="0.08" />
-            <line x1="1035" y1="250" x2="1035" y2="600" />
-            <line x1="1095" y1="250" x2="1095" y2="600" />
-            <line x1="980" y1="295" x2="1150" y2="295" />
-            <line x1="980" y1="340" x2="1150" y2="340" />
-            <line x1="980" y1="385" x2="1150" y2="385" />
-            <line x1="980" y1="430" x2="1150" y2="430" />
-          </g>
-        </svg>
-      </div>
+      {/* Scattered Construction Materials & Liquid Orbs Behind the Glass Cards */}
+      <ScatteredMaterialsBackdrop />
 
       {/* Top animated progress bar when switching modules or roles */}
       {(isTransitioning || signingOut) && (
