@@ -10,6 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +24,86 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing Page motion                                                 */
+/* ------------------------------------------------------------------ */
+
+@keyframes cms-line-in {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes cms-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cms-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0);
+  }
+}
+
+@keyframes cms-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes cms-scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+.cms-line-in {
+  animation: cms-line-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cms-fade-in {
+  animation: cms-fade-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cms-float {
+  animation: cms-float 9s ease-in-out infinite;
+}
+
+.cms-marquee {
+  animation: cms-marquee 40s linear infinite;
+}
+
+.cms-scroll-cue {
+  animation: cms-scroll-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cms-line-in,
+  .cms-fade-in,
+  .cms-float,
+  .cms-marquee,
+  .cms-scroll-cue {
+    animation: none !important;
+  }
 }
