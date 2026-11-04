@@ -1,10 +1,8 @@
 import { Suspense } from 'react'
-import { redirect } from 'next/navigation'
-import { createClient as createServerSupabase } from '@/lib/supabase-server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { requireAuth } from '@/lib/auth'
+import { getAdminDb } from '@/lib/db'
 import AppShell from '@/components/layout/AppShell'
 import { USER_STORIES, DATABASE_TABLES } from '@/types/database'
-import type { UserRole } from '@/lib/roles'
 
 export const metadata = {
   title: 'Requirements & Database Design | Construction Management System',
@@ -25,28 +23,13 @@ export default function ArchitecturePage() {
 }
 
 async function ArchitectureContent() {
-  const supabase = await createServerSupabase()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
-
-  const adminSupabase = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
-  const { data: myProfile } = await adminSupabase
-    .from('profiles')
-    .select('full_name, email, avatar_url, role, email_verified')
-    .eq('id', user.id)
-    .single()
+  const user = await requireAuth()
+  const adminDb = getAdminDb()
 
   // Live check which of the 13 tables exist in Supabase right now
   const tableStatuses = await Promise.all(
     DATABASE_TABLES.map(async (t) => {
-      const { error } = await adminSupabase.from(t.table).select('*').limit(1)
+      const { error } = await adminDb.from(t.table).select('*').limit(1)
       return {
         table: t.table,
         exists: !error,
@@ -56,19 +39,9 @@ async function ArchitectureContent() {
 
   const statusMap = Object.fromEntries(tableStatuses.map((s) => [s.table, s.exists]))
   const createdCount = tableStatuses.filter((s) => s.exists).length
-  const currentRole: UserRole = (myProfile?.role as UserRole) ?? 'worker'
 
   return (
-    <AppShell
-      user={{
-        id: user.id,
-        email: myProfile?.email ?? user.email ?? '',
-        fullName: myProfile?.full_name ?? null,
-        avatarUrl: myProfile?.avatar_url ?? null,
-        role: currentRole,
-        emailVerified: Boolean(myProfile?.email_verified ?? user.email_confirmed_at),
-      }}
-    >
+    <AppShell user={user}>
       <div className="mx-auto max-w-6xl space-y-8">
         {/* Page Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -211,4 +184,3 @@ async function ArchitectureContent() {
     </AppShell>
   )
 }
-

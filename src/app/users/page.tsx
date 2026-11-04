@@ -1,10 +1,8 @@
 import { Suspense } from 'react'
-import { redirect } from 'next/navigation'
-import { createClient as createServerSupabase } from '@/lib/supabase-server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { requireAuth } from '@/lib/auth'
+import { getAdminDb } from '@/lib/db'
 import AppShell from '@/components/layout/AppShell'
 import RoleManager from '@/components/users/RoleManager'
-import type { UserRole } from '@/lib/roles'
 
 export const metadata = {
   title: 'Users & Roles | Construction Management System',
@@ -19,42 +17,16 @@ export default function UsersPage() {
 }
 
 async function UsersContent() {
-  const supabase = await createServerSupabase()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await requireAuth()
+  const adminDb = getAdminDb()
 
-  if (!user) redirect('/login')
-
-  const adminSupabase = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
-  const { data: myProfile } = await adminSupabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  const { data: allProfiles } = await adminSupabase
+  const { data: allProfiles } = await adminDb
     .from('profiles')
     .select('id, email, full_name, avatar_url, role, email_verified, created_at')
     .order('created_at', { ascending: true })
 
-  const currentRole: UserRole = (myProfile?.role as UserRole) ?? 'worker'
-
   return (
-    <AppShell
-      user={{
-        id: user.id,
-        email: myProfile?.email ?? user.email ?? '',
-        fullName: myProfile?.full_name ?? null,
-        avatarUrl: myProfile?.avatar_url ?? null,
-        role: currentRole,
-        emailVerified: Boolean(myProfile?.email_verified ?? user.email_confirmed_at),
-      }}
-    >
+    <AppShell user={user}>
       <div className="mx-auto max-w-5xl space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Users &amp; Role Management</h1>
@@ -66,11 +38,10 @@ async function UsersContent() {
 
         <RoleManager
           currentUserId={user.id}
-          currentUserRole={currentRole}
+          currentUserRole={user.role}
           profiles={(allProfiles as never[]) ?? []}
         />
       </div>
     </AppShell>
   )
 }
-

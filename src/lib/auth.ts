@@ -57,3 +57,4 @@ export async function requireRole(allowedRoles: UserRole[]): Promise<Authenticat
   }
   return currentUser
 }
+

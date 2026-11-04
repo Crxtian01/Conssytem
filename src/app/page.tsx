@@ -1,9 +1,8 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase-server'
+import { requireAuth } from '@/lib/auth'
 import AppShell from '@/components/layout/AppShell'
-import { ROLES, getModulesForRole, type UserRole } from '@/lib/roles'
+import { ROLES, getModulesForRole } from '@/lib/roles'
 
 export default function HomePage() {
   return (
@@ -14,34 +13,12 @@ export default function HomePage() {
 }
 
 async function DashboardContent() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, email, avatar_url, role, email_verified')
-    .eq('id', user.id)
-    .single()
-
-  const role: UserRole = (profile?.role as UserRole) ?? 'worker'
-  const roleInfo = ROLES[role] ?? ROLES.worker
-  const allowedModules = getModulesForRole(role).filter((m) => m.id !== 'dashboard')
+  const user = await requireAuth()
+  const roleInfo = ROLES[user.role] ?? ROLES.worker
+  const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
 
   return (
-    <AppShell
-      user={{
-        id: user.id,
-        email: profile?.email ?? user.email ?? '',
-        fullName: profile?.full_name ?? null,
-        avatarUrl: profile?.avatar_url ?? null,
-        role,
-        emailVerified: Boolean(profile?.email_verified ?? user.email_confirmed_at),
-      }}
-    >
+    <AppShell user={user}>
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Welcome banner with Role & Typical Access */}
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -49,7 +26,7 @@ async function DashboardContent() {
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Welcome, {profile?.full_name || user.email}
+                  Welcome, {user.fullName || user.email}
                 </h1>
                 <span
                   className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${roleInfo.badgeColor}`}
