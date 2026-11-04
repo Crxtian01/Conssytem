@@ -149,8 +149,28 @@ export default function AppShell({ user, children }: AppShellProps) {
         </div>
       </aside>
 
-      {/* Main content area */}
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto">{children}</main>
+      {/* Main content area (pb-20 on mobile for phone-first bottom nav bar) */}
+      <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8 overflow-y-auto">{children}</main>
+
+      {/* Phone-first bottom quick bar for site staff (Section 5) */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-gray-200 bg-white/95 backdrop-blur md:hidden">
+        {allowedModules.slice(0, 5).map((mod) => {
+          const active =
+            mod.href === '/' ? pathname === '/' : pathname.startsWith(mod.href)
+          return (
+            <Link
+              key={mod.id}
+              href={mod.href}
+              className={`flex flex-col items-center justify-center py-2 text-[11px] font-medium ${
+                active ? 'text-amber-600 font-bold' : 'text-gray-600'
+              }`}
+            >
+              <span className="text-base leading-none">{mod.icon}</span>
+              <span className="mt-1 truncate max-w-[64px]">{mod.name.split(' ')[0]}</span>
+            </Link>
+          )
+        })}
+      </nav>
     </div>
   )
 }

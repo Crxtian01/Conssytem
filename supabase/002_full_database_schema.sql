@@ -302,3 +302,4 @@ end $$;
 drop policy if exists "Own email verifications" on public.email_verifications;
 create policy "Own email verifications" on public.email_verifications
   for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+

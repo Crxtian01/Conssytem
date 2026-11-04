@@ -211,3 +211,4 @@ async function ArchitectureContent() {
     </AppShell>
   )
 }
+

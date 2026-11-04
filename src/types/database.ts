@@ -229,3 +229,4 @@ export const DATABASE_TABLES: DatabaseTableSpec[] = [
     keyColumns: ['id', 'user_id', 'target_email', 'token', 'expires_at', 'used'],
   },
 ]
+

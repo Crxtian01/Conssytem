@@ -262,6 +262,15 @@ export const CORE_MODULES: CoreModule[] = [
     allowedRoles: ['admin', 'project_manager', 'engineer', 'foreman', 'worker', 'client'],
     phase: 1,
   },
+  {
+    id: 'screen-design',
+    name: 'Screens, Stack & Setup',
+    href: '/screen-design',
+    icon: '📱',
+    description: 'Phone-first wireframes (Section 5), Tech Stack (Section 6) & Setup (Section 7)',
+    allowedRoles: ['admin', 'project_manager', 'engineer', 'foreman', 'worker', 'client'],
+    phase: 1,
+  },
 ]
 
 export function getModulesForRole(role: UserRole): CoreModule[] {
