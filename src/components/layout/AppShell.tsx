@@ -22,6 +22,31 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
+function SidebarModuleIcon({ id, fallback }: { id: string; fallback: string }) {
+  if (id === 'bidding') {
+    return (
+      <svg
+        className="h-4 w-4 text-amber-700"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10" />
+        <path d="m16 16 6-6" />
+        <path d="m8 8 6-6" />
+        <path d="m9 7 8 8" />
+        <path d="m21 11-8-8" />
+        <path d="M8 22h8" />
+      </svg>
+    )
+  }
+  return <span className="text-sm leading-none">{fallback}</span>
+}
+
 export default function AppShell({ user, children }: AppShellProps) {
   const pathname = usePathname()
   const router = useRouter()
@@ -123,10 +148,10 @@ export default function AppShell({ user, children }: AppShellProps) {
               onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
               className="w-full rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-900 focus:border-amber-500 focus:outline-none disabled:opacity-50"
             >
-              <option value="admin_engineer">Admin / Engineer (All Modules)</option>
-              <option value="assistant">Assistant (All Modules)</option>
-              <option value="contractor">Contractor (Site Modules Only)</option>
-              <option value="client">Client (Read-Only Modules)</option>
+              <option value="admin_engineer">Admin / Engineer (15 Modules)</option>
+              <option value="assistant">Assistant (15 Modules)</option>
+              <option value="contractor">Contractor (6 Site Modules)</option>
+              <option value="client">Client (5 Read-Only Modules)</option>
             </select>
           </div>
         </div>
@@ -144,14 +169,22 @@ export default function AppShell({ user, children }: AppShellProps) {
                 key={mod.id}
                 href={mod.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition ${
+                className={`group flex items-center justify-between rounded-lg px-2.5 py-2 text-sm font-medium transition ${
                   active
-                    ? 'bg-amber-50 text-amber-900 font-semibold'
+                    ? 'bg-amber-50 text-amber-900 font-semibold shadow-2xs'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
-                  <span>{mod.icon}</span>
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-md border transition ${
+                      active
+                        ? 'border-amber-300 bg-amber-100 text-amber-900'
+                        : 'border-gray-200 bg-gray-50 text-gray-700 group-hover:border-amber-200 group-hover:bg-amber-50/60'
+                    }`}
+                  >
+                    <SidebarModuleIcon id={mod.id} fallback={mod.icon} />
+                  </span>
                   <span>{mod.name}</span>
                 </span>
               </Link>
@@ -181,11 +214,14 @@ export default function AppShell({ user, children }: AppShellProps) {
               🔒
             </div>
             <h1 className="text-xl font-bold text-gray-900">
-              Module Restricted for {roleInfo.label}
+              Access Denied — Module Restricted for {roleInfo.label}
             </h1>
             <p className="text-sm text-gray-600">
-              Your current role (<strong>{roleInfo.label}</strong>) only has access to{' '}
-              <strong>{allowedModules.length} permitted modules</strong>:
+              Your current role (<strong>{roleInfo.label}</strong>) does not have permission to open{' '}
+              <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-mono text-red-700">
+                {pathname}
+              </code>
+              . You only have access to <strong>{allowedModules.length} permitted modules</strong>:
             </p>
             <div className="flex flex-wrap justify-center gap-2 pt-2">
               {allowedModules.map((m) => (
@@ -198,6 +234,14 @@ export default function AppShell({ user, children }: AppShellProps) {
                   <span>{m.name}</span>
                 </Link>
               ))}
+            </div>
+            <div className="pt-2">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-700"
+              >
+                ← Return to Dashboard
+              </Link>
             </div>
           </div>
         )}

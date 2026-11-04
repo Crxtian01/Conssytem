@@ -9,6 +9,8 @@ export interface RoleDefinition {
   permissions: {
     manageUsers: boolean
     manageProjects: boolean
+    prepareBids: boolean
+    approveAndAwardBids: boolean
     viewBudgets: boolean
     approveExpenses: boolean
     manageTasks: boolean
@@ -27,10 +29,11 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Admin / Engineer',
     badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
     typicalAccess:
-      'Full access to all modules: Projects, Budgets, Approvals, Engineering Tasks, Inventory, Attendance, Equipment, Reports, and User Role Management',
+      'Full access to all 15 modules: Projects, Bidding (bid preparation, approval, submission & contract award), Budgets, Approvals, Engineering Tasks, Inventory, Attendance, Equipment, Reports, and User Role Management',
     allowedModuleIds: [
       'dashboard',
       'projects',
+      'bidding',
       'tasks',
       'daily-logs',
       'materials',
@@ -47,6 +50,8 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     permissions: {
       manageUsers: true,
       manageProjects: true,
+      prepareBids: true,
+      approveAndAwardBids: true,
       viewBudgets: true,
       approveExpenses: true,
       manageTasks: true,
@@ -63,10 +68,11 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Assistant',
     badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
     typicalAccess:
-      'Can access all modules across the system to assist Admin/Engineer with projects, logs, inventory, attendance, expenses, documents, and reports',
+      'Can access all 15 modules across the system to assist Admin/Engineer with bid preparation (draft, BOQ estimating & RA 12009 checklist), projects, logs, inventory, attendance, expenses, documents, and reports',
     allowedModuleIds: [
       'dashboard',
       'projects',
+      'bidding',
       'tasks',
       'daily-logs',
       'materials',
@@ -83,6 +89,8 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     permissions: {
       manageUsers: false,
       manageProjects: true,
+      prepareBids: true,
+      approveAndAwardBids: false,
       viewBudgets: true,
       approveExpenses: false,
       manageTasks: true,
@@ -99,7 +107,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Contractor',
     badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
     typicalAccess:
-      'Limited strictly to field & site operations: Tasks & Progress, Daily Logs, Materials & Inventory, Workers & Attendance, and Equipment (No Budgets/Expenses or Admin modules)',
+      'Limited strictly to 6 field & site operations modules: Dashboard, Tasks & Progress, Daily Logs, Materials & Inventory, Workers & Attendance, and Equipment (No Bidding, Budgets/Expenses, or Admin modules)',
     allowedModuleIds: [
       'dashboard',
       'tasks',
@@ -111,6 +119,8 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     permissions: {
       manageUsers: false,
       manageProjects: false,
+      prepareBids: false,
+      approveAndAwardBids: false,
       viewBudgets: false,
       approveExpenses: false,
       manageTasks: true,
@@ -127,7 +137,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Client',
     badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     typicalAccess:
-      'Limited strictly to read-only project monitoring: Dashboard, Projects & Sites, Daily Logs, Project Documents, and Progress Reports',
+      'Limited strictly to 5 read-only project monitoring modules: Dashboard, Projects & Sites, Daily Logs, Project Documents, and Progress Reports',
     allowedModuleIds: [
       'dashboard',
       'projects',
@@ -138,6 +148,8 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     permissions: {
       manageUsers: false,
       manageProjects: false,
+      prepareBids: false,
+      approveAndAwardBids: false,
       viewBudgets: true,
       approveExpenses: false,
       manageTasks: false,
@@ -196,6 +208,15 @@ export const CORE_MODULES: CoreModule[] = [
     icon: '🏗️',
     description: 'Manage construction projects, locations, timelines, and members',
     allowedRoles: ['admin_engineer', 'assistant', 'client'],
+    phase: 2,
+  },
+  {
+    id: 'bidding',
+    name: 'Bidding',
+    href: '/bidding',
+    icon: '🔨',
+    description: 'RA 12009 bid preparation, BOQ cost estimating, checklist, approvals & award conversion',
+    allowedRoles: ['admin_engineer', 'assistant'],
     phase: 2,
   },
   {
@@ -313,9 +334,9 @@ export function getModulesForRole(role: UserRole): CoreModule[] {
 }
 
 export function canRoleAccessPath(role: UserRole, pathname: string): boolean {
-  if (pathname === '/' || pathname === '/users') return true
+  if (pathname === '/') return true
   const matchedModule = CORE_MODULES.find(
-    (m) => m.href !== '/' && pathname.startsWith(m.href)
+    (m) => m.href !== '/' && (pathname === m.href || pathname.startsWith(`${m.href}/`))
   )
   if (!matchedModule) return true
   return matchedModule.allowedRoles.includes(role)
