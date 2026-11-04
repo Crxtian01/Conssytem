@@ -1,7 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { connection } from 'next/server'
 
 export async function createClient() {
+  // Tell Next.js 16 Cache Components this runs at request time
+  // before Supabase internally calls Date.now()
+  await connection()
   const cookieStore = await cookies()
 
   return createServerClient(
@@ -19,7 +23,7 @@ export async function createClient() {
             )
           } catch {
             // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
+            // This can be ignored if you have proxy refreshing
             // user sessions.
           }
         },
@@ -27,4 +31,3 @@ export async function createClient() {
     }
   )
 }
-
