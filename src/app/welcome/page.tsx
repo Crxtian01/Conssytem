@@ -19,3 +19,4 @@ async function WelcomeContent() {
   const user = await getOptionalAuthUser()
   return <LandingPage isSignedIn={Boolean(user)} userEmail={user?.email} />
 }
+
