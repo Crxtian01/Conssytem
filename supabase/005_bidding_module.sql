@@ -376,3 +376,4 @@ insert into public.bids (
     'Computing BOQ concrete & rebar quantities and equipment rental rates.'
   )
 on conflict (id) do nothing;
+
