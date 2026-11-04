@@ -53,10 +53,24 @@ export default function AppShell({ user, children }: AppShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [switchingRole, setSwitchingRole] = useState(false)
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
+  const [showSignOutModal, setShowSignOutModal] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
 
   useEffect(() => {
     setNavigatingTo(null)
   }, [pathname])
+
+  // Close sign-out confirmation modal on Escape key
+  useEffect(() => {
+    if (!showSignOutModal) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && !signingOut) {
+        setShowSignOutModal(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showSignOutModal, signingOut])
 
   const roleInfo = ROLES[user.role] ?? ROLES.contractor
   const allowedModules = getModulesForRole(user.role)
@@ -77,7 +91,7 @@ export default function AppShell({ user, children }: AppShellProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Top animated progress bar when switching modules or roles */}
-      {isTransitioning && (
+      {(isTransitioning || signingOut) && (
         <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-amber-100 overflow-hidden">
           <div className="h-full w-2/3 animate-pulse bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
         </div>
@@ -220,15 +234,28 @@ export default function AppShell({ user, children }: AppShellProps) {
           })}
         </nav>
 
+        {/* Sign Out Trigger Button (Opens Confirmation Modal) */}
         <div className="border-t border-gray-100 p-3">
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          <button
+            type="button"
+            onClick={() => setShowSignOutModal(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+          >
+            <svg
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Sign out
-            </button>
-          </form>
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span>Sign out</span>
+          </button>
         </div>
       </aside>
 
@@ -311,6 +338,110 @@ export default function AppShell({ user, children }: AppShellProps) {
           )
         })}
       </nav>
+
+      {/* Sign Out Confirmation Modal */}
+      {showSignOutModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-xs"
+          onClick={() => {
+            if (!signingOut) setShowSignOutModal(false)
+          }}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-xl space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-50 border border-red-200 text-red-600">
+                <svg
+                  className="h-6 w-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Sign out of ConstructMS?
+                </h2>
+                <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+                  Are you sure you want to log out of your account? You can sign back in anytime
+                  using Google or your email and password.
+                </p>
+              </div>
+            </div>
+
+            {/* Account Summary Card */}
+            <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3.5">
+              <div className="flex items-center gap-3 min-w-0">
+                {user.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.avatarUrl}
+                    alt=""
+                    className="h-9 w-9 rounded-full border border-gray-200 object-cover"
+                  />
+                ) : (
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-800">
+                    {(user.fullName || user.email).charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-bold text-gray-900">
+                    {user.fullName || user.email}
+                  </p>
+                  <p className="truncate text-[11px] text-gray-500">{user.email}</p>
+                </div>
+              </div>
+              <span
+                className={`ml-2 shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${roleInfo.badgeColor}`}
+              >
+                {roleInfo.label}
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-2.5 pt-1">
+              <button
+                type="button"
+                disabled={signingOut}
+                onClick={() => setShowSignOutModal(false)}
+                className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Stay Signed In
+              </button>
+
+              <form
+                action="/auth/signout"
+                method="post"
+                onSubmit={() => setSigningOut(true)}
+              >
+                <button
+                  type="submit"
+                  disabled={signingOut}
+                  className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-red-700 disabled:opacity-60"
+                >
+                  {signingOut ? (
+                    <>
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      <span>Signing out…</span>
+                    </>
+                  ) : (
+                    <span>Yes, Sign Out</span>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
