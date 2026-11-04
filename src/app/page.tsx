@@ -2,8 +2,10 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { requireAuth } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
+import { readStore } from '@/lib/module-store'
 import AppShell from '@/components/layout/AppShell'
 import NotificationEmailCard from '@/components/auth/NotificationEmailCard'
+import DashboardAnalytics from '@/components/dashboard/DashboardAnalytics'
 import { ROLES, getModulesForRole } from '@/lib/roles'
 
 export default function HomePage() {
@@ -23,12 +25,13 @@ async function DashboardContent() {
   const verifiedNotificationEmail = (meta.verified_notification_email as string) || null
   const pendingNotificationEmail = (meta.pending_notification_email as string) || null
 
+  const store = readStore()
   const roleInfo = ROLES[user.role] ?? ROLES.worker
   const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
 
   return (
     <AppShell user={user}>
-      <div className="mx-auto max-w-5xl space-y-6">
+      <div className="mx-auto max-w-6xl space-y-6">
         {/* Welcome banner with Role & Typical Access */}
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -56,6 +59,9 @@ async function DashboardContent() {
             </Link>
           </div>
         </div>
+
+        {/* Section 13: Dashboard KPIs, Project Progress, Budget vs Actual, Low-Stock, Attendance & Export */}
+        <DashboardAnalytics store={store} role={user.role} />
 
         {/* Section 10: Email for Notifications & Confirmation Flow */}
         <NotificationEmailCard
