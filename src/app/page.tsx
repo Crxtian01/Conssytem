@@ -1,24 +1,31 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { requireAuth } from '@/lib/auth'
+import { getOptionalAuthUser } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
 import { readStore } from '@/lib/module-store'
 import AppShell from '@/components/layout/AppShell'
 import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
+import LandingPage from '@/components/landing/LandingPage'
 import NotificationEmailCard from '@/components/auth/NotificationEmailCard'
 import DashboardAnalytics from '@/components/dashboard/DashboardAnalytics'
 import { ROLES, getModulesForRole } from '@/lib/roles'
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<ModuleLoadingSkeleton title="Loading Dashboard…" />}>
-      <DashboardContent />
+    <Suspense fallback={<ModuleLoadingSkeleton title="Loading ConstructMS…" />}>
+      <HomeOrDashboardContent />
     </Suspense>
   )
 }
 
-async function DashboardContent() {
-  const user = await requireAuth()
+async function HomeOrDashboardContent() {
+  const user = await getOptionalAuthUser()
+
+  // Show the ConstructMS Landing Page when not signed in
+  if (!user) {
+    return <LandingPage isSignedIn={false} />
+  }
+
   const adminDb = getAdminDb()
   const { data: authUserData } = await adminDb.auth.admin.getUserById(user.id)
   const meta = authUserData?.user?.user_metadata ?? {}
@@ -53,14 +60,22 @@ async function DashboardContent() {
               </p>
             </div>
 
-            {canManageUsers && (
+            <div className="flex flex-wrap items-center gap-2">
               <Link
-                href="/users"
-                className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700"
+                href="/welcome"
+                className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
               >
-                Manage Users &amp; Roles
+                🌐 View Landing Page
               </Link>
-            )}
+              {canManageUsers && (
+                <Link
+                  href="/users"
+                  className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-amber-700"
+                >
+                  Manage Users &amp; Roles
+                </Link>
+              )}
+            </div>
           </div>
         </div>
 

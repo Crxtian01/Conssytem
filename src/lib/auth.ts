@@ -29,11 +29,9 @@ export function clearAuthCache() {
 }
 
 /**
- * Section 7: Reusable Authentication & Role Helper
- * Ensures the caller is signed in and returns their profile + normalized 4-tier role:
- * ('admin_engineer' | 'assistant' | 'contractor' | 'client')
+ * Returns the authenticated user if signed in, or null if unauthenticated (no redirect).
  */
-export async function requireAuth(): Promise<AuthenticatedUser> {
+export async function getOptionalAuthUser(): Promise<AuthenticatedUser | null> {
   const supabase = await getSessionDb()
   const {
     data: { session },
@@ -44,9 +42,7 @@ export async function requireAuth(): Promise<AuthenticatedUser> {
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    if (!user) {
-      redirect('/login')
-    }
+    if (!user) return null
     return resolveUserProfile(user.id, user.email ?? '', user.user_metadata, user.email_confirmed_at)
   }
 
@@ -61,6 +57,19 @@ export async function requireAuth(): Promise<AuthenticatedUser> {
     sessionUser.user_metadata,
     sessionUser.email_confirmed_at
   )
+}
+
+/**
+ * Section 7: Reusable Authentication & Role Helper
+ * Ensures the caller is signed in and returns their profile + normalized 4-tier role:
+ * ('admin_engineer' | 'assistant' | 'contractor' | 'client')
+ */
+export async function requireAuth(): Promise<AuthenticatedUser> {
+  const user = await getOptionalAuthUser()
+  if (!user) {
+    redirect('/login')
+  }
+  return user
 }
 
 async function resolveUserProfile(

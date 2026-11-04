@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Routes anyone can open without being signed in
-const PUBLIC_ROUTES = ['/login', '/register', '/verify', '/auth']
+// Routes anyone can open without being signed in (including the Landing Page at '/' and '/welcome')
+const PUBLIC_ROUTES = ['/login', '/register', '/verify', '/auth', '/welcome']
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -39,7 +39,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
+  const isPublicRoute =
+    pathname === '/' || PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
 
   // Not signed in and trying to open a protected page -> go to login
   if (!user && !isPublicRoute) {

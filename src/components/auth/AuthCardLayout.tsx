@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 interface AuthCardLayoutProps {
   title: string
@@ -8,7 +9,16 @@ interface AuthCardLayoutProps {
 
 export default function AuthCardLayout({ title, subtitle, children }: AuthCardLayoutProps) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 px-4 py-10">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 px-4 py-10">
+      <div className="mb-4 w-full max-w-md">
+        <Link
+          href="/welcome"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-white/80 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-2xs hover:bg-white hover:text-amber-700 transition"
+        >
+          <span>←</span>
+          <span>Back to ConstructMS Landing Page</span>
+        </Link>
+      </div>
       <div className="w-full max-w-md rounded-2xl border border-amber-100 bg-white p-8 shadow-xl">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500 text-3xl shadow-sm">
@@ -22,4 +32,3 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
     </main>
   )
 }
-
