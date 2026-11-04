@@ -203,3 +203,4 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ error: 'Unknown notification type' }, { status: 400 })
 }
+
