@@ -253,8 +253,18 @@ export const CORE_MODULES: CoreModule[] = [
     allowedRoles: ['admin', 'project_manager', 'engineer', 'foreman', 'worker', 'client'],
     phase: 1,
   },
+  {
+    id: 'architecture',
+    name: 'Requirements & ERD',
+    href: '/architecture',
+    icon: '🗂️',
+    description: 'User stories (Section 3) and 13-table Database Design & live status (Section 4)',
+    allowedRoles: ['admin', 'project_manager', 'engineer', 'foreman', 'worker', 'client'],
+    phase: 1,
+  },
 ]
 
 export function getModulesForRole(role: UserRole): CoreModule[] {
   return CORE_MODULES.filter((m) => m.allowedRoles.includes(role))
 }
+
