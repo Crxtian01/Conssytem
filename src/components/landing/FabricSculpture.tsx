@@ -5,13 +5,9 @@ import { useEffect, useRef, useState } from 'react'
 /**
  * Real-time WebGL 3D Isometric Architectural Sculpture of the ConstructMS Logo.
  *
- * Renders the complete 3D ConstructMS structure in true 3D space:
- *  - Matte charcoal-black & brushed brass interlocking structural portal frames
- *  - Beveled 3D brushed-brass T-square ruler threading through the frames with
- *    procedural millimeter/centimeter graduation tick marks
- *  - 7 floating 3D spheres (glossy amber, matte charcoal ink, pearl ivory)
- *    with independent 3D bobbing and accurate depth occlusion
- *  - Accurate 3D rotation when moving the mouse OR clicking & dragging the sculpture
+ * All structural beams, the graduated T-square ruler, and the 7 spheres are
+ * constructed with non-overlapping butt-jointed geometry and high-precision
+ * depth bounds so there is zero Z-fighting or flickering at any rotation angle.
  */
 
 const VERTEX_SHADER = `
@@ -30,7 +26,6 @@ varying vec3 vNormal;
 varying vec3 vWorldPos;
 varying vec2 vUv;
 varying float vMat;
-varying float vPart;
 
 void main() {
   vec3 p = aPos;
@@ -38,14 +33,10 @@ void main() {
   // Independent 3D floating motion for the 7 spheres (aPart >= 10.0)
   if (aPart >= 10.0) {
     float idx = aPart - 10.0;
-    float bob = sin(uTime * 1.45 + idx * 1.35) * 0.055;
-    float swayX = cos(uTime * 0.95 + idx * 2.1) * 0.025;
-    float swayZ = sin(uTime * 1.15 + idx * 1.7) * 0.025;
+    float bob = sin(uTime * 1.45 + idx * 1.35) * 0.05;
+    float swayX = cos(uTime * 0.95 + idx * 2.1) * 0.02;
+    float swayZ = sin(uTime * 1.15 + idx * 1.7) * 0.02;
     p += vec3(swayX, bob, swayZ);
-  } else if (aPart >= 1.0 && aPart < 5.0) {
-    // Subtle breathing motion of the T-square & inner brass frame
-    float breathe = sin(uTime * 1.1 + aPart) * 0.012;
-    p.y += breathe;
   }
 
   vec4 world = uModel * vec4(p, 1.0);
@@ -53,7 +44,6 @@ void main() {
   vNormal = normalize((uModel * vec4(aNormal, 0.0)).xyz);
   vUv = aUv;
   vMat = aMat;
-  vPart = aPart;
 
   gl_Position = uProj * uView * world;
 }
@@ -70,10 +60,12 @@ varying vec3 vNormal;
 varying vec3 vWorldPos;
 varying vec2 vUv;
 varying float vMat;
-varying float vPart;
 
 void main() {
   vec3 N = normalize(vNormal);
+  if (!gl_FrontFacing) {
+    N = -N;
+  }
   vec3 V = normalize(vec3(0.0, 0.2, 6.5) - vWorldPos);
 
   // Studio three-point lighting setup matching the ConstructMS brand render
@@ -94,50 +86,46 @@ void main() {
   // Material 0: Matte Architectural Charcoal-Black (#222428)
   if (vMat < 0.5) {
     vec3 base = vec3(0.145, 0.152, 0.168);
-    float diff = 0.32 + ndlKey * 0.62 + ndlFill * 0.22 + ndlRim * 0.14;
-    float spec = pow(max(dot(N, HKey), 0.0), 28.0) * 0.22;
-    // Subtle edge highlight on bevels
-    float edge = smoothstep(0.0, 0.04, vUv.x) * smoothstep(1.0, 0.96, vUv.x)
-               * smoothstep(0.0, 0.04, vUv.y) * smoothstep(1.0, 0.96, vUv.y);
-    col = base * diff + vec3(0.85, 0.78, 0.68) * spec + vec3(0.04) * (1.0 - edge) + fresnel * 0.06;
+    float diff = 0.34 + ndlKey * 0.62 + ndlFill * 0.22 + ndlRim * 0.14;
+    float spec = pow(max(dot(N, HKey), 0.0), 28.0) * 0.20;
+    float edge = smoothstep(0.0, 0.035, vUv.x) * smoothstep(1.0, 0.965, vUv.x)
+               * smoothstep(0.0, 0.035, vUv.y) * smoothstep(1.0, 0.965, vUv.y);
+    col = base * diff + vec3(0.85, 0.78, 0.68) * spec + vec3(0.035) * (1.0 - edge) + fresnel * 0.05;
   }
   // Material 1: Brushed Architectural Brass / Gold (#c59e5e)
   else if (vMat < 1.5) {
-    float grain = sin(vUv.x * 180.0 + vUv.y * 40.0) * 0.018;
-    vec3 goldLight = vec3(0.86, 0.72, 0.46) + grain;
+    vec3 goldLight = vec3(0.86, 0.72, 0.46);
     vec3 goldDeep  = vec3(0.54, 0.40, 0.20);
     float diff = clamp(ndlKey * 0.78 + ndlFill * 0.32 + 0.18, 0.0, 1.0);
     vec3 base = mix(goldDeep, goldLight, diff);
-    float spec = pow(max(dot(N, HKey), 0.0), 42.0) * 0.55
-               + pow(max(dot(N, HFill), 0.0), 24.0) * 0.20;
-    col = base + vec3(1.0, 0.94, 0.78) * spec + vec3(0.95, 0.80, 0.50) * fresnel * 0.15;
+    float spec = pow(max(dot(N, HKey), 0.0), 42.0) * 0.52
+               + pow(max(dot(N, HFill), 0.0), 24.0) * 0.18;
+    col = base + vec3(1.0, 0.94, 0.78) * spec + vec3(0.95, 0.80, 0.50) * fresnel * 0.14;
   }
   // Material 2: Graduated Brushed-Brass T-Square Ruler Blade (with tick marks)
   else if (vMat < 2.5) {
-    float grain = sin(vUv.x * 260.0) * 0.015;
-    vec3 brassLight = vec3(0.84, 0.68, 0.42) + grain;
+    vec3 brassLight = vec3(0.84, 0.68, 0.42);
     vec3 brassDeep  = vec3(0.50, 0.36, 0.18);
     float diff = clamp(ndlKey * 0.80 + ndlFill * 0.30 + 0.20, 0.0, 1.0);
     vec3 base = mix(brassDeep, brassLight, diff);
 
-    // Procedural ruler graduation ticks along the top face of the blade (N.y > 0.3 or front-facing)
-    if (N.y > 0.25 && vUv.x > 0.06 && vUv.x < 0.96) {
-      float scaleCoord = vUv.x * 68.0;
-      float frac = fract(scaleCoord);
-      float tickLine = 1.0 - smoothstep(0.0, 0.13, min(frac, 1.0 - frac));
+    // Anti-aliased ruler graduation ticks along both long edges of the top blade face
+    if (vUv.x > 0.04 && vUv.x < 0.96) {
+      float scaleCoord = vUv.x * 56.0;
+      float distToLine = abs(fract(scaleCoord + 0.5) - 0.5);
+      float tickLine = 1.0 - smoothstep(0.06, 0.16, distToLine);
 
-      // Major (every 5 units), medium (every 2.5), minor (every 1)
       float idx = floor(scaleCoord + 0.5);
       bool isMajor = mod(idx, 5.0) < 0.5;
       float edgeDist = min(vUv.y, 1.0 - vUv.y);
-      float maxLen = isMajor ? 0.28 : 0.16;
-      float inTick = step(edgeDist, maxLen) * tickLine;
+      float maxLen = isMajor ? 0.30 : 0.17;
+      float inTick = (1.0 - smoothstep(maxLen - 0.02, maxLen + 0.02, edgeDist)) * tickLine;
 
       vec3 tickColor = vec3(0.24, 0.16, 0.07);
-      base = mix(base, tickColor, inTick * 0.78);
+      base = mix(base, tickColor, inTick * 0.75);
     }
 
-    float spec = pow(max(dot(N, HKey), 0.0), 48.0) * 0.58;
+    float spec = pow(max(dot(N, HKey), 0.0), 48.0) * 0.55;
     col = base + vec3(1.0, 0.95, 0.80) * spec;
   }
   // Material 3: Glossy Amber / Gold Sphere (#eb9619)
@@ -152,11 +140,11 @@ void main() {
   }
   // Material 4: Matte Charcoal Sphere (#1d1f22)
   else if (vMat < 4.5) {
-    vec3 darkTop = vec3(0.27, 0.28, 0.31);
+    vec3 darkTop = vec3(0.28, 0.29, 0.32);
     vec3 darkBot = vec3(0.07, 0.075, 0.085);
     float wrap = clamp((dot(N, keyLight) + 0.30) / 1.30, 0.0, 1.0);
     vec3 base = mix(darkBot, darkTop, wrap);
-    float spec = pow(max(dot(N, HKey), 0.0), 36.0) * 0.32;
+    float spec = pow(max(dot(N, HKey), 0.0), 36.0) * 0.34;
     col = base + vec3(0.95, 0.95, 1.0) * spec + vec3(0.35) * fresnel * 0.14;
   }
   // Material 5: Warm Pearl / Ivory Sphere (#f4ede1)
@@ -242,50 +230,48 @@ interface MeshBuilder {
   indices: number[]
 }
 
+interface FaceMaterials {
+  px?: number
+  nx?: number
+  py?: number
+  ny?: number
+  pz?: number
+  nz?: number
+  all: number
+}
+
 /**
- * Adds an oriented 3D box with independent per-face materials (so beams can have
- * brushed-gold top/inner faces and matte-charcoal side faces just like the logo).
+ * Adds a box defined by exact min/max bounds [x0..x1, y0..y1, z0..z1] so
+ * adjacent structural beams meet at clean butt-joints with zero overlapping faces.
  */
-function addBox(
+function addBoxBounds(
   b: MeshBuilder,
-  cx: number,
-  cy: number,
-  cz: number,
-  sx: number,
-  sy: number,
-  sz: number,
-  mats: {
-    px?: number
-    nx?: number
-    py?: number
-    ny?: number
-    pz?: number
-    nz?: number
-    all: number
-  },
+  x0: number,
+  x1: number,
+  y0: number,
+  y1: number,
+  z0: number,
+  z1: number,
+  mats: FaceMaterials,
   part = 0,
-  rotY = 0,
+  pivotX = 0,
+  pivotY = 0,
+  pivotZ = 0,
   rotZ = 0
 ) {
-  const hx = sx / 2
-  const hy = sy / 2
-  const hz = sz / 2
+  const cz = Math.cos(rotZ)
+  const sz = Math.sin(rotZ)
 
-  const cyRot = Math.cos(rotY)
-  const syRot = Math.sin(rotY)
-  const czRot = Math.cos(rotZ)
-  const szRot = Math.sin(rotZ)
+  function xformPos(vx: number, vy: number, vz: number): [number, number, number] {
+    if (rotZ === 0) return [vx, vy, vz]
+    const dx = vx - pivotX
+    const dy = vy - pivotY
+    return [pivotX + dx * cz - dy * sz, pivotY + dx * sz + dy * cz, vz]
+  }
 
-  function xform(vx: number, vy: number, vz: number): [number, number, number] {
-    // Rotate Z first, then Y
-    const x1 = vx * czRot - vy * szRot
-    const y1 = vx * szRot + vy * czRot
-    const z1 = vz
-
-    const x2 = x1 * cyRot + z1 * syRot
-    const y2 = y1
-    const z2 = -x1 * syRot + z1 * cyRot
-    return [x2, y2, z2]
+  function xformNorm(nx: number, ny: number, nz: number): [number, number, number] {
+    if (rotZ === 0) return [nx, ny, nz]
+    return [nx * cz - ny * sz, nx * sz + ny * cz, nz]
   }
 
   const faces: Array<{
@@ -298,10 +284,10 @@ function addBox(
       n: [1, 0, 0],
       m: mats.px ?? mats.all,
       v: [
-        [hx, -hy, hz, 0, 0],
-        [hx, -hy, -hz, 1, 0],
-        [hx, hy, -hz, 1, 1],
-        [hx, hy, hz, 0, 1],
+        [x1, y0, z1, 0, 0],
+        [x1, y0, z0, 1, 0],
+        [x1, y1, z0, 1, 1],
+        [x1, y1, z1, 0, 1],
       ],
     },
     // -X face
@@ -309,10 +295,10 @@ function addBox(
       n: [-1, 0, 0],
       m: mats.nx ?? mats.all,
       v: [
-        [-hx, -hy, -hz, 0, 0],
-        [-hx, -hy, hz, 1, 0],
-        [-hx, hy, hz, 1, 1],
-        [-hx, hy, -hz, 0, 1],
+        [x0, y0, z0, 0, 0],
+        [x0, y0, z1, 1, 0],
+        [x0, y1, z1, 1, 1],
+        [x0, y1, z0, 0, 1],
       ],
     },
     // +Y (Top) face
@@ -320,10 +306,10 @@ function addBox(
       n: [0, 1, 0],
       m: mats.py ?? mats.all,
       v: [
-        [-hx, hy, hz, 0, 0],
-        [hx, hy, hz, 1, 0],
-        [hx, hy, -hz, 1, 1],
-        [-hx, hy, -hz, 0, 1],
+        [x0, y1, z1, 0, 0],
+        [x1, y1, z1, 1, 0],
+        [x1, y1, z0, 1, 1],
+        [x0, y1, z0, 0, 1],
       ],
     },
     // -Y (Bottom) face
@@ -331,10 +317,10 @@ function addBox(
       n: [0, -1, 0],
       m: mats.ny ?? mats.all,
       v: [
-        [-hx, -hy, -hz, 0, 0],
-        [hx, -hy, -hz, 1, 0],
-        [hx, -hy, hz, 1, 1],
-        [-hx, -hy, hz, 0, 1],
+        [x0, y0, z0, 0, 0],
+        [x1, y0, z0, 1, 0],
+        [x1, y0, z1, 1, 1],
+        [x0, y0, z1, 0, 1],
       ],
     },
     // +Z (Front-Left) face
@@ -342,10 +328,10 @@ function addBox(
       n: [0, 0, 1],
       m: mats.pz ?? mats.all,
       v: [
-        [-hx, -hy, hz, 0, 0],
-        [hx, -hy, hz, 1, 0],
-        [hx, hy, hz, 1, 1],
-        [-hx, hy, hz, 0, 1],
+        [x0, y0, z1, 0, 0],
+        [x1, y0, z1, 1, 0],
+        [x1, y1, z1, 1, 1],
+        [x0, y1, z1, 0, 1],
       ],
     },
     // -Z (Back-Right) face
@@ -353,20 +339,20 @@ function addBox(
       n: [0, 0, -1],
       m: mats.nz ?? mats.all,
       v: [
-        [hx, -hy, -hz, 0, 0],
-        [-hx, -hy, -hz, 1, 0],
-        [-hx, hy, -hz, 1, 1],
-        [hx, hy, -hz, 0, 1],
+        [x1, y0, z0, 0, 0],
+        [x0, y0, z0, 1, 0],
+        [x0, y1, z0, 1, 1],
+        [x1, y1, z0, 0, 1],
       ],
     },
   ]
 
   for (const f of faces) {
     const baseIdx = b.positions.length / 3
-    const [nx, ny, nz] = xform(f.n[0], f.n[1], f.n[2])
+    const [nx, ny, nz] = xformNorm(f.n[0], f.n[1], f.n[2])
     for (const vert of f.v) {
-      const [rx, ry, rz] = xform(vert[0], vert[1], vert[2])
-      b.positions.push(cx + rx, cy + ry, cz + rz)
+      const [rx, ry, rz] = xformPos(vert[0], vert[1], vert[2])
+      b.positions.push(rx, ry, rz)
       b.normals.push(nx, ny, nz)
       b.uvs.push(vert[3], vert[4])
       b.mats.push(f.m)
@@ -377,7 +363,7 @@ function addBox(
 }
 
 /**
- * Adds a smooth 3D UV sphere with its own material and floating part ID.
+ * Adds a smooth 3D UV sphere with outward counter-clockwise triangle winding.
  */
 function addSphere(
   b: MeshBuilder,
@@ -387,8 +373,8 @@ function addSphere(
   r: number,
   mat: number,
   partId: number,
-  latBands = 28,
-  lonBands = 36
+  latBands = 30,
+  lonBands = 40
 ) {
   const baseIdx = b.positions.length / 3
   for (let lat = 0; lat <= latBands; lat++) {
@@ -417,19 +403,15 @@ function addSphere(
     for (let lon = 0; lon < lonBands; lon++) {
       const first = baseIdx + lat * (lonBands + 1) + lon
       const second = first + lonBands + 1
-      b.indices.push(first, second, first + 1, second, second + 1, first + 1)
+      // Outward-facing CCW winding
+      b.indices.push(first, first + 1, second, second, first + 1, second + 1)
     }
   }
 }
 
 /**
- * Builds the complete 3D ConstructMS Isometric Architectural Sculpture:
- *  - Material 0: Matte Charcoal (#222428)
- *  - Material 1: Brushed Brass / Gold (#c59e5e)
- *  - Material 2: Graduated Brass T-Square Ruler with tick marks
- *  - Material 3: Glossy Amber Sphere
- *  - Material 4: Matte Charcoal Sphere
- *  - Material 5: Pearl Ivory Sphere
+ * Builds the complete 3D ConstructMS Isometric Architectural Sculpture with
+ * zero overlapping or coplanar faces.
  */
 function buildConstructMSSculpture(): MeshBuilder {
   const b: MeshBuilder = {
@@ -449,133 +431,153 @@ function buildConstructMSSculpture(): MeshBuilder {
   const PEARL_SPHERE = 5
 
   // 1. Tall Central Vertical Pillar (Matte Charcoal)
-  addBox(b, -0.18, 0.28, -0.18, 0.22, 2.55, 0.42, { all: CHARCOAL }, 0)
+  // x: [-0.30, -0.08], y: [-0.88, +1.55], z: [-0.32, +0.08]
+  addBoxBounds(b, -0.30, -0.08, -0.88, 1.55, -0.32, 0.08, { all: CHARCOAL }, 0)
 
-  // 2. Long Horizontal Base Beam running from front-left (+Z) to back-right (-Z)
-  // Front-left charcoal channel section
-  addBox(b, -0.05, -0.78, 0.52, 0.36, 0.22, 1.55, { all: CHARCOAL }, 0)
-  // Back-right extension with Brushed Brass top face and Matte Charcoal sides
-  addBox(
+  // 2. Long Horizontal Base Beam along Z (placed at x: [-0.08, +0.28], y: [-0.88, -0.66])
+  // 2a. Front-Left Charcoal Channel Segment (z: [-0.08, +1.12])
+  addBoxBounds(b, -0.08, 0.28, -0.88, -0.66, -0.08, 1.12, { all: CHARCOAL }, 0)
+  // 2b. Back-Right Brass-Topped Extension Segment (z: [-1.65, -0.08])
+  addBoxBounds(
     b,
-    -0.05,
-    -0.78,
-    -0.95,
-    0.36,
-    0.22,
-    1.55,
-    { all: CHARCOAL, py: BRASS, px: CHARCOAL, nx: BRASS },
+    -0.08,
+    0.28,
+    -0.88,
+    -0.66,
+    -1.65,
+    -0.08,
+    { all: CHARCOAL, py: BRASS, nx: BRASS },
     0
   )
 
-  // 3. Front-Left L-Hook Base Foot (Matte Charcoal)
-  addBox(b, 0.14, -0.78, 1.24, 0.78, 0.20, 0.22, { all: CHARCOAL }, 0)
+  // 3. Front-Left L-Hook Base Foot (z: [+1.12, +1.34], x: [-0.30, +0.52], y: [-0.88, -0.66])
+  addBoxBounds(b, -0.30, 0.52, -0.88, -0.66, 1.12, 1.34, { all: CHARCOAL }, 0)
 
-  // 4. Outer Portal Frame — Front-Left Vertical Column (Charcoal outside, Brass inner face)
-  addBox(
+  // 4. Outer Portal Frame — Front-Left Vertical Post (stands on L-Hook Base Foot: y: [-0.66, +0.44])
+  addBoxBounds(
     b,
-    -0.16,
-    -0.12,
-    1.22,
-    0.22,
-    1.46,
-    0.22,
+    -0.30,
+    -0.08,
+    -0.66,
+    0.44,
+    1.12,
+    1.34,
     { all: CHARCOAL, px: BRASS },
     0
   )
 
-  // 5. Outer Portal Frame — Top-Left Horizontal Beam (Matte Charcoal, connecting front-left post to center)
-  addBox(b, -0.16, 0.52, 0.52, 0.22, 0.22, 1.62, { all: CHARCOAL }, 0)
+  // 5. Outer Portal Frame — Top-Left Horizontal Beam (y: [+0.44, +0.66], z: [+0.08, +1.34])
+  addBoxBounds(b, -0.30, -0.08, 0.44, 0.66, 0.08, 1.34, { all: CHARCOAL }, 0)
 
-  // 6. Outer Portal Frame — Top-Right Beam (Brushed Brass top & outer face, Charcoal underside)
-  addBox(
+  // 6. Outer Portal Frame — Top-Right Brushed-Brass Beam (x: [-0.08, +1.24], y: [+0.72, +0.94], z: [-0.30, -0.06])
+  addBoxBounds(
     b,
-    0.48,
-    0.76,
-    -0.18,
-    1.48,
-    0.22,
-    0.24,
-    { all: CHARCOAL, py: BRASS, pz: BRASS, px: BRASS },
+    -0.08,
+    1.24,
+    0.72,
+    0.94,
+    -0.30,
+    -0.06,
+    { all: BRASS, ny: CHARCOAL, nz: CHARCOAL },
     0
   )
 
-  // 7. Outer Portal Frame — Front-Right Vertical Column (Matte Charcoal)
-  addBox(
-    b,
-    1.12,
-    -0.02,
-    -0.18,
-    0.24,
-    1.52,
-    0.24,
-    { all: CHARCOAL, py: BRASS },
-    0
-  )
+  // 7. Outer Portal Frame — Front-Right Vertical Column (stands under Top-Right Beam: y: [-0.78, +0.72])
+  addBoxBounds(b, 1.00, 1.24, -0.78, 0.72, -0.30, -0.06, { all: CHARCOAL }, 0)
 
-  // 8. Inner Nested Brushed-Brass Portal Frame (Top Beam + Vertical Post)
-  addBox(b, 0.26, 0.28, 0.24, 0.92, 0.17, 0.18, { all: BRASS }, 1)
-  addBox(b, 0.64, -0.44, 0.24, 0.18, 1.56, 0.18, { all: BRASS }, 1)
+  // 8. Inner Nested Brushed-Brass Portal Frame (at z: [+0.20, +0.38])
+  // 8a. Inner Brass Top Bar (x: [-0.08, +0.74], y: [+0.22, +0.40])
+  addBoxBounds(b, -0.08, 0.74, 0.22, 0.40, 0.20, 0.38, { all: BRASS }, 1)
+  // 8b. Inner Brass Vertical Post (stands under Inner Top Bar: x: [+0.56, +0.74], y: [-1.02, +0.22])
+  addBoxBounds(b, 0.56, 0.74, -1.02, 0.22, 0.20, 0.38, { all: BRASS }, 1)
 
-  // 9. Graduated Brushed-Brass T-Square Ruler threading through the structure!
-  // Long graduated ruler blade running along X (from upper-left -X to lower-right +X)
-  addBox(
-    b,
-    0.22,
-    -0.14,
-    0.66,
-    3.45,
-    0.09,
-    0.38,
-    { all: BRASS, py: RULER },
-    2,
-    0,
-    -0.14 // Slight downward slope from upper-left to lower-right
-  )
+  // 9. Graduated Brushed-Brass T-Square Ruler threading through the structure (at z: [+0.50, +0.86])
+  // All 4 parts share pivot (0.15, -0.10, 0.68) and tilt rotZ = -0.15 rad with zero overlap:
+  const px = 0.15
+  const py = -0.10
+  const pz = 0.68
+  const tilt = -0.15
 
-  // T-Square Crosshead at upper-left end of the blade
-  addBox(
-    b,
-    -1.38,
-    0.08,
-    0.66,
-    0.32,
-    0.11,
-    1.42,
-    { all: BRASS },
-    2,
-    0,
-    -0.14
-  )
-  // T-Square Beveled Shoulder Reinforcement
-  addBox(
+  // 9a. Long Graduated Ruler Blade (x: [-1.18, +1.92], y: [-0.145, -0.055], z: [+0.50, +0.86])
+  addBoxBounds(
     b,
     -1.18,
-    0.06,
-    0.66,
-    0.28,
-    0.10,
-    0.76,
+    1.92,
+    -0.145,
+    -0.055,
+    0.50,
+    0.86,
+    { all: BRASS, py: RULER },
+    2,
+    px,
+    py,
+    pz,
+    tilt
+  )
+  // 9b. T-Square Crosshead (x: [-1.50, -1.18], y: [-0.155, -0.045], z: [-0.04, +1.40])
+  addBoxBounds(
+    b,
+    -1.50,
+    -1.18,
+    -0.155,
+    -0.045,
+    -0.04,
+    1.40,
     { all: BRASS },
     2,
-    0,
-    -0.14
+    px,
+    py,
+    pz,
+    tilt
+  )
+  // 9c. T-Square Upper Shoulder Gusset (x: [-1.18, -0.94], z: [+0.86, +1.10])
+  addBoxBounds(
+    b,
+    -1.18,
+    -0.94,
+    -0.145,
+    -0.055,
+    0.86,
+    1.10,
+    { all: BRASS },
+    2,
+    px,
+    py,
+    pz,
+    tilt
+  )
+  // 9d. T-Square Lower Shoulder Gusset (x: [-1.18, -0.94], z: [+0.26, +0.50])
+  addBoxBounds(
+    b,
+    -1.18,
+    -0.94,
+    -0.145,
+    -0.055,
+    0.26,
+    0.50,
+    { all: BRASS },
+    2,
+    px,
+    py,
+    pz,
+    tilt
   )
 
   // 10. The 7 Signature Floating 3D Spheres around & inside the structure
   // (1) Large Glossy Amber Sphere (upper-left of central pillar)
-  addSphere(b, -0.58, 0.94, 0.36, 0.34, AMBER_SPHERE, 10)
+  addSphere(b, -0.62, 0.96, 0.36, 0.34, AMBER_SPHERE, 10)
   // (2) Medium Matte Charcoal Sphere (upper-right above brass beam)
-  addSphere(b, 0.42, 1.32, -0.62, 0.23, INK_SPHERE, 11)
+  addSphere(b, 0.42, 1.34, -0.62, 0.23, INK_SPHERE, 11)
   // (3) Small Pearl Ivory Sphere (far right-top)
-  addSphere(b, 1.24, 0.78, -0.88, 0.145, PEARL_SPHERE, 12)
+  addSphere(b, 1.26, 0.78, -0.88, 0.145, PEARL_SPHERE, 12)
   // (4) Medium Matte Charcoal Sphere (far right-mid)
-  addSphere(b, 1.56, -0.08, -0.52, 0.19, INK_SPHERE, 13)
-  // (5) Large Pearl Ivory Sphere (lower-right resting near the brass ruler blade)
-  addSphere(b, 1.24, -0.22, 0.36, 0.32, PEARL_SPHERE, 14)
+  addSphere(b, 1.58, -0.08, -0.52, 0.19, INK_SPHERE, 13)
+  // (5) Large Pearl Ivory Sphere (lower-right above the brass ruler blade)
+  addSphere(b, 1.24, -0.14, 0.32, 0.31, PEARL_SPHERE, 14)
   // (6) Medium Matte Charcoal Sphere (lower-left)
-  addSphere(b, -0.62, -0.46, 1.28, 0.185, INK_SPHERE, 15)
-  // (7) Tiny Glossy Amber Sphere (nestled inside the front-left charcoal base channel)
-  addSphere(b, 0.08, -0.62, 1.12, 0.085, AMBER_SPHERE, 16)
+  addSphere(b, -0.66, -0.46, 1.28, 0.185, INK_SPHERE, 15)
+  // (7) Tiny Glossy Amber Sphere (nestled above the front-left charcoal base foot)
+  addSphere(b, 0.10, -0.54, 1.18, 0.085, AMBER_SPHERE, 16)
 
   return b
 }
@@ -592,6 +594,7 @@ export default function FabricSculpture({ className = '' }: { className?: string
     const gl = canvas.getContext('webgl', {
       antialias: true,
       alpha: true,
+      depth: true,
       premultipliedAlpha: false,
     })
     if (!gl) return
@@ -638,6 +641,7 @@ export default function FabricSculpture({ className = '' }: { className?: string
     const uTime = gl.getUniformLocation(program, 'uTime')
 
     gl.enable(gl.DEPTH_TEST)
+    gl.depthFunc(gl.LEQUAL)
     gl.enable(gl.CULL_FACE)
     gl.cullFace(gl.BACK)
     gl.clearColor(0, 0, 0, 0)
@@ -661,12 +665,11 @@ export default function FabricSculpture({ className = '' }: { className?: string
     // Accurate 3D rotation state: responds to both hover movement AND direct click-and-drag orbiting
     const hover = { x: 0, y: 0 }
     const dragOffset = { x: 0, y: 0 }
-    const smoothRot = { x: 0, y: 0 }
+    const smoothRot = { x: 0.52, y: -0.76 }
     let dragging = false
     let lastPointer = { x: 0, y: 0 }
 
     function onWindowPointerMove(e: PointerEvent) {
-      // Normalized cursor position relative to the sculpture canvas center
       if (canvas) {
         const rect = canvas.getBoundingClientRect()
         const cx = rect.left + rect.width * 0.5
@@ -712,27 +715,26 @@ export default function FabricSculpture({ className = '' }: { className?: string
 
       const t = (now - start) / 1000
 
-      // When not dragging, gently spring-relax any drag spin back toward the signature isometric angle
       if (!dragging) {
         dragOffset.x *= 0.965
         dragOffset.y *= 0.965
       }
 
-      // Target 3D rotation combines natural cursor tracking + direct drag orbit
-      const targetPitch = 0.52 + hover.y * 0.38 + dragOffset.x
-      const targetYaw = -0.76 + hover.x * 0.55 + dragOffset.y + Math.sin(t * 0.45) * 0.04
+      const targetPitch = 0.52 + hover.y * 0.36 + dragOffset.x
+      const targetYaw = -0.76 + hover.x * 0.52 + dragOffset.y + Math.sin(t * 0.45) * 0.035
 
       smoothRot.x += (targetPitch - smoothRot.x) * 0.1
       smoothRot.y += (targetYaw - smoothRot.y) * 0.1
 
       const aspect = canvas.width / canvas.height
-      const proj = perspective((32 * Math.PI) / 180, aspect, 0.1, 50)
+      // Tight near/far clip planes (2.5 to 12.0) maximize 24-bit depth buffer precision
+      const proj = perspective((32 * Math.PI) / 180, aspect, 2.5, 12.0)
       const view = translate(0, -0.05, -6.3)
 
       let model = translate(0, Math.sin(t * 0.9) * 0.04, 0)
       model = multiply(model, rotateX(smoothRot.x))
       model = multiply(model, rotateY(smoothRot.y))
-      model = multiply(model, rotateZ(hover.x * -0.05))
+      model = multiply(model, rotateZ(hover.x * -0.04))
 
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
       gl.uniformMatrix4fv(uProj, false, proj)
