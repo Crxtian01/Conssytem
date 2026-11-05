@@ -269,9 +269,21 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         }`}
       >
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
-          <Link href="/welcome" className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-600" />
-            <span className="text-[15px] font-bold tracking-tight">ConstructMS</span>
+          <Link href="/welcome" className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/constructms-sculpture.png"
+              alt="ConstructMS Logo"
+              className="h-9 w-auto object-contain"
+            />
+            <div className="leading-none">
+              <span className="block text-[16px] font-extrabold tracking-tight text-[#111]">
+                ConstructMS
+              </span>
+              <span className="mt-0.5 block text-[8.5px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+                Construction Management
+              </span>
+            </div>
           </Link>
 
           <nav className="hidden items-center gap-10 text-[13px] font-medium text-neutral-600 md:flex">
@@ -322,15 +334,15 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
 
       {/* --------------------------------- Hero --------------------------------- */}
       <section ref={heroRef} className="relative flex min-h-[100svh] flex-col overflow-hidden">
-        {/* Fabric sculpture */}
+        {/* 3D Isometric Architectural Frame & Brass T-Square Sculpture */}
         <div
-          className="pointer-events-none absolute inset-0 lg:left-[30%]"
+          className="pointer-events-none absolute inset-0 lg:left-[34%]"
           style={{
             transform: 'translate3d(calc(var(--mx, 0) * -10px), calc(var(--my, 0) * -10px), 0)',
             transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
-          <FabricSculpture className="h-full w-full opacity-60 lg:opacity-100" />
+          <FabricSculpture className="h-full w-full opacity-45 md:opacity-75 lg:opacity-100" />
         </div>
 
         {/* Floating spheres */}
@@ -619,9 +631,14 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       {/* -------------------------------- Footer -------------------------------- */}
       <footer className="relative z-10 border-t border-black/10 bg-[#f3efe8]">
         <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-6 py-8 text-xs text-neutral-500 sm:flex-row lg:px-10">
-          <div className="flex items-center gap-2.5">
-            <span className="h-2 w-2 rounded-full bg-amber-600" />
-            <span className="font-semibold text-neutral-800">ConstructMS</span>
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/constructms-sculpture.png"
+              alt="ConstructMS Logo"
+              className="h-7 w-auto object-contain"
+            />
+            <span className="font-bold text-neutral-900">ConstructMS</span>
             <span>— Construction Management &amp; RA 12009 Bidding</span>
           </div>
           <p>© 2026 ConstructMS. All rights reserved.</p>

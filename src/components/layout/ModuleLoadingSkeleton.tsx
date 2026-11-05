@@ -17,12 +17,19 @@ export default function ModuleLoadingSkeleton({
       {/* Persistent Liquid Glass Sidebar Skeleton */}
       <aside className="liquid-glass-sidebar relative z-20 hidden w-64 md:m-3 md:flex md:flex-col md:rounded-3xl md:shrink-0">
         <div className="flex items-center gap-3 border-b border-white/60 px-5 py-4">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-xl text-white shadow-sm">
-            🏗️
+          <span className="liquid-droplet-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl p-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/constructms-sculpture.png"
+              alt="ConstructMS Logo"
+              className="h-full w-full object-contain"
+            />
           </span>
           <div>
             <p className="font-extrabold text-gray-900 leading-tight">ConstructMS</p>
-            <p className="text-[11px] font-medium text-gray-500">Liquid Glass Workspace</p>
+            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-gray-500">
+              Construction Management
+            </p>
           </div>
         </div>
 

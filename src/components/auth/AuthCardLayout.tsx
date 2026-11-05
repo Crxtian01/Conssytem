@@ -32,9 +32,12 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
         />
 
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-3xl text-white shadow-[0_8px_20px_rgba(217,119,6,0.4),inset_0_2px_2px_rgba(255,255,255,0.8)]">
-            🏗️
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/constructms-logo-transparent.png"
+            alt="ConstructMS — Construction Management"
+            className="mx-auto mb-3 h-28 w-auto object-contain drop-shadow-sm"
+          />
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">{title}</h1>
           <p className="mt-1 text-sm font-medium text-slate-600">{subtitle}</p>
         </div>

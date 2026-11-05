@@ -142,10 +142,20 @@ export default function AppShell({ user, children }: AppShellProps) {
       {/* Mobile Liquid Glass top bar */}
       <header className="liquid-glass-sidebar sticky top-0 z-30 flex items-center justify-between px-4 py-3 md:hidden">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-lg text-white shadow-sm">
-            🏗️
+          <span className="liquid-droplet-pill flex h-9 w-9 items-center justify-center rounded-xl p-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/constructms-sculpture.png"
+              alt="ConstructMS Logo"
+              className="h-full w-full object-contain"
+            />
           </span>
-          <span className="font-bold text-slate-900">ConstructMS</span>
+          <div className="leading-none">
+            <span className="block font-extrabold tracking-tight text-slate-900">ConstructMS</span>
+            <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-slate-600">
+              Construction Management
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <span
@@ -177,15 +187,20 @@ export default function AppShell({ user, children }: AppShellProps) {
         />
 
         <div className="hidden items-center gap-3 border-b border-white/50 px-5 py-4 md:flex">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-xl text-white shadow-[0_8px_20px_rgba(217,119,6,0.4),inset_0_2px_2px_rgba(255,255,255,0.75)]">
-            🏗️
+          <span className="liquid-droplet-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl p-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/constructms-sculpture.png"
+              alt="ConstructMS Logo"
+              className="h-full w-full object-contain"
+            />
           </span>
           <div>
             <p className="font-extrabold text-slate-900 leading-tight tracking-tight">
               ConstructMS
             </p>
-            <p className="text-[11px] font-semibold text-slate-600">
-              Liquid Glass OS
+            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600">
+              Construction Management
             </p>
           </div>
         </div>
