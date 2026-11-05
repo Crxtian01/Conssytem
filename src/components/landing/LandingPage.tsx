@@ -336,13 +336,13 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       <section ref={heroRef} className="relative flex min-h-[100svh] flex-col overflow-hidden">
         {/* 3D Isometric Architectural Frame & Brass T-Square Sculpture */}
         <div
-          className="pointer-events-none absolute inset-0 lg:left-[34%]"
+          className="absolute inset-0 z-10 lg:left-[32%]"
           style={{
             transform: 'translate3d(calc(var(--mx, 0) * -10px), calc(var(--my, 0) * -10px), 0)',
             transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
-          <FabricSculpture className="h-full w-full opacity-45 md:opacity-75 lg:opacity-100" />
+          <FabricSculpture className="h-full w-full opacity-55 md:opacity-85 lg:opacity-100" />
         </div>
 
         {/* Floating spheres */}
@@ -351,7 +351,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         ))}
 
         {/* Hero content */}
-        <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-between px-6 pb-10 pt-32 lg:px-10">
+        <div className="pointer-events-none relative z-20 mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-between px-6 pb-10 pt-32 lg:px-10">
           <div
             className="cms-fade-in flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-500"
             style={{ animationDelay: '80ms' }}
@@ -378,7 +378,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                 One quiet system for the engineering office, the jobsite, and the project owner — from
                 RA 12009 bid preparation to daily logs, inventory, attendance, and approvals.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-6">
+              <div className="pointer-events-auto mt-8 flex flex-wrap items-center gap-6">
                 {isSignedIn ? (
                   <Link
                     href="/"
@@ -432,7 +432,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
               <button
                 type="button"
                 onClick={() => scrollToId('modules')}
-                className="flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-neutral-500 hover:text-black"
+                className="pointer-events-auto flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-neutral-500 hover:text-black"
               >
                 <span className="relative h-12 w-px overflow-hidden bg-neutral-300">
                   <span className="cms-scroll-cue absolute inset-x-0 top-0 h-1/2 bg-neutral-900" />
