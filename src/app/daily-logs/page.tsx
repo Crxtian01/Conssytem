@@ -1,4 +1,4 @@
-﻿import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
+import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import { Suspense } from 'react'
 import { requireAuth } from '@/lib/auth'
 import { readStore } from '@/lib/module-store'
