@@ -578,36 +578,40 @@ const INITIAL_BIDDING_SEED: BiddingStoreData = {
   ],
 }
 
+let memoryBiddingCache: BiddingStoreData | null = null
+
 export function readBiddingStore(): BiddingStoreData {
+  if (memoryBiddingCache) {
+    return memoryBiddingCache
+  }
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true })
-    }
     if (!fs.existsSync(BIDDING_STORE_PATH)) {
-      fs.writeFileSync(BIDDING_STORE_PATH, JSON.stringify(INITIAL_BIDDING_SEED, null, 2), 'utf-8')
-      return INITIAL_BIDDING_SEED
+      memoryBiddingCache = structuredClone(INITIAL_BIDDING_SEED)
+      return memoryBiddingCache
     }
     const raw = fs.readFileSync(BIDDING_STORE_PATH, 'utf-8')
     const parsed = JSON.parse(raw) as BiddingStoreData
-    let dirty = false
     if (!Array.isArray(parsed.contractor_proposals)) {
       parsed.contractor_proposals = INITIAL_BIDDING_SEED.contractor_proposals
-      dirty = true
     }
-    if (dirty) {
-      fs.writeFileSync(BIDDING_STORE_PATH, JSON.stringify(parsed, null, 2), 'utf-8')
-    }
-    return parsed
+    memoryBiddingCache = parsed
+    return memoryBiddingCache
   } catch {
-    return INITIAL_BIDDING_SEED
+    memoryBiddingCache = structuredClone(INITIAL_BIDDING_SEED)
+    return memoryBiddingCache
   }
 }
 
 export function writeBiddingStore(data: BiddingStoreData): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
+  memoryBiddingCache = data
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true })
+    }
+    fs.writeFileSync(BIDDING_STORE_PATH, JSON.stringify(data, null, 2), 'utf-8')
+  } catch {
+    // On Vercel serverless (read-only filesystem), keep changes in memoryBiddingCache
   }
-  fs.writeFileSync(BIDDING_STORE_PATH, JSON.stringify(data, null, 2), 'utf-8')
 }
 
 async function trySyncSupabase(table: string, record: Record<string, unknown>, mode: 'insert' | 'upsert' = 'upsert') {

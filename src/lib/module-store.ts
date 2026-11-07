@@ -530,18 +530,20 @@ const INITIAL_SEED: StoreData = {
   role_requests: [],
 }
 
+let memoryStoreCache: StoreData | null = null
+
 export function readStore(): StoreData {
+  if (memoryStoreCache) {
+    return memoryStoreCache
+  }
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true })
-    }
     if (!fs.existsSync(STORE_PATH)) {
-      fs.writeFileSync(STORE_PATH, JSON.stringify(INITIAL_SEED, null, 2), 'utf8')
-      return INITIAL_SEED
+      memoryStoreCache = structuredClone(INITIAL_SEED)
+      return memoryStoreCache
     }
     const raw = fs.readFileSync(STORE_PATH, 'utf8')
     const parsed = JSON.parse(raw) as Partial<StoreData>
-    return {
+    memoryStoreCache = {
       projects: (parsed.projects ?? INITIAL_SEED.projects).map((p) => ({
         assigned_assistant: true,
         assigned_contractor: p.status === 'active',
@@ -565,16 +567,23 @@ export function readStore(): StoreData {
       })),
       role_requests: parsed.role_requests ?? INITIAL_SEED.role_requests,
     }
+    return memoryStoreCache
   } catch {
-    return INITIAL_SEED
+    memoryStoreCache = structuredClone(INITIAL_SEED)
+    return memoryStoreCache
   }
 }
 
 export function writeStore(data: StoreData): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
+  memoryStoreCache = data
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true })
+    }
+    fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), 'utf8')
+  } catch {
+    // On Vercel serverless (read-only filesystem), keep changes in memoryStoreCache
   }
-  fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), 'utf8')
 }
 
 export function newId(prefix: string): string {
