@@ -49,9 +49,8 @@ export default function ModuleLoadingSkeleton({
           {Array.from({ length: 10 }).map((_, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2.5 rounded-2xl px-2.5 py-2"
+              className="flex items-center rounded-2xl px-3.5 py-2.5"
             >
-              <div className="h-7 w-7 rounded-xl bg-white/65 animate-pulse" />
               <div className="h-3.5 flex-1 rounded bg-white/65 animate-pulse" />
             </div>
           ))}

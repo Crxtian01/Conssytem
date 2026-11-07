@@ -23,31 +23,6 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
-function SidebarModuleIcon({ id, fallback }: { id: string; fallback: string }) {
-  if (id === 'bidding') {
-    return (
-      <svg
-        className="h-4 w-4 text-amber-700"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L11 10" />
-        <path d="m16 16 6-6" />
-        <path d="m8 8 6-6" />
-        <path d="m9 7 8 8" />
-        <path d="m21 11-8-8" />
-        <path d="M8 22h8" />
-      </svg>
-    )
-  }
-  return <span className="text-sm leading-none">{fallback}</span>
-}
-
 export default function AppShell({ user, children }: AppShellProps) {
   const pathname = usePathname()
   const router = useRouter()
@@ -269,26 +244,16 @@ export default function AppShell({ user, children }: AppShellProps) {
                     setNavigatingTo(mod.name)
                   }
                 }}
-                className={`group flex items-center justify-between rounded-2xl px-2.5 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`group flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   active || isLoadingThis
                     ? 'liquid-droplet-pill text-slate-950 font-bold'
                     : 'border border-transparent text-slate-800 hover:border-white/60 hover:bg-white/35'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
-                  <span
-                    className={`flex h-7 w-7 items-center justify-center rounded-xl transition ${
-                      active || isLoadingThis
-                        ? 'bg-gradient-to-br from-amber-300/90 to-amber-500/80 text-slate-950 shadow-[inset_0_1px_2px_rgba(255,255,255,0.95)]'
-                        : 'liquid-droplet-pill text-slate-800'
-                    }`}
-                  >
-                    {isLoadingThis ? (
-                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-amber-800 border-t-transparent" />
-                    ) : (
-                      <SidebarModuleIcon id={mod.id} fallback={mod.icon} />
-                    )}
-                  </span>
+                  {isLoadingThis && (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-amber-800 border-t-transparent" />
+                  )}
                   <span>{mod.name}</span>
                 </span>
                 {isLoadingThis && (
@@ -363,9 +328,8 @@ export default function AppShell({ user, children }: AppShellProps) {
                   <Link
                     key={m.id}
                     href={m.href}
-                    className="liquid-droplet-pill inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-white/80"
+                    className="liquid-droplet-pill inline-flex items-center rounded-xl px-3.5 py-1.5 text-xs font-semibold text-slate-900 hover:bg-white/80"
                   >
-                    <span>{m.icon}</span>
                     <span>{m.name}</span>
                   </Link>
                 ))}
@@ -395,12 +359,11 @@ export default function AppShell({ user, children }: AppShellProps) {
               onClick={() => {
                 if (!active) setNavigatingTo(mod.name)
               }}
-              className={`flex flex-col items-center justify-center py-2 text-[11px] font-medium ${
+              className={`flex items-center justify-center py-3 text-[11px] font-medium ${
                 active ? 'text-amber-800 font-bold' : 'text-slate-800'
               }`}
             >
-              <span className="text-base leading-none">{mod.icon}</span>
-              <span className="mt-1 truncate max-w-[64px]">{mod.name.split(' ')[0]}</span>
+              <span className="truncate max-w-[68px]">{mod.name.split(' ')[0]}</span>
             </Link>
           )
         })}
