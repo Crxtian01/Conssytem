@@ -187,3 +187,4 @@ export function createChartCardVariants(timings: DashboardAnimationTimings): Var
     },
   }
 }
+

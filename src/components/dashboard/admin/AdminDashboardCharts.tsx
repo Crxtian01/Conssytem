@@ -845,3 +845,4 @@ export default function AdminDashboardCharts({
     </motion.div>
   )
 }
+

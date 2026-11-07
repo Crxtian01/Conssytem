@@ -1,12 +1,126 @@
 -- =====================================================================
--- 004_admin_dashboard_views_and_rpcs.sql
--- SQL Views & RPC Functions for the Admin / Engineer Executive Dashboard
--- Enforces strict Admin/Engineer role verification (RLS) and server-side
--- aggregations (monthly totals, previous-period comparison, S-curve, etc.)
+-- ADD THIS AS A NEW QUERY IN SUPABASE SQL EDITOR:
+-- Title suggestion: "ADMIN DASHBOARD VIEWS & 4-ROLE APPROVAL TABLES"
+-- Safe to run on top of your 16 existing SQL scripts (uses IF NOT EXISTS
+-- and CREATE OR REPLACE so nothing in your existing tables is lost).
 -- =====================================================================
 
--- 1. Strict helper function: returns true ONLY when the caller's verified
---    profile role is 'admin_engineer'
+-- ---------------------------------------------------------------------
+-- 1. ADD NEW COLUMNS TO EXISTING TABLES (FOR 4-ROLE PERMISSIONS)
+-- ---------------------------------------------------------------------
+alter table public.projects
+  add column if not exists assigned_assistant boolean not null default true,
+  add column if not exists assigned_contractor boolean not null default true;
+
+alter table public.daily_logs
+  add column if not exists approval_status text not null default 'approved'
+  check (approval_status in ('pending', 'approved'));
+
+alter table public.documents
+  add column if not exists shared_with_client boolean not null default true;
+
+-- ---------------------------------------------------------------------
+-- 2. NEW TABLE: material_requests (Assistant creates, Admin/Engineer approves)
+-- ---------------------------------------------------------------------
+create table if not exists public.material_requests (
+  id                 text primary key default gen_random_uuid()::text,
+  material_id        text not null,
+  material_name      text not null,
+  project_id         text not null,
+  quantity           numeric(12, 2) not null check (quantity > 0),
+  unit               text not null default 'pcs',
+  urgency            text not null default 'Normal'
+                       check (urgency in ('Normal', 'High', 'Critical')),
+  notes              text not null default '',
+  approval_status    text not null default 'pending'
+                       check (approval_status in ('pending', 'approved', 'rejected')),
+  requested_by_email text not null,
+  approved_by_email  text,
+  created_at         timestamptz not null default now()
+);
+
+alter table public.material_requests enable row level security;
+
+drop policy if exists "Authenticated read material_requests" on public.material_requests;
+create policy "Authenticated read material_requests" on public.material_requests
+  for select to authenticated using (true);
+
+drop policy if exists "Authenticated insert material_requests" on public.material_requests;
+create policy "Authenticated insert material_requests" on public.material_requests
+  for insert to authenticated with check (true);
+
+drop policy if exists "Only Admin/Engineer can approve material_requests" on public.material_requests;
+create policy "Only Admin/Engineer can approve material_requests" on public.material_requests
+  for update to authenticated using (public.is_admin_engineer());
+
+-- ---------------------------------------------------------------------
+-- 3. NEW TABLE: role_requests (Users request role upgrade, Admin approves)
+-- ---------------------------------------------------------------------
+create table if not exists public.role_requests (
+  id                text primary key default gen_random_uuid()::text,
+  user_id           uuid references public.profiles(id) on delete cascade,
+  user_email        text not null,
+  user_name         text not null default '',
+  current_role      text not null default 'contractor',
+  requested_role    text not null default 'assistant'
+                      check (requested_role in ('admin_engineer', 'assistant', 'contractor', 'client')),
+  reason            text not null default '',
+  status            text not null default 'pending'
+                      check (status in ('pending', 'approved', 'rejected')),
+  reviewed_by_email text,
+  created_at        timestamptz not null default now()
+);
+
+alter table public.role_requests enable row level security;
+
+drop policy if exists "Authenticated read role_requests" on public.role_requests;
+create policy "Authenticated read role_requests" on public.role_requests
+  for select to authenticated using (true);
+
+drop policy if exists "Authenticated insert role_requests" on public.role_requests;
+create policy "Authenticated insert role_requests" on public.role_requests
+  for insert to authenticated with check (true);
+
+drop policy if exists "Only Admin/Engineer can approve role_requests" on public.role_requests;
+create policy "Only Admin/Engineer can approve role_requests" on public.role_requests
+  for update to authenticated using (public.is_admin_engineer());
+
+-- ---------------------------------------------------------------------
+-- 4. NEW TABLE: contractor_proposals (Contractor submits own bid & views status)
+-- ---------------------------------------------------------------------
+create table if not exists public.contractor_proposals (
+  id               text primary key default gen_random_uuid()::text,
+  bid_id           text not null references public.bids(id) on delete cascade,
+  bid_title        text not null,
+  reference_no     text not null,
+  contractor_name  text not null,
+  contractor_email text not null,
+  pcab_license     text not null default 'PCAB Category B',
+  bid_amount       numeric(14, 2) not null default 0,
+  proposal_notes   text not null default '',
+  document_url     text,
+  status           text not null default 'submitted'
+                     check (status in ('submitted', 'under_evaluation', 'awarded', 'not_selected')),
+  submitted_at     timestamptz not null default now()
+);
+
+alter table public.contractor_proposals enable row level security;
+
+drop policy if exists "Authenticated read contractor_proposals" on public.contractor_proposals;
+create policy "Authenticated read contractor_proposals" on public.contractor_proposals
+  for select to authenticated using (true);
+
+drop policy if exists "Authenticated insert contractor_proposals" on public.contractor_proposals;
+create policy "Authenticated insert contractor_proposals" on public.contractor_proposals
+  for insert to authenticated with check (true);
+
+drop policy if exists "Only Admin/Engineer can evaluate contractor_proposals" on public.contractor_proposals;
+create policy "Only Admin/Engineer can evaluate contractor_proposals" on public.contractor_proposals
+  for update to authenticated using (public.is_admin_engineer());
+
+-- ---------------------------------------------------------------------
+-- 5. STRICT ADMIN/ENGINEER HELPER FUNCTION
+-- ---------------------------------------------------------------------
 create or replace function public.is_admin_engineer()
 returns boolean
 language sql
@@ -17,11 +131,29 @@ as $$
     select 1
     from public.profiles
     where id = auth.uid()
-      and role = 'admin_engineer'
+      and role::text in ('admin_engineer', 'admin', 'engineer')
   );
 $$;
 
--- 2. View: Monthly Expenses Aggregation by Project & Month
+-- Allow Contractor to read open bids in public.bids as well
+create or replace function public.can_access_bidding()
+returns boolean
+language sql
+stable
+security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid()
+      and role::text in ('admin_engineer', 'assistant', 'contractor', 'admin', 'engineer', 'project_manager')
+  );
+$$;
+
+-- ---------------------------------------------------------------------
+-- 6. ADMIN DASHBOARD SQL VIEWS (SERVER-SIDE AGGREGATIONS FOR RECHARTS)
+-- ---------------------------------------------------------------------
+
+-- View A: Monthly Expenses Aggregation by Project & Month
 create or replace view public.v_admin_monthly_expenses as
 select
   e.project_id,
@@ -35,7 +167,7 @@ from public.expenses e
 join public.projects p on p.id = e.project_id
 group by e.project_id, p.name, date_trunc('month', e.expense_date);
 
--- 3. View: Expenses by Category (Sorted Highest to Lowest)
+-- View B: Expenses by Category (Sorted Highest to Lowest)
 create or replace view public.v_admin_expenses_by_category as
 select
   e.project_id,
@@ -46,7 +178,7 @@ from public.expenses e
 group by e.project_id, e.category
 order by total_amount desc;
 
--- 4. View: Material Stock Levels vs Reorder Level
+-- View C: Material Stock Levels vs Reorder Level
 create or replace view public.v_admin_material_stock_levels as
 select
   m.id as material_id,
@@ -65,7 +197,7 @@ select
 from public.materials m
 order by (m.current_stock <= m.reorder_level) desc, m.current_stock asc;
 
--- 5. View: Tasks by Status Aggregation
+-- View D: Tasks by Status Aggregation (Done, Ongoing, Delayed)
 create or replace view public.v_admin_tasks_by_status as
 select
   t.project_id,
@@ -79,7 +211,7 @@ select
 from public.tasks t
 group by t.project_id, t.status;
 
--- 6. View: Daily Attendance Breakdown (Present, Half-Day/Late, Absent)
+-- View E: Daily Attendance Breakdown (Present, Half-Day/Late, Absent)
 create or replace view public.v_admin_attendance_trend as
 select
   a.project_id,
@@ -92,9 +224,25 @@ from public.attendance a
 group by a.project_id, a.attendance_date
 order by a.attendance_date asc;
 
--- 7. RPC Function: get_admin_dashboard_kpi_comparison
+-- View F: Bids by Stage Aggregation (Draft, Open, Evaluation, Awarded)
+create or replace view public.v_admin_bids_by_stage as
+select
+  case
+    when b.status = 'draft' then 'Draft'
+    when b.status = 'estimating' then 'Open'
+    when b.status in ('checklist', 'approved', 'submitted') then 'Evaluation'
+    when b.status in ('awarded', 'converted') then 'Awarded'
+    else 'Other'
+  end as stage_group,
+  count(*)::integer as bid_count,
+  coalesce(sum(b.abc_amount), 0)::numeric(14,2) as total_abc
+from public.bids b
+group by 1;
+
+-- ---------------------------------------------------------------------
+-- 7. RPC FUNCTION: get_admin_dashboard_kpi_comparison
 --    Computes current period vs previous period totals & percentage deltas
---    Strictly checks public.is_admin_engineer() when called by a user session.
+-- ---------------------------------------------------------------------
 create or replace function public.get_admin_dashboard_kpi_comparison(
   p_project_id uuid default null,
   p_start_date date default (current_date - interval '30 days')::date,
