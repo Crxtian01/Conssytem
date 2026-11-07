@@ -86,7 +86,7 @@ export default function AnimatedChartCard({
   return (
     <motion.section
       variants={cardVariants}
-      className="min-h-[350px] rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs flex flex-col justify-between"
+      className="min-h-[350px] min-w-0 rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs flex flex-col justify-between"
     >
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-100 pb-3.5">

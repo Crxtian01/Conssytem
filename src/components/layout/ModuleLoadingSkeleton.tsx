@@ -6,7 +6,7 @@ export default function ModuleLoadingSkeleton({
   title?: string
 }) {
   return (
-    <div className="liquid-mesh-bg relative min-h-screen flex flex-col md:flex-row overflow-hidden text-slate-900">
+    <div className="liquid-mesh-bg relative flex h-dvh w-full overflow-hidden text-slate-900">
       <ScatteredMaterialsBackdrop />
 
       {/* Top animated progress bar */}
@@ -14,9 +14,9 @@ export default function ModuleLoadingSkeleton({
         <div className="h-full w-1/2 animate-pulse bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
       </div>
 
-      {/* Persistent Liquid Glass Sidebar Skeleton */}
-      <aside className="liquid-glass-sidebar relative z-20 hidden w-64 md:m-3 md:flex md:flex-col md:rounded-3xl md:shrink-0">
-        <div className="flex items-center gap-3 border-b border-white/60 px-5 py-4">
+      {/* Persistent Desktop Sidebar Skeleton (hidden on mobile < md) */}
+      <aside className="liquid-glass-sidebar relative z-20 hidden w-72 shrink-0 flex-col overflow-y-auto border-r border-white/70 md:flex">
+        <div className="flex shrink-0 items-center gap-3 border-b border-white/60 px-5 py-4">
           <span className="liquid-droplet-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl p-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -33,7 +33,7 @@ export default function ModuleLoadingSkeleton({
           </div>
         </div>
 
-        <div className="border-b border-white/60 p-4 space-y-3">
+        <div className="shrink-0 border-b border-white/60 p-4 space-y-3">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-white/70 animate-pulse" />
             <div className="flex-1 space-y-1.5">
@@ -49,7 +49,7 @@ export default function ModuleLoadingSkeleton({
           {Array.from({ length: 10 }).map((_, idx) => (
             <div
               key={idx}
-              className="flex items-center rounded-2xl px-3.5 py-2.5"
+              className="flex min-h-12 items-center rounded-2xl px-3.5 py-2.5"
             >
               <div className="h-3.5 flex-1 rounded bg-white/65 animate-pulse" />
             </div>
@@ -57,57 +57,72 @@ export default function ModuleLoadingSkeleton({
         </div>
       </aside>
 
-      {/* Main Content Area Liquid Glass Skeleton */}
-      <main className="relative z-10 flex-1 p-4 pb-24 md:p-7 md:pb-8 overflow-y-auto">
-        <div className="mx-auto max-w-6xl space-y-6">
-          <div className="liquid-glass-card rounded-3xl p-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/90 bg-white/70 shadow-2xs">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-600 border-t-transparent" />
-              </div>
-              <div>
-                <p className="text-base font-bold text-gray-900">{title}</p>
-                <p className="text-xs text-gray-600">
-                  Refracting ConstructMS Liquid Glass workspace…
-                </p>
+      {/* Right Column: Fixed Header + Scrollable Main Area */}
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
+        <header className="liquid-glass-sidebar shrink-0 border-b border-white/70 px-4 py-2.5 md:px-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-white/70 animate-pulse md:hidden" />
+              <div className="space-y-1.5">
+                <div className="h-4 w-36 rounded bg-white/80 animate-pulse" />
+                <div className="hidden h-3 w-56 rounded bg-white/60 animate-pulse sm:block" />
               </div>
             </div>
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/90 bg-white/75 px-3 py-1 text-xs font-semibold text-amber-900 shadow-2xs">
-              <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
-              Loading
-            </span>
+            <div className="h-7 w-28 rounded-full bg-white/75 animate-pulse" />
           </div>
+        </header>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="liquid-glass-card rounded-2xl p-5 space-y-3"
-              >
-                <div className="h-3 w-24 rounded bg-white/80 animate-pulse" />
-                <div className="h-7 w-20 rounded bg-white/80 animate-pulse" />
-                <div className="h-2.5 w-32 rounded bg-white/60 animate-pulse" />
+        <main className="flex-1 min-w-0 overflow-y-auto p-4 md:p-6">
+          <div className="mx-auto max-w-6xl space-y-6">
+            <div className="liquid-glass-card rounded-3xl p-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/90 bg-white/70 shadow-2xs">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-600 border-t-transparent" />
+                </div>
+                <div>
+                  <p className="text-base font-bold text-gray-900">{title}</p>
+                  <p className="text-xs text-gray-600">
+                    Refracting ConstructMS Liquid Glass workspace…
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
+              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/90 bg-white/75 px-3 py-1 text-xs font-semibold text-amber-900 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
+                Loading
+              </span>
+            </div>
 
-          <div className="liquid-glass-card rounded-3xl p-6 space-y-4">
-            <div className="h-5 w-48 rounded bg-white/80 animate-pulse" />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-white/80 bg-white/45 p-4 space-y-3"
+                  className="liquid-glass-card rounded-2xl p-5 space-y-3"
                 >
-                  <div className="h-4 w-3/4 rounded bg-white/80 animate-pulse" />
-                  <div className="h-3 w-1/2 rounded bg-white/65 animate-pulse" />
-                  <div className="h-16 w-full rounded-xl bg-white/55 animate-pulse" />
+                  <div className="h-3 w-24 rounded bg-white/80 animate-pulse" />
+                  <div className="h-7 w-20 rounded bg-white/80 animate-pulse" />
+                  <div className="h-2.5 w-32 rounded bg-white/60 animate-pulse" />
                 </div>
               ))}
             </div>
+
+            <div className="liquid-glass-card rounded-3xl p-6 space-y-4">
+              <div className="h-5 w-48 rounded bg-white/80 animate-pulse" />
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-white/80 bg-white/45 p-4 space-y-3"
+                  >
+                    <div className="h-4 w-3/4 rounded bg-white/80 animate-pulse" />
+                    <div className="h-3 w-1/2 rounded bg-white/65 animate-pulse" />
+                    <div className="h-16 w-full rounded-xl bg-white/55 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

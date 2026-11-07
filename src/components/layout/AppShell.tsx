@@ -23,11 +23,18 @@ interface AppShellProps {
   children: React.ReactNode
 }
 
+// Module-scoped scroll cache so the desktop sidebar keeps its exact scroll position across route changes
+let persistedSidebarScrollTop = 0
+
 export default function AppShell({ user, children }: AppShellProps) {
   const pathname = usePathname()
   const router = useRouter()
+
   const shellRef = useRef<HTMLDivElement | null>(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const desktopSidebarRef = useRef<HTMLElement | null>(null)
+  const mainScrollRef = useRef<HTMLElement | null>(null)
+
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
   const [switchingRole, setSwitchingRole] = useState(false)
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
   const [showSignOutModal, setShowSignOutModal] = useState(false)
@@ -37,9 +44,41 @@ export default function AppShell({ user, children }: AppShellProps) {
   const [roleReqSent, setRoleReqSent] = useState<string | null>(null)
   const [showDemoPreview, setShowDemoPreview] = useState(false)
 
+  // Restore desktop sidebar scroll position on mount and keep it synced on scroll
+  useEffect(() => {
+    const sidebarEl = desktopSidebarRef.current
+    if (!sidebarEl) return
+    sidebarEl.scrollTop = persistedSidebarScrollTop
+
+    function handleSidebarScroll() {
+      if (sidebarEl) {
+        persistedSidebarScrollTop = sidebarEl.scrollTop
+      }
+    }
+    sidebarEl.addEventListener('scroll', handleSidebarScroll, { passive: true })
+    return () => sidebarEl.removeEventListener('scroll', handleSidebarScroll)
+  }, [])
+
+  // On route change: reset main content scroll to top, close mobile drawer, and clear loading state
   useEffect(() => {
     setNavigatingTo(null)
+    setMobileDrawerOpen(false)
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+    }
   }, [pathname])
+
+  // Close mobile drawer or sign-out modal on Escape key
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        if (mobileDrawerOpen) setMobileDrawerOpen(false)
+        if (showSignOutModal && !signingOut) setShowSignOutModal(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [mobileDrawerOpen, showSignOutModal, signingOut])
 
   // Mouse-following liquid light refraction across the workspace
   useEffect(() => {
@@ -53,22 +92,15 @@ export default function AppShell({ user, children }: AppShellProps) {
     return () => window.removeEventListener('pointermove', onPointerMove)
   }, [])
 
-  // Close sign-out confirmation modal on Escape key
-  useEffect(() => {
-    if (!showSignOutModal) return
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && !signingOut) {
-        setShowSignOutModal(false)
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [showSignOutModal, signingOut])
-
   const roleInfo = ROLES[user.role] ?? ROLES.contractor
   const allowedModules = getModulesForRole(user.role)
   const hasAccessToCurrentPath = canRoleAccessPath(user.role, pathname)
   const isTransitioning = Boolean(navigatingTo) || switchingRole
+
+  const currentModule =
+    allowedModules.find((m) =>
+      m.href === '/' ? pathname === '/' : pathname.startsWith(m.href)
+    ) ?? allowedModules[0]
 
   async function handleQuickRoleSwitch(newRole: UserRole) {
     setSwitchingRole(true)
@@ -100,10 +132,225 @@ export default function AppShell({ user, children }: AppShellProps) {
     }
   }
 
+  function renderSidebarContents(isMobileDrawer: boolean) {
+    return (
+      <>
+        {/* Brand Header inside Sidebar */}
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/50 px-5 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="liquid-droplet-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl p-1">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/constructms-sculpture.png"
+                alt="ConstructMS Logo"
+                className="h-full w-full object-contain"
+              />
+            </span>
+            <div className="min-w-0">
+              <p className="font-extrabold text-slate-900 leading-tight tracking-tight truncate">
+                ConstructMS
+              </p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600 truncate">
+                Construction Management
+              </p>
+            </div>
+          </div>
+
+          {isMobileDrawer && (
+            <button
+              type="button"
+              onClick={() => setMobileDrawerOpen(false)}
+              className="liquid-droplet-pill inline-flex min-h-12 min-w-12 items-center justify-center rounded-xl text-base font-bold text-slate-800 hover:bg-white/80"
+              aria-label="Close navigation drawer"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* User Profile Summary + Role Badge + Switch Role / Request Role */}
+        <div className="shrink-0 border-b border-white/50 p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            {user.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.avatarUrl}
+                alt=""
+                className="h-10 w-10 shrink-0 rounded-full border-2 border-white/90 object-cover shadow-sm"
+              />
+            ) : (
+              <div className="liquid-droplet-pill flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold text-amber-900">
+                {(user.fullName || user.email).charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold text-slate-900">
+                {user.fullName || user.email}
+              </p>
+              <p className="truncate text-xs text-slate-700">{user.email}</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                Assigned Role
+              </span>
+              <span
+                className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${roleInfo.badgeColor}`}
+              >
+                {roleInfo.label}
+              </span>
+            </div>
+
+            {user.role !== 'admin_engineer' && (
+              <div className="space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowRoleRequestBox((v) => !v)}
+                  className="liquid-droplet-pill min-h-11 w-full rounded-xl px-2.5 py-2 text-[11px] font-bold text-slate-800 hover:bg-white/80 transition"
+                >
+                  {showRoleRequestBox ? 'Cancel Role Request' : 'Request Role Upgrade →'}
+                </button>
+
+                {showRoleRequestBox && (
+                  <div className="liquid-droplet-pill rounded-xl p-2.5 space-y-2">
+                    <p className="text-[10px] font-semibold text-slate-700">
+                      Requires Admin / Engineer Approval:
+                    </p>
+                    <select
+                      value={requestedRole}
+                      onChange={(e) => setRequestedRole(e.target.value as UserRole)}
+                      className="w-full rounded-lg border border-white/80 bg-white/80 px-2 py-1.5 text-xs font-semibold text-slate-900"
+                    >
+                      <option value="assistant">Assistant</option>
+                      <option value="contractor">Contractor</option>
+                      <option value="client">Client</option>
+                      <option value="admin_engineer">Admin / Engineer</option>
+                    </select>
+                    <button
+                      type="button"
+                      disabled={switchingRole}
+                      onClick={handleSubmitRoleRequest}
+                      className="w-full rounded-lg bg-amber-600 px-2.5 py-1.5 text-[11px] font-bold text-white hover:bg-amber-700 disabled:opacity-50"
+                    >
+                      Submit Request
+                    </button>
+                  </div>
+                )}
+
+                {roleReqSent && (
+                  <p className="rounded-lg bg-emerald-50/90 px-2 py-1 text-[10px] font-semibold text-emerald-800">
+                    {roleReqSent}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Switch Role / Preview Other Role Dashboard */}
+            <div className="pt-0.5">
+              <button
+                type="button"
+                onClick={() => setShowDemoPreview((v) => !v)}
+                className="text-[11px] font-semibold text-slate-600 hover:text-slate-900 underline"
+              >
+                {showDemoPreview ? 'Hide Switch Role' : 'Switch Role (Preview 4 Roles)'}
+              </button>
+              {showDemoPreview && (
+                <select
+                  aria-label="Switch role dashboard"
+                  value={user.role}
+                  disabled={switchingRole}
+                  onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
+                  className="liquid-droplet-pill mt-1.5 min-h-11 w-full rounded-xl px-2.5 py-2 text-xs font-bold text-slate-900 focus:outline-none disabled:opacity-50"
+                >
+                  <option value="admin_engineer">Admin / Engineer (15 Modules)</option>
+                  <option value="assistant">Assistant (10 Modules)</option>
+                  <option value="contractor">Contractor (6 Modules)</option>
+                  <option value="client">Client (5 Read-Only Modules)</option>
+                </select>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Role-Filtered Navigation Links (Touch targets >= 48px via min-h-12) */}
+        <nav className="flex-1 space-y-1.5 p-3" aria-label="Module navigation">
+          <p className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+            Allowed Modules ({allowedModules.length})
+          </p>
+          {allowedModules.map((mod) => {
+            const active =
+              mod.href === '/' ? pathname === '/' : pathname.startsWith(mod.href)
+            const isLoadingThis = navigatingTo === mod.name && !active
+            return (
+              <Link
+                key={mod.id}
+                href={mod.href}
+                onClick={() => {
+                  if (isMobileDrawer) {
+                    setMobileDrawerOpen(false)
+                  }
+                  if (!active) {
+                    setNavigatingTo(mod.name)
+                  }
+                }}
+                className={`group flex min-h-12 items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                  active || isLoadingThis
+                    ? 'liquid-droplet-pill text-slate-950 font-bold'
+                    : 'border border-transparent text-slate-800 hover:border-white/60 hover:bg-white/35'
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  {isLoadingThis && (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-amber-800 border-t-transparent" />
+                  )}
+                  <span>{mod.name}</span>
+                </span>
+                {isLoadingThis && (
+                  <span className="text-[10px] font-bold text-amber-800">
+                    Opening…
+                  </span>
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Sign Out Trigger Button (Touch target >= 48px via min-h-12) */}
+        <div className="shrink-0 border-t border-white/50 p-3">
+          <button
+            type="button"
+            onClick={() => {
+              if (isMobileDrawer) setMobileDrawerOpen(false)
+              setShowSignOutModal(true)
+            }}
+            className="liquid-droplet-pill flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-bold text-slate-800 transition hover:border-red-300 hover:bg-red-500/20 hover:text-red-900"
+          >
+            <svg
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span>Sign out</span>
+          </button>
+        </div>
+      </>
+    )
+  }
+
   return (
     <div
       ref={shellRef}
-      className="liquid-mesh-bg relative min-h-screen flex flex-col md:flex-row overflow-x-hidden text-slate-900"
+      className="liquid-mesh-bg relative flex h-dvh w-full overflow-hidden text-slate-900"
     >
       {/* Hidden SVG Optical Liquid Refraction Filter */}
       <svg className="pointer-events-none fixed h-0 w-0" aria-hidden="true">
@@ -137,321 +384,155 @@ export default function AppShell({ user, children }: AppShellProps) {
         </div>
       )}
 
-      {/* Mobile Liquid Glass top bar */}
-      <header className="liquid-glass-sidebar sticky top-0 z-30 flex items-center justify-between px-4 py-3 md:hidden">
-        <div className="flex items-center gap-2.5">
-          <span className="liquid-droplet-pill flex h-9 w-9 items-center justify-center rounded-xl p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/constructms-sculpture.png"
-              alt="ConstructMS Logo"
-              className="h-full w-full object-contain"
-            />
-          </span>
-          <div className="leading-none">
-            <span className="block font-extrabold tracking-tight text-slate-900">ConstructMS</span>
-            <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-slate-600">
-              Construction Management
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className={`liquid-droplet-pill rounded-full px-2.5 py-0.5 text-xs font-semibold ${roleInfo.badgeColor}`}
-          >
-            {roleInfo.label}
-          </span>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((v) => !v)}
-            className="liquid-droplet-pill rounded-xl p-2 text-slate-800"
-            aria-label="Toggle navigation"
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
-        </div>
-      </header>
-
-      {/* Floating Liquid Glass Sidebar Dock */}
+      {/* =====================================================================
+          1. DESKTOP FIXED SIDEBAR (hidden on mobile < md, scrolls independently)
+         ===================================================================== */}
       <aside
-        className={`${
-          mobileMenuOpen ? 'block' : 'hidden'
-        } liquid-glass-sidebar relative z-20 w-full md:m-3.5 md:flex md:w-64 md:flex-col md:rounded-[28px] md:shrink-0`}
+        ref={desktopSidebarRef}
+        aria-label="Sidebar navigation"
+        className="liquid-glass-sidebar relative z-20 hidden w-72 shrink-0 flex-col overflow-y-auto border-r border-white/70 md:flex"
       >
-        {/* Specular Top Glint Line */}
+        {renderSidebarContents(false)}
+      </aside>
+
+      {/* =====================================================================
+          2. MOBILE SLIDE-OUT DRAWER (< md, locks background scroll, closes on link/backdrop)
+         ===================================================================== */}
+      {mobileDrawerOpen && (
         <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"
-        />
+          className="fixed inset-0 z-40 flex md:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation drawer"
+        >
+          {/* Backdrop overlay (click to close) */}
+          <div
+            className="fixed inset-0 bg-slate-900/45 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileDrawerOpen(false)}
+            aria-hidden="true"
+          />
 
-        <div className="hidden items-center gap-3 border-b border-white/50 px-5 py-4 md:flex">
-          <span className="liquid-droplet-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/constructms-sculpture.png"
-              alt="ConstructMS Logo"
-              className="h-full w-full object-contain"
-            />
-          </span>
-          <div>
-            <p className="font-extrabold text-slate-900 leading-tight tracking-tight">
-              ConstructMS
-            </p>
-            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-600">
-              Construction Management
-            </p>
-          </div>
+          {/* Slide-out drawer panel (independent overflow-y-auto scroll container) */}
+          <aside className="liquid-glass-sidebar relative z-10 flex h-dvh w-78 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-r border-white/80 shadow-2xl">
+            {renderSidebarContents(true)}
+          </aside>
         </div>
+      )}
 
-        {/* Logged-in user summary + 4-Role Switcher */}
-        <div className="border-b border-white/50 p-4 space-y-3">
-          <div className="flex items-center gap-3">
-            {user.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.avatarUrl}
-                alt=""
-                className="h-10 w-10 rounded-full border-2 border-white/90 object-cover shadow-sm"
-              />
-            ) : (
-              <div className="liquid-droplet-pill flex h-10 w-10 items-center justify-center rounded-full font-bold text-amber-900">
-                {(user.fullName || user.email).charAt(0).toUpperCase()}
+      {/* =====================================================================
+          3. RIGHT SIDE: flex min-w-0 flex-1 flex-col (Fixed Header + Scrollable Main)
+         ===================================================================== */}
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
+        {/* Fixed Top Header (shrink-0, border-b) */}
+        <header className="liquid-glass-sidebar shrink-0 border-b border-white/70 px-4 py-2.5 md:px-6">
+          <div className="flex items-center justify-between gap-3">
+            {/* Left: Mobile Hamburger Button (>= 48px touch target) + Active Module Title */}
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={() => setMobileDrawerOpen(true)}
+                className="liquid-droplet-pill inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-xl text-lg font-bold text-slate-800 md:hidden"
+                aria-label="Open navigation menu"
+                aria-expanded={mobileDrawerOpen}
+              >
+                ☰
+              </button>
+
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="truncate text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">
+                    {currentModule?.name || 'Dashboard'}
+                  </span>
+                </div>
+                <p className="hidden truncate text-xs text-slate-600 sm:block">
+                  {currentModule?.description || roleInfo.typicalAccess}
+                </p>
               </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-slate-900">
-                {user.fullName || user.email}
-              </p>
-              <p className="truncate text-xs text-slate-700">{user.email}</p>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
-                Assigned Role
-              </span>
+            {/* Right: Verified Role Badge + Quick Switch Role Selector */}
+            <div className="flex items-center gap-2.5 shrink-0">
               <span
-                className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${roleInfo.badgeColor}`}
+                className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${roleInfo.badgeColor}`}
               >
                 {roleInfo.label}
               </span>
-            </div>
 
-            {user.role !== 'admin_engineer' && (
-              <div className="space-y-1.5">
-                <button
-                  type="button"
-                  onClick={() => setShowRoleRequestBox((v) => !v)}
-                  className="liquid-droplet-pill w-full rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-slate-800 hover:bg-white/80 transition"
-                >
-                  {showRoleRequestBox ? 'Cancel Role Request' : 'Request Role Upgrade →'}
-                </button>
-
-                {showRoleRequestBox && (
-                  <div className="liquid-droplet-pill rounded-xl p-2.5 space-y-2">
-                    <p className="text-[10px] font-semibold text-slate-700">
-                      Requires Admin / Engineer Approval:
-                    </p>
-                    <select
-                      value={requestedRole}
-                      onChange={(e) => setRequestedRole(e.target.value as UserRole)}
-                      className="w-full rounded-lg border border-white/80 bg-white/80 px-2 py-1 text-xs font-semibold text-slate-900"
-                    >
-                      <option value="assistant">Assistant</option>
-                      <option value="contractor">Contractor</option>
-                      <option value="client">Client</option>
-                      <option value="admin_engineer">Admin / Engineer</option>
-                    </select>
-                    <button
-                      type="button"
-                      disabled={switchingRole}
-                      onClick={handleSubmitRoleRequest}
-                      className="w-full rounded-lg bg-amber-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-amber-700 disabled:opacity-50"
-                    >
-                      Submit Request
-                    </button>
-                  </div>
-                )}
-
-                {roleReqSent && (
-                  <p className="rounded-lg bg-emerald-50/90 px-2 py-1 text-[10px] font-semibold text-emerald-800">
-                    {roleReqSent}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Discrete Demo Role Preview toggle for testing the 4 separate role dashboards */}
-            <div className="pt-0.5">
-              <button
-                type="button"
-                onClick={() => setShowDemoPreview((v) => !v)}
-                className="text-[10px] font-semibold text-slate-500 hover:text-slate-800 underline"
+              <select
+                aria-label="Quick switch role"
+                value={user.role}
+                disabled={switchingRole}
+                onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
+                className="liquid-droplet-pill hidden min-h-10 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none disabled:opacity-50 sm:block"
               >
-                {showDemoPreview ? 'Hide Role Preview' : 'Demo: Preview Other Role Dashboard'}
-              </button>
-              {showDemoPreview && (
-                <select
-                  aria-label="Preview role dashboard"
-                  value={user.role}
-                  disabled={switchingRole}
-                  onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
-                  className="liquid-droplet-pill mt-1 w-full rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none disabled:opacity-50"
-                >
-                  <option value="admin_engineer">Admin / Engineer (15 Modules)</option>
-                  <option value="assistant">Assistant (10 Modules)</option>
-                  <option value="contractor">Contractor (6 Modules)</option>
-                  <option value="client">Client (5 Read-Only Modules)</option>
-                </select>
-              )}
+                <option value="admin_engineer">Switch: Admin / Engineer</option>
+                <option value="assistant">Switch: Assistant</option>
+                <option value="contractor">Switch: Contractor</option>
+                <option value="client">Switch: Client</option>
+              </select>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Strictly Limited Role-Filtered Module Links */}
-        <nav className="flex-1 space-y-1.5 p-3 overflow-y-auto">
-          <p className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
-            Allowed Modules ({allowedModules.length})
-          </p>
-          {allowedModules.map((mod) => {
-            const active =
-              mod.href === '/' ? pathname === '/' : pathname.startsWith(mod.href)
-            const isLoadingThis = navigatingTo === mod.name && !active
-            return (
-              <Link
-                key={mod.id}
-                href={mod.href}
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  if (!active) {
-                    setNavigatingTo(mod.name)
-                  }
-                }}
-                className={`group flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
-                  active || isLoadingThis
-                    ? 'liquid-droplet-pill text-slate-950 font-bold'
-                    : 'border border-transparent text-slate-800 hover:border-white/60 hover:bg-white/35'
-                }`}
-              >
-                <span className="flex items-center gap-2.5">
-                  {isLoadingThis && (
-                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-amber-800 border-t-transparent" />
-                  )}
-                  <span>{mod.name}</span>
-                </span>
-                {isLoadingThis && (
-                  <span className="text-[10px] font-bold text-amber-800">
-                    Opening…
-                  </span>
-                )}
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Sign Out Trigger Button */}
-        <div className="border-t border-white/50 p-3">
-          <button
-            type="button"
-            onClick={() => setShowSignOutModal(true)}
-            className="liquid-droplet-pill flex w-full items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-bold text-slate-800 transition hover:border-red-300 hover:bg-red-500/20 hover:text-red-900"
-          >
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            <span>Sign out</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main content area — Liquid Glassmorphism Workspace for Dashboard & All Modules */}
-      <main className="liquid-workspace relative z-10 flex-1 p-4 pb-24 md:p-7 md:pb-8 overflow-y-auto">
-        {isTransitioning && (
-          <div className="liquid-glass-card mb-4 rounded-2xl px-4 py-2.5 text-xs font-bold text-slate-900 flex items-center gap-2.5">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-amber-700 border-t-transparent" />
-            <span>
-              {switchingRole
-                ? 'Switching role & updating module permissions…'
-                : `Opening ${navigatingTo}…`}
-            </span>
-          </div>
-        )}
-
-        <div className={isTransitioning ? 'opacity-60 transition-opacity duration-150' : ''}>
-          {hasAccessToCurrentPath ? (
-            children
-          ) : (
-            <div className="liquid-glass-card mx-auto max-w-2xl rounded-3xl p-8 text-center space-y-4 mt-8">
-              <div className="liquid-droplet-pill mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-2xl">
-                🔒
-              </div>
-              <h1 className="text-xl font-bold text-slate-900">
-                Access Denied — Module Restricted for {roleInfo.label}
-              </h1>
-              <p className="text-sm text-slate-700">
-                Your current role (<strong>{roleInfo.label}</strong>) does not have permission to
-                open{' '}
-                <code className="rounded bg-white/60 px-1.5 py-0.5 text-xs font-mono text-red-700">
-                  {pathname}
-                </code>
-                . You only have access to <strong>{allowedModules.length} permitted modules</strong>:
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 pt-2">
-                {allowedModules.map((m) => (
-                  <Link
-                    key={m.id}
-                    href={m.href}
-                    className="liquid-droplet-pill inline-flex items-center rounded-xl px-3.5 py-1.5 text-xs font-semibold text-slate-900 hover:bg-white/80"
-                  >
-                    <span>{m.name}</span>
-                  </Link>
-                ))}
-              </div>
-              <div className="pt-2">
-                <Link
-                  href="/"
-                  className="inline-flex items-center justify-center rounded-xl bg-amber-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-amber-700"
-                >
-                  ← Return to Dashboard
-                </Link>
-              </div>
+        {/* Scrollable Main Content Container (flex-1 overflow-y-auto p-4 md:p-6) */}
+        <main
+          ref={mainScrollRef}
+          className="liquid-workspace flex-1 min-w-0 overflow-y-auto p-4 md:p-6"
+        >
+          {isTransitioning && (
+            <div className="liquid-glass-card mb-4 rounded-2xl px-4 py-2.5 text-xs font-bold text-slate-900 flex items-center gap-2.5">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-amber-700 border-t-transparent" />
+              <span>
+                {switchingRole
+                  ? 'Switching role & updating module permissions…'
+                  : `Opening ${navigatingTo}…`}
+              </span>
             </div>
           )}
-        </div>
-      </main>
 
-      {/* Phone-first bottom Liquid Glass quick bar */}
-      <nav className="liquid-glass-sidebar fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 md:hidden">
-        {allowedModules.slice(0, 5).map((mod) => {
-          const active =
-            mod.href === '/' ? pathname === '/' : pathname.startsWith(mod.href)
-          return (
-            <Link
-              key={mod.id}
-              href={mod.href}
-              onClick={() => {
-                if (!active) setNavigatingTo(mod.name)
-              }}
-              className={`flex items-center justify-center py-3 text-[11px] font-medium ${
-                active ? 'text-amber-800 font-bold' : 'text-slate-800'
-              }`}
-            >
-              <span className="truncate max-w-[68px]">{mod.name.split(' ')[0]}</span>
-            </Link>
-          )
-        })}
-      </nav>
+          <div className={`min-w-0 ${isTransitioning ? 'opacity-60 transition-opacity duration-150' : ''}`}>
+            {hasAccessToCurrentPath ? (
+              children
+            ) : (
+              <div className="liquid-glass-card mx-auto max-w-2xl rounded-3xl p-8 text-center space-y-4 mt-8">
+                <div className="liquid-droplet-pill mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-2xl">
+                  🔒
+                </div>
+                <h1 className="text-xl font-bold text-slate-900">
+                  Access Denied — Module Restricted for {roleInfo.label}
+                </h1>
+                <p className="text-sm text-slate-700">
+                  Your current role (<strong>{roleInfo.label}</strong>) does not have permission to
+                  open{' '}
+                  <code className="rounded bg-white/60 px-1.5 py-0.5 text-xs font-mono text-red-700">
+                    {pathname}
+                  </code>
+                  . You only have access to <strong>{allowedModules.length} permitted modules</strong>:
+                </p>
+                <div className="flex flex-wrap justify-center gap-2 pt-2">
+                  {allowedModules.map((m) => (
+                    <Link
+                      key={m.id}
+                      href={m.href}
+                      className="liquid-droplet-pill inline-flex min-h-11 items-center rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 hover:bg-white/80"
+                    >
+                      <span>{m.name}</span>
+                    </Link>
+                  ))}
+                </div>
+                <div className="pt-2">
+                  <Link
+                    href="/"
+                    className="inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-amber-700"
+                  >
+                    ← Return to Dashboard
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
 
       {/* Liquid Glass Sign Out Confirmation Modal */}
       {showSignOutModal && (
@@ -525,7 +606,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                 type="button"
                 disabled={signingOut}
                 onClick={() => setShowSignOutModal(false)}
-                className="liquid-droplet-pill rounded-xl px-4 py-2 text-xs font-bold text-slate-800 hover:bg-white/80 disabled:opacity-50"
+                className="liquid-droplet-pill min-h-11 rounded-xl px-4 py-2 text-xs font-bold text-slate-800 hover:bg-white/80 disabled:opacity-50"
               >
                 Stay Signed In
               </button>
@@ -538,7 +619,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                 <button
                   type="submit"
                   disabled={signingOut}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:from-red-700 hover:to-rose-700 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:from-red-700 hover:to-rose-700 disabled:opacity-60"
                 >
                   {signingOut ? (
                     <>

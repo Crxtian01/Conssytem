@@ -749,7 +749,7 @@ export default function AdminDashboardCharts({
         isEmpty={forceEmptyState || charts.progressPerProject.length === 0}
       >
         {({ showTargetLines }) => (
-          <div className="space-y-3.5 max-h-[260px] overflow-y-auto pr-1">
+          <div className="space-y-3.5 pr-1">
             {charts.progressPerProject.map((proj) => (
               <div
                 key={proj.id}

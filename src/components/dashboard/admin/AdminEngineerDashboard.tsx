@@ -259,7 +259,7 @@ export default function AdminEngineerDashboard({
   const isShowingSkeleton = isFetchingFilter || simulateSkeleton
 
   return (
-    <div className="space-y-6 overflow-x-hidden">
+    <div className="min-w-0 space-y-6">
       {/* 1. HEADER & INTERACTIVE FILTER BAR */}
       <AdminDashboardFilters
         projects={payload.projectsList}
