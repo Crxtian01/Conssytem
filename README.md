@@ -1,126 +1,16 @@
-# 🏗️ ConstructMS — Construction Management & RA 12009 Bidding System
+# ConstructMS — Construction Management & RA 12009 Bidding System
 
-**ConstructMS** is a full-stack, role-based **Construction Management and Republic Act No. 12009 (New Government Procurement Act) Bidding System** built with **Next.js 16**, **React 19**, **TypeScript**, **Tailwind CSS v4**, **Recharts**, **Framer Motion**, and **Supabase (PostgreSQL + Auth + RLS)**.
+**ConstructMS** is a web-based Construction Management and Republic Act No. 12009 Bidding System built with **Next.js**, **TypeScript**, **Tailwind CSS**, **Recharts**, **Framer Motion**, and **Supabase**.
 
-It connects **Lead Engineers**, **Site Assistants**, **Contractors**, and **Project Clients** in one unified workspace to manage infrastructure projects, S-curve schedules, RA 12009 procurement bids, material stock levels, daily site logs, worker attendance, and budget approvals.
+It provides a centralized workspace for managing construction projects, S-curve schedules, contractor bidding (`Draft → Open → Evaluation → Awarded`), material inventory, worker attendance, daily site logs, and expense approvals across four distinct user roles:
 
----
+- **Admin / Engineer:** Full system access, executive KPI & S-curve dashboard, bid issuance/awarding, user management, and approval of pending expenses and material requests.
+- **Assistant:** Encodes daily site logs, worker attendance, task progress, material stock-in/out, and submits pending expense/material requests.
+- **Contractor:** Views open RA 12009 bids, submits bid proposals, and updates assigned project tasks and daily logs.
+- **Client:** Read-only access to project progress, approved daily logs, shared documents, and progress reports.
 
-## 🔄 End-to-End System Process & Workflow
-
-ConstructMS follows a structured, real-world construction & procurement lifecycle across **5 core operational stages**:
-
-```mermaid
-flowchart LR
-    A["1. Authentication & Role Assignment"] --> B["2. RA 12009 Bidding & Contract Award"]
-    B --> C["3. Project Execution & Field Encoding"]
-    C --> D["4. Maker-Checker Approvals (Materials & Expenses)"]
-    D --> E["5. Executive S-Curve & Financial Analytics"]
-```
-
-### Stage 1: Authentication & Role-Based Workspace Initialization
-1. Users sign in via **Email & Password** or **Google OAuth** (`/login`).
-2. Supabase automatically creates/syncs the user's record in `public.profiles` and verifies their assigned role (`admin_engineer`, `assistant`, `contractor`, or `client`).
-3. The shared **`AppShell`** locks the viewport (`h-dvh overflow-hidden`) and dynamically filters the sidebar navigation, header controls, and **My Profile & Account Details** modal according to the user's verified role.
-4. Non-admin users can submit a **Role Upgrade Request** from the sidebar, which is queued for **Admin / Engineer** approval.
-
-### Stage 2: RA 12009 Bidding & Procurement Process (`/bidding`)
-1. **Bid Preparation (`Draft`):** An **Admin / Engineer** or **Assistant** prepares a bid package with the Approved Budget for the Contract (ABC), project scope, and eligibility requirements.
-2. **Bid Issuance (`Open`):** Only the **Admin / Engineer** can officially issue/open the bid for public contractor proposals.
-3. **Contractor Proposal Submission:** Accredited **Contractors** log into their portal, inspect open bid packages, and submit their formal financial bid amount, completion days, and technical notes.
-4. **Evaluation & Contract Award (`Evaluation` → `Awarded`):** The **Admin / Engineer** evaluates submitted contractor proposals side-by-side and awards the contract.
-
-### Stage 3: Daily Field Operations & Site Encoding
-1. **Projects & Tasks (`/projects`, `/tasks`):** Engineers create projects and assign tasks; Assistants and Contractors update task completion percentages (`%`) and status (`todo`, `in_progress`, `completed`, `blocked`).
-2. **Materials & Inventory (`/materials`):** Assistants encode daily stock-in and stock-out transactions. When an item falls below its minimum **Reorder Level**, the system flags it as **Low Stock** across the workspace.
-3. **Workers & Attendance (`/attendance`):** Assistants and Engineers record daily site attendance (`Present`, `Late`, `Absent`) and hours worked per trade.
-4. **Daily Site Logs (`/daily-logs`):** Field staff log site weather, manpower counts, and work accomplished. Approved logs become visible to the **Client**.
-
-### Stage 4: Maker-Checker Approval Workflow (`/expenses`, `/materials`, `/users`)
-- **Expense Control:** **Assistants** can record project expenses only as `Pending`. Only an **Admin / Engineer** can `Approve` or `Reject` pending expenses so unverified spending never distorts the approved project budget.
-- **Material Requisitions:** **Assistants** submit material restock requests (`Pending`), which **Admin / Engineers** review and approve.
-- **Role Upgrade Requests:** **Admin / Engineers** review and approve/reject user role requests in `/users`.
-
-### Stage 5: Executive Dashboard & Real-Time S-Curve Analytics (`/` & `/admin-dashboard`)
-- **6 Animated KPI Cards:** Active Projects, Overall Progress (`%`), Spent vs. Budget (`₱`), Low-Stock Materials, Pending Approvals, and Open Bids—each with count-up numerals, semantic trend indicators (`▲` / `▼`), and sparklines.
-- **8 Interactive Recharts Visualizations:**
-  1. **Planned vs. Actual Progress (S-Curve Line Chart)**
-  2. **Monthly Expenses vs. Cumulative Budget (Combo Bar + Line Chart)**
-  3. **Expenses by Category (Horizontal Bar Chart)**
-  4. **Material Stock Levels with Reorder-Level Threshold Line**
-  5. **Attendance Trend (Stacked Bar Chart: Present, Late, Absent)**
-  6. **Tasks by Status (Donut Chart: Done, Ongoing, Delayed)**
-  7. **Bids by Stage (RA 12009 Funnel Bar Chart)**
-  8. **Progress per Project ( Interactive Progress Bars List)**
-- **Dynamic Filtering:** Filtering by **Project** or **Date Range** (`This Week`, `This Month`, `This Quarter`, `Custom`) updates all KPI cards and charts simultaneously.
-
----
-
-## 🛡️ Four-Role Permission Matrix
-
-| Module / Capability | Admin / Engineer | Assistant | Contractor | Client |
-| :--- | :---: | :---: | :---: | :---: |
-| **Permitted Modules** | **15 Modules (Full Access)** | **10 Modules** | **6 Modules** | **5 Modules (Read-Only)** |
-| **Executive Dashboard (`/`)** | Full KPIs + 8 Charts | Assigned projects | Own bids & projects | Read-only progress |
-| **Projects & Sites (`/projects`)** | Full CRUD + Progress | View & Update | View assigned only | Read-only progress |
-| **RA 12009 Bidding (`/bidding`)** | Draft, Issue, Evaluate & Award | Prepare drafts only | View open & Submit own bid | — |
-| **Tasks & Progress (`/tasks`)** | Full CRUD | Update status/progress | View & update assigned | — |
-| **Daily Logs (`/daily-logs`)** | Create, View & Approve | Create & Submit | Create & View own | View approved only |
-| **Materials & Inventory (`/materials`)** | Full Stock + Approve Requests | Stock In/Out + Request | — | — |
-| **Workers & Attendance (`/attendance`)** | Manage Workers & Attendance | Record Attendance | — | — |
-| **Equipment (`/equipment`)** | Full Equipment Control | — | — | — |
-| **Expenses & Budget (`/expenses`)** | Create + Approve/Reject | Create as `Pending` only | — | — |
-| **Documents (`/documents`)** | Upload, Share & Delete | Upload & View assigned | Upload & View assigned | View shared only |
-| **Reports (`/reports`)** | Progress + Financial Summaries | Progress reports only | — | Progress reports only |
-| **Users & Roles (`/users`)** | Manage Users & Approve Roles | — | — | — |
-
----
-
-## 🎨 HCI Design & Prototyping Process (CS PC 12)
-
-This project was developed following the **Human-Computer Interaction (HCI) Interactive Design & Prototyping** methodology:
-1. **User Research & Personas:** Modeled around real construction personas (*Engr. Marco Reyes — Senior Project Engineer* and *Katrina Santos — Field Assistant*) with documented user needs, pain points, and interview evidence.
-2. **User Scenarios & Navigation Architecture:** Structured navigation map and step-by-step user flows ensuring any core task is completed within 3–4 clicks.
-3. **Ergonomic & Accessible UI:**
-   - Viewport-locked layout (`flex h-dvh overflow-hidden`) with an independently scrolling desktop sidebar, fixed header, and mobile slide-out drawer.
-   - Touch targets `>= 48px` (`min-h-12`) for field phone use.
-   - Semantic color logic paired with explicit directional arrows (`▲` / `▼`) so status never relies on color alone.
-   - Automatic `prefers-reduced-motion` support.
-4. **Usability Testing & Iterative Refinement (Version 1 → Version 2):**
-   - Removed duplicate dashboard module cards to eliminate scroll clutter.
-   - Locked the sidebar and header scroll containers so navigation never disappears on long pages.
-   - Added the interactive **My Profile & Account Details** modal when clicking the user's profile in the sidebar or top header.
-
-> 📄 **Full Project Documentation:**
-> - [**`MasterPlan.md`**](./MasterPlan.md) — System Architecture, 16-Table Database Schema, SQL Views/RPCs, and 4-Role Matrix.
-> - [**`All_Needed_Documents.md`**](./All_Needed_Documents.md) — Complete CS PC 12 Final Laboratory Project Report (User Personas, Scenarios, Navigation Diagrams, 8+ Screens Breakdown, Usability Testing Table, and V1 vs. V2 Iteration Analysis).
-
----
-
-## 🚀 Getting Started Locally
-
-### 1. Install Dependencies
-```bash
-npm install
-```
-
-### 2. Configure Environment Variables (`.env.local`)
-Create a `.env.local` file in the root directory with your Supabase credentials:
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-```
-
-### 3. Initialize Supabase Database & Views
-Run the SQL migration scripts inside your **Supabase SQL Editor** in order:
-1. `supabase/001_profiles.sql`
-2. `supabase/002_full_database_schema.sql`
-3. `supabase/003_bidding_and_seed_data.sql`
-4. `supabase/004_admin_dashboard_views_and_rpcs.sql`
-
-### 4. Start the Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Quick Start
+1. Install dependencies: `npm install`
+2. Add your Supabase keys in `.env.local` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`).
+3. Run the SQL scripts inside `supabase/` in your Supabase SQL Editor.
+4. Start the app: `npm run dev`
