@@ -10,7 +10,7 @@ import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import LandingPage from '@/components/landing/LandingPage'
 import NotificationEmailCard from '@/components/auth/NotificationEmailCard'
 import DashboardAnalytics from '@/components/dashboard/DashboardAnalytics'
-import { ROLES, getModulesForRole } from '@/lib/roles'
+import { ROLES } from '@/lib/roles'
 
 export default function HomePage() {
   return (
@@ -38,7 +38,6 @@ async function HomeOrDashboardContent() {
   const store = readStore()
   const biddingStore = readBiddingStore()
   const roleInfo = ROLES[user.role] ?? ROLES.contractor
-  const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
   const canManageUsers = user.role === 'admin_engineer'
   const adminDashboardPayload =
     user.role === 'admin_engineer'
@@ -101,43 +100,6 @@ async function HomeOrDashboardContent() {
           verifiedNotificationEmail={verifiedNotificationEmail}
           pendingNotificationEmail={pendingNotificationEmail}
         />
-
-        {/* Core Modules available to this user's role */}
-        <div>
-          <div className="mb-3 flex items-center justify-between px-1">
-            <h2 className="text-lg font-extrabold tracking-tight text-gray-900">
-              Allowed Modules for {roleInfo.label} ({allowedModules.length})
-            </h2>
-            <span className="rounded-full border border-white/80 bg-white/60 px-3 py-1 text-xs font-medium text-gray-600 backdrop-blur-md">
-              Liquid Glass Workspace
-            </span>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {allowedModules.map((mod) => (
-              <Link
-                key={mod.id}
-                href={mod.href}
-                className="group flex flex-col justify-between rounded-2xl border border-white/80 bg-white p-5 transition hover:border-amber-400"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900 group-hover:text-amber-700">
-                      {mod.name}
-                    </h3>
-                    <span className="rounded-full border border-white/90 bg-white/75 px-2.5 py-0.5 text-xs font-semibold text-gray-700 shadow-2xs">
-                      Phase {mod.phase}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs text-gray-600 leading-relaxed">{mod.description}</p>
-                </div>
-                <div className="mt-4 text-xs font-semibold text-amber-700 group-hover:translate-x-1 transition">
-                  Open module →
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
       </div>
     </AppShell>
   )
