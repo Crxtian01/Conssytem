@@ -2,52 +2,80 @@
 
 import { useState } from 'react'
 import type { StoreData } from '@/lib/module-store'
+import { ROLES, type UserRole } from '@/lib/roles'
 
-export default function ReportsClient({ store }: { store: StoreData }) {
+export default function ReportsClient({
+  store,
+  role = 'admin_engineer',
+}: {
+  store: StoreData
+  role?: UserRole
+}) {
   const [emailing, setEmailing] = useState(false)
   const [emailStatus, setEmailStatus] = useState<string | null>(null)
+  const perms = ROLES[role].permissions
+  const showFinancials = perms.viewFinancialSummaries
+  const isClientProgressOnly = role === 'client'
 
   function exportToExcelCsv() {
     const rows: string[][] = [
-      ['CONSTRUCTMS — FULL EXECUTIVE REPORT'],
+      [`CONSTRUCTMS — ${ROLES[role].label.toUpperCase()} REPORT`],
       [],
-      ['1. PROJECT PROGRESS & BUDGET VS ACTUAL'],
-      ['Project Name', 'Location', 'Status', 'Progress %', 'Budget (PHP)', 'Approved Spent (PHP)', 'Remaining Budget (PHP)'],
+      showFinancials
+        ? ['1. PROJECT PROGRESS & BUDGET VS ACTUAL']
+        : ['1. PROJECT PROGRESS SUMMARY (NO FINANCIAL SUMMARY)'],
+      showFinancials
+        ? [
+            'Project Name',
+            'Location',
+            'Status',
+            'Progress %',
+            'Budget (PHP)',
+            'Approved Spent (PHP)',
+            'Remaining Budget (PHP)',
+          ]
+        : ['Project Name', 'Location', 'Status', 'Progress %', 'Start Date', 'Target Completion'],
       ...store.projects.map((p) => {
         const spent = store.expenses
           .filter((e) => e.project_id === p.id && e.approval_status === 'approved')
           .reduce((s, e) => s + e.amount, 0)
-        return [
-          p.name,
-          p.location,
-          p.status,
-          `${p.progress}%`,
-          `${p.budget}`,
-          `${spent}`,
-          `${p.budget - spent}`,
-        ]
+        return showFinancials
+          ? [
+              p.name,
+              p.location,
+              p.status,
+              `${p.progress}%`,
+              `${p.budget}`,
+              `${spent}`,
+              `${p.budget - spent}`,
+            ]
+          : [p.name, p.location, p.status, `${p.progress}%`, p.start_date, p.end_date || 'TBD']
       }),
-      [],
-      ['2. LOW-STOCK MATERIALS & INVENTORY'],
-      ['Material Name', 'Current Stock', 'Reorder Level', 'Unit', 'Unit Cost (PHP)', 'Stock Status'],
-      ...store.materials.map((m) => [
-        m.name,
-        `${m.current_stock}`,
-        `${m.reorder_level}`,
-        m.unit,
-        `${m.unit_cost}`,
-        m.current_stock <= m.reorder_level ? 'LOW STOCK ALERT' : 'In Stock',
-      ]),
-      [],
-      ['3. WORKER ATTENDANCE SUMMARY'],
-      ['Worker Name', 'Date', 'Hours Worked', 'Status'],
-      ...store.attendance.map((a) => [
-        a.worker_name,
-        a.attendance_date,
-        `${a.hours_worked}`,
-        a.status,
-      ]),
     ]
+
+    if (!isClientProgressOnly) {
+      rows.push(
+        [],
+        ['2. LOW-STOCK MATERIALS & INVENTORY'],
+        ['Material Name', 'Current Stock', 'Reorder Level', 'Unit', 'Stock Status'],
+        ...store.materials.map((m) => [
+          m.name,
+          `${m.current_stock}`,
+          `${m.reorder_level}`,
+          m.unit,
+          m.current_stock <= m.reorder_level ? 'LOW STOCK ALERT' : 'In Stock',
+        ]),
+        [],
+        ['3. WORKER ATTENDANCE SUMMARY'],
+        ['Worker Name', 'Date', 'Hours Worked', 'Status'],
+        ...store.attendance.map((a) => [
+          a.worker_name,
+          a.attendance_date,
+          `${a.hours_worked}`,
+          a.status,
+        ])
+      )
+    }
 
     const csvContent = rows
       .map((r) => r.map((v) => `"${(v ?? '').replace(/"/g, '""')}"`).join(','))
@@ -56,7 +84,7 @@ export default function ReportsClient({ store }: { store: StoreData }) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `construction-full-report-${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `construction-${role}-report-${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
   }
 
@@ -70,7 +98,7 @@ export default function ReportsClient({ store }: { store: StoreData }) {
     })
     setEmailing(false)
     if (res.ok) {
-      setEmailStatus('✉️ Weekly Client Progress Report sent! Check /notifications to preview.')
+      setEmailStatus('Weekly Client Progress Report sent!')
     }
   }
 
@@ -84,23 +112,25 @@ export default function ReportsClient({ store }: { store: StoreData }) {
           onClick={exportToExcelCsv}
           className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700"
         >
-          📥 Export Full Report to Excel (CSV)
+          Export Report to Excel (CSV)
         </button>
         <button
           type="button"
           onClick={() => window.print()}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-700"
         >
-          🖨️ Export / Save as PDF
+          Export / Save as PDF
         </button>
-        <button
-          type="button"
-          disabled={emailing}
-          onClick={handleEmailWeeklyReport}
-          className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 disabled:opacity-50"
-        >
-          {emailing ? 'Sending…' : '✉️ Email Weekly Report to Client'}
-        </button>
+        {role === 'admin_engineer' && (
+          <button
+            type="button"
+            disabled={emailing}
+            onClick={handleEmailWeeklyReport}
+            className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 disabled:opacity-50"
+          >
+            {emailing ? 'Sending…' : 'Email Weekly Report to Client'}
+          </button>
+        )}
       </div>
 
       {emailStatus && (
@@ -109,20 +139,40 @@ export default function ReportsClient({ store }: { store: StoreData }) {
         </div>
       )}
 
-      {/* 1. Project Progress & Budget vs Actual */}
+      {/* 1. Project Progress (& Financial Summary only for Admin/Engineer) */}
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900">
-          1. Project Progress &amp; Budget vs. Actual Summary
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-bold text-gray-900">
+            {showFinancials
+              ? '1. Project Progress & Financial Summary (Budget vs. Actual)'
+              : '1. Project Progress Summary (Progress Only)'}
+          </h2>
+          {!showFinancials && (
+            <span className="rounded-full bg-gray-100 px-3 py-0.5 text-xs font-semibold text-gray-600">
+              Financial Summaries Restricted to Admin / Engineer
+            </span>
+          )}
+        </div>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
                 <th className="py-3 pr-4">Project</th>
+                <th className="py-3 px-4">Location</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Progress</th>
-                <th className="py-3 px-4">Budget</th>
-                <th className="py-3 px-4">Approved Spent</th>
-                <th className="py-3 pl-4">Remaining Budget</th>
+                {showFinancials ? (
+                  <>
+                    <th className="py-3 px-4">Budget</th>
+                    <th className="py-3 px-4">Approved Spent</th>
+                    <th className="py-3 pl-4">Remaining Budget</th>
+                  </>
+                ) : (
+                  <>
+                    <th className="py-3 px-4">Start Date</th>
+                    <th className="py-3 pl-4">Target Completion</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -134,12 +184,25 @@ export default function ReportsClient({ store }: { store: StoreData }) {
                 return (
                   <tr key={p.id}>
                     <td className="py-3 pr-4 font-bold text-gray-900">{p.name}</td>
+                    <td className="py-3 px-4 text-gray-600">{p.location}</td>
+                    <td className="py-3 px-4 uppercase text-xs font-semibold text-gray-700">
+                      {p.status}
+                    </td>
                     <td className="py-3 px-4 font-semibold text-amber-700">{p.progress}%</td>
-                    <td className="py-3 px-4">₱{p.budget.toLocaleString()}</td>
-                    <td className="py-3 px-4">₱{spent.toLocaleString()}</td>
-                    <td className="py-3 pl-4 font-semibold text-emerald-700">
-                      ₱{remaining.toLocaleString()}
-                    </td>
+                    {showFinancials ? (
+                      <>
+                        <td className="py-3 px-4">₱{p.budget.toLocaleString()}</td>
+                        <td className="py-3 px-4">₱{spent.toLocaleString()}</td>
+                        <td className="py-3 pl-4 font-semibold text-emerald-700">
+                          ₱{remaining.toLocaleString()}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="py-3 px-4 text-gray-600">{p.start_date}</td>
+                        <td className="py-3 pl-4 text-gray-600">{p.end_date || 'TBD'}</td>
+                      </>
+                    )}
                   </tr>
                 )
               })}
@@ -148,84 +211,89 @@ export default function ReportsClient({ store }: { store: StoreData }) {
         </div>
       </div>
 
-      {/* 2. Low-Stock Materials Summary */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900">
-          2. Low-Stock Materials &amp; Inventory Report ({lowStockItems.length} Alerts)
-        </h2>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
-                <th className="py-3 pr-4">Material</th>
-                <th className="py-3 px-4">Current Stock</th>
-                <th className="py-3 px-4">Reorder Level</th>
-                <th className="py-3 pl-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {store.materials.map((m) => {
-                const isLow = m.current_stock <= m.reorder_level
-                return (
-                  <tr key={m.id}>
-                    <td className="py-3 pr-4 font-bold text-gray-900">{m.name}</td>
-                    <td className="py-3 px-4">
-                      {m.current_stock} {m.unit}
-                    </td>
-                    <td className="py-3 px-4">
-                      {m.reorder_level} {m.unit}
-                    </td>
-                    <td className="py-3 pl-4">
-                      {isLow ? (
-                        <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-800">
-                          LOW STOCK ⚠️
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-                          OK ✅
-                        </span>
-                      )}
-                    </td>
+      {/* 2. Low-Stock Materials & 3. Attendance (Hidden for Client Progress-Only view) */}
+      {!isClientProgressOnly && (
+        <>
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-bold text-gray-900">
+              2. Low-Stock Materials &amp; Inventory Report ({lowStockItems.length} Alerts)
+            </h2>
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
+                    <th className="py-3 pr-4">Material</th>
+                    <th className="py-3 px-4">Current Stock</th>
+                    <th className="py-3 px-4">Reorder Level</th>
+                    <th className="py-3 pl-4">Status</th>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {store.materials.map((m) => {
+                    const isLow = m.current_stock <= m.reorder_level
+                    return (
+                      <tr key={m.id}>
+                        <td className="py-3 pr-4 font-bold text-gray-900">{m.name}</td>
+                        <td className="py-3 px-4">
+                          {m.current_stock} {m.unit}
+                        </td>
+                        <td className="py-3 px-4">
+                          {m.reorder_level} {m.unit}
+                        </td>
+                        <td className="py-3 pl-4">
+                          {isLow ? (
+                            <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-800">
+                              LOW STOCK
+                            </span>
+                          ) : (
+                            <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                              OK
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-      {/* 3. Attendance Summary */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900">
-          3. Worker Attendance &amp; Hours Summary
-        </h2>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
-                <th className="py-3 pr-4">Worker</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Hours Worked</th>
-                <th className="py-3 pl-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {store.attendance.map((a) => (
-                <tr key={a.id}>
-                  <td className="py-3 pr-4 font-bold text-gray-900">{a.worker_name}</td>
-                  <td className="py-3 px-4 text-gray-600">{a.attendance_date}</td>
-                  <td className="py-3 px-4 font-semibold text-gray-900">{a.hours_worked} hrs</td>
-                  <td className="py-3 pl-4">
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold uppercase text-emerald-800">
-                      {a.status.replace('_', ' ')}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-bold text-gray-900">
+              3. Worker Attendance &amp; Hours Summary
+            </h2>
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
+                    <th className="py-3 pr-4">Worker</th>
+                    <th className="py-3 px-4">Date</th>
+                    <th className="py-3 px-4">Hours Worked</th>
+                    <th className="py-3 pl-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {store.attendance.map((a) => (
+                    <tr key={a.id}>
+                      <td className="py-3 pr-4 font-bold text-gray-900">{a.worker_name}</td>
+                      <td className="py-3 px-4 text-gray-600">{a.attendance_date}</td>
+                      <td className="py-3 px-4 font-semibold text-gray-900">
+                        {a.hours_worked} hrs
+                      </td>
+                      <td className="py-3 pl-4">
+                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold uppercase text-emerald-800">
+                          {a.status.replace('_', ' ')}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

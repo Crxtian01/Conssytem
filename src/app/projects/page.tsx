@@ -18,18 +18,35 @@ async function ProjectsContent() {
   const user = await requireAuth()
   const store = readStore()
   const perms = ROLES[user.role].permissions
-  const projects = store.projects.map((p) => ({
-    ...p,
-    budget: perms.viewBudgets ? p.budget : 0,
-  }))
+
+  const projects = store.projects
+    .filter((p) => {
+      if (user.role === 'contractor') return p.assigned_contractor !== false
+      if (user.role === 'assistant') return p.assigned_assistant !== false
+      return true
+    })
+    .map((p) => ({
+      ...p,
+      budget: perms.viewBudgets ? p.budget : 0,
+    }))
 
   return (
     <AppShell user={user}>
       <div className="mx-auto max-w-6xl space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects &amp; Sites</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {user.role === 'admin_engineer'
+              ? 'Projects & Sites (Full Access)'
+              : user.role === 'client'
+                ? 'Project Progress (Read-Only)'
+                : 'Assigned Projects & Sites'}
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Manage construction sites, timelines, progress percentages, and project budgets.
+            {user.role === 'admin_engineer'
+              ? 'Create, update, and manage construction projects, timelines, budgets, and records.'
+              : user.role === 'assistant'
+                ? 'View assigned construction sites and update milestone progress.'
+                : 'Monitor assigned construction site timelines and completion progress.'}
           </p>
         </div>
         <ProjectsClient initialProjects={projects} role={user.role} />
@@ -37,5 +54,3 @@ async function ProjectsContent() {
     </AppShell>
   )
 }
-
-

@@ -68,6 +68,18 @@ export default function TasksClient({
     }
   }
 
+  async function handleDelete(id: string) {
+    const res = await fetch('/api/modules/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id }),
+    })
+    if (res.ok) {
+      setTasks(tasks.filter((t) => t.id !== id))
+      router.refresh()
+    }
+  }
+
   const projectMap = Object.fromEntries(projects.map((p) => [p.id, p.name]))
 
   return (
@@ -108,7 +120,7 @@ export default function TasksClient({
             />
             <input
               type="text"
-              placeholder="Assigned Worker / Engineer"
+              placeholder="Assigned Worker / Contractor"
               value={assignedTo}
               onChange={(e) => setAssignedTo(e.target.value)}
               className="rounded-lg border border-gray-300 px-3.5 py-2 text-sm text-gray-900"
@@ -155,8 +167,8 @@ export default function TasksClient({
             </div>
             <p className="text-xs text-gray-600">{t.description}</p>
             <div className="flex justify-between text-xs text-gray-500">
-              <span>👷 Assigned: {t.assigned_user_name}</span>
-              <span>📅 Due: {t.due_date}</span>
+              <span>Assigned: {t.assigned_user_name}</span>
+              <span>Due: {t.due_date}</span>
             </div>
 
             <div>
@@ -172,30 +184,42 @@ export default function TasksClient({
               </div>
             </div>
 
-            {!perms.readOnly && (
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                {[0, 25, 50, 75, 100].map((pct) => (
-                  <button
-                    key={pct}
-                    type="button"
-                    onClick={() =>
-                      handleUpdateTask(
-                        t.id,
-                        pct,
-                        pct === 100 ? 'completed' : pct > 0 ? 'in_progress' : 'todo'
-                      )
-                    }
-                    className="rounded border border-gray-300 px-2 py-1 text-xs font-medium hover:bg-gray-50"
-                  >
-                    {pct}%
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              {perms.updateTaskProgress && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] text-gray-500">Update Status/%:</span>
+                  {[0, 25, 50, 75, 100].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() =>
+                        handleUpdateTask(
+                          t.id,
+                          pct,
+                          pct === 100 ? 'completed' : pct > 0 ? 'in_progress' : 'todo'
+                        )
+                      }
+                      className="rounded border border-gray-300 px-2 py-0.5 text-xs font-medium hover:bg-gray-50"
+                    >
+                      {pct}%
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {perms.deleteRecords && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(t.id)}
+                  className="rounded border border-red-200 px-2.5 py-0.5 text-[11px] font-semibold text-red-600 hover:bg-red-50"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
     </div>
   )
 }
-

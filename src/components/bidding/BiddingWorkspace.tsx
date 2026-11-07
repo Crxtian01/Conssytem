@@ -14,6 +14,7 @@ interface BiddingWorkspaceProps {
   initialStore: BiddingStoreData
   userRole: UserRole
   userEmail: string
+  userName?: string
 }
 
 const STAGE_ORDER: { key: BidStage; label: string; desc: string }[] = [
@@ -54,6 +55,7 @@ export default function BiddingWorkspace({
   initialStore,
   userRole,
   userEmail,
+  userName,
 }: BiddingWorkspaceProps) {
   const router = useRouter()
   const [store, setStore] = useState<BiddingStoreData>(initialStore)
@@ -68,6 +70,20 @@ export default function BiddingWorkspace({
   const [busy, setBusy] = useState<boolean>(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  // Contractor proposal form state
+  const [propBidId, setPropBidId] = useState<string>(
+    initialStore.bids.find((b) => !['awarded', 'lost', 'converted'].includes(b.status))?.id ??
+      initialStore.bids[0]?.id ??
+      ''
+  )
+  const [propContractorName, setPropContractorName] = useState<string>(
+    userName || 'Apex Builders Corp.'
+  )
+  const [propPcab, setPropPcab] = useState<string>('PCAB #44912 - Category B (Medium A)')
+  const [propAmount, setPropAmount] = useState<string>('')
+  const [propNotes, setPropNotes] = useState<string>('')
+  const [propDocUrl, setPropDocUrl] = useState<string>('')
 
   // New Bid form state
   const [newRefNo, setNewRefNo] = useState('ITB-2026-DPWH-045')
@@ -243,6 +259,319 @@ export default function BiddingWorkspace({
     if (data?.ok) {
       setNotice('Updated RA 12009 Bidding Rules and default markups.')
     }
+  }
+
+  async function handleSubmitContractorProposal(e: React.FormEvent) {
+    e.preventDefault()
+    if (!propBidId || !propAmount) return
+    const data = await callBiddingApi('submit_contractor_proposal', {
+      bid_id: propBidId,
+      contractor_name: propContractorName,
+      pcab_license: propPcab,
+      bid_amount: Number(propAmount),
+      proposal_notes: propNotes,
+      document_url: propDocUrl || undefined,
+    })
+    if (data?.ok) {
+      setPropAmount('')
+      setPropNotes('')
+      setNotice('Your bid proposal has been submitted and is now visible in My Submitted Bids & Status.')
+    }
+  }
+
+  // =========================================================================
+  // CONTRACTOR PORTAL: View Open Bids, Submit Own Bid, View Own Status
+  // =========================================================================
+  if (userRole === 'contractor') {
+    const openBids = store.bids.filter((b) => !['awarded', 'lost', 'converted'].includes(b.status))
+    const myProposals = (store.contractor_proposals || []).filter(
+      (p) =>
+        p.contractor_email.toLowerCase() === userEmail.toLowerCase() ||
+        p.contractor_email === 'contractor@constructms.ph'
+    )
+    const selectedOpenBid = openBids.find((b) => b.id === propBidId) || openBids[0]
+
+    return (
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="rounded-2xl border border-amber-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-900">
+                  Contractor Bidding Portal
+                </span>
+                <span className="text-xs text-gray-500">RA 12009 Compliant</span>
+              </div>
+              <h1 className="mt-1.5 text-2xl font-bold text-gray-900">
+                Open Invitations to Bid &amp; My Bid Submissions
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                View open Invitations to Bid (ITB), submit your own contractor bid proposal, and track your evaluation &amp; award status.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {notice && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 flex items-center justify-between">
+            <span>✅ {notice}</span>
+            <button type="button" onClick={() => setNotice(null)} className="text-xs font-semibold">
+              Dismiss
+            </button>
+          </div>
+        )}
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 flex items-center justify-between">
+            <span>⚠️ {error}</span>
+            <button type="button" onClick={() => setError(null)} className="text-xs font-semibold">
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Open Bids List */}
+          <div className="lg:col-span-7 space-y-4">
+            <h2 className="text-base font-bold text-gray-900">
+              Open Invitations to Bid ({openBids.length})
+            </h2>
+            {openBids.map((b) => {
+              const myExisting = myProposals.find((p) => p.bid_id === b.id)
+              return (
+                <div
+                  key={b.id}
+                  className={`rounded-2xl border p-5 transition ${
+                    propBidId === b.id
+                      ? 'border-amber-500 bg-amber-50/40 ring-1 ring-amber-400'
+                      : 'border-gray-200 bg-white'
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-mono text-xs font-bold text-amber-800">
+                      {b.reference_no}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {myExisting && (
+                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                          ✓ Bid Submitted ({myExisting.status})
+                        </span>
+                      )}
+                      <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-800">
+                        Open for Bids
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="mt-1.5 text-base font-bold text-gray-900">{b.title}</h3>
+                  <p className="text-xs text-gray-500">
+                    {b.procuring_entity} • {b.location} • Required: {b.pcab_category}
+                  </p>
+                  <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl bg-gray-50 p-3 text-xs">
+                    <div>
+                      <span className="text-[10px] uppercase text-gray-400 block">ABC Ceiling</span>
+                      <span className="font-bold text-gray-900">{formatPHP(b.abc_amount)}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase text-gray-400 block">Deadline</span>
+                      <span className="font-semibold text-gray-800">{b.submission_deadline}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase text-gray-400 block">Duration</span>
+                      <span className="font-semibold text-gray-800">{b.contract_duration_days} CD</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPropBidId(b.id)
+                        if (myExisting) {
+                          setPropAmount(String(myExisting.bid_amount))
+                          setPropNotes(myExisting.proposal_notes)
+                        }
+                      }}
+                      className="rounded-lg bg-amber-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-amber-700"
+                    >
+                      {myExisting ? 'Update My Submitted Bid' : 'Select & Submit My Bid →'}
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Submit Own Bid Form */}
+          <div className="lg:col-span-5">
+            <form
+              onSubmit={handleSubmitContractorProposal}
+              className="rounded-2xl border border-amber-300 bg-white p-5 shadow-sm space-y-4"
+            >
+              <div>
+                <h2 className="text-base font-bold text-gray-900">Submit Own Bid Proposal</h2>
+                <p className="text-xs text-gray-500">
+                  Your bid amount must not exceed the Approved Budget for the Contract (ABC).
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Target Open Bid (ITB) *
+                </label>
+                <select
+                  value={propBidId}
+                  onChange={(e) => setPropBidId(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium"
+                >
+                  {openBids.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.reference_no} — {b.title} (ABC: {formatPHP(b.abc_amount)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Contractor / Firm Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={propContractorName}
+                  onChange={(e) => setPropContractorName(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  PCAB License No. &amp; Category *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={propPcab}
+                  onChange={(e) => setPropPcab(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Proposed Financial Bid Amount (₱) *{' '}
+                  {selectedOpenBid && (
+                    <span className="text-gray-500 font-normal">
+                      (Max ABC: {formatPHP(selectedOpenBid.abc_amount)})
+                    </span>
+                  )}
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  max={selectedOpenBid?.abc_amount || undefined}
+                  step="0.01"
+                  value={propAmount}
+                  onChange={(e) => setPropAmount(e.target.value)}
+                  placeholder="Enter your total bid price in PHP"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Technical &amp; Financial Proposal Summary *
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={propNotes}
+                  onChange={(e) => setPropNotes(e.target.value)}
+                  placeholder="Include Bid Security type, key personnel, and delivery commitment..."
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Sealed Bid Package URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={propDocUrl}
+                  onChange={(e) => setPropDocUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={busy || openBids.length === 0}
+                className="w-full rounded-xl bg-amber-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-amber-700 disabled:opacity-50"
+              >
+                {busy ? 'Submitting Bid…' : 'Submit Official Contractor Bid'}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* My Submitted Bids & Status */}
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-bold text-gray-900">
+            My Submitted Bids &amp; Status ({myProposals.length})
+          </h2>
+          <p className="text-xs text-gray-500">
+            Track the live status of your submitted bids from submission through post-qualification and award.
+          </p>
+
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-gray-200 text-[11px] uppercase text-gray-500">
+                  <th className="py-2.5 pr-3">Reference No.</th>
+                  <th className="py-2.5 px-3">Project Title</th>
+                  <th className="py-2.5 px-3">PCAB License</th>
+                  <th className="py-2.5 px-3 text-right">My Bid Amount</th>
+                  <th className="py-2.5 px-3">Submitted At</th>
+                  <th className="py-2.5 pl-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {myProposals.map((p) => (
+                  <tr key={p.id}>
+                    <td className="py-3 pr-3 font-mono font-bold text-amber-800">
+                      {p.reference_no}
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-semibold text-gray-900">{p.bid_title}</div>
+                      <div className="text-[11px] text-gray-500">{p.proposal_notes}</div>
+                    </td>
+                    <td className="py-3 px-3 text-gray-600">{p.pcab_license}</td>
+                    <td className="py-3 px-3 text-right font-bold text-gray-900">
+                      {formatPHP(p.bid_amount)}
+                    </td>
+                    <td className="py-3 px-3 text-gray-500">{p.submitted_at.slice(0, 10)}</td>
+                    <td className="py-3 pl-3">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase ${
+                          p.status === 'awarded'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : p.status === 'not_selected'
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {p.status.replace('_', ' ')}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -1019,14 +1348,31 @@ export default function BiddingWorkspace({
                         >
                           🚀 4. Convert Awarded Bid to Active Project
                         </button>
+
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={async () => {
+                            const res = await callBiddingApi('delete_bid', {
+                              bid_id: selectedBid.id,
+                            })
+                            if (res?.ok) {
+                              setSelectedBidId(res.store?.bids?.[0]?.id ?? '')
+                              setNotice(`Deleted bid record ${selectedBid.reference_no}.`)
+                            }
+                          }}
+                          className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50"
+                        >
+                          🗑️ Delete Bid Record
+                        </button>
                       </div>
                     ) : (
                       <div className="grid gap-2 sm:grid-cols-4 pt-1">
                         {[
-                          'Approve Bid',
+                          'Issue / Approve Bid',
                           'Submit Bid',
-                          'Record Award Result',
-                          'Convert to Project',
+                          'Award Bid',
+                          'Delete Bid Record',
                         ].map((label) => (
                           <button
                             key={label}
@@ -1037,6 +1383,82 @@ export default function BiddingWorkspace({
                             🔒 {label}
                           </button>
                         ))}
+                      </div>
+                    )}
+
+                    {/* Contractor Proposals Submitted for this Bid (Admin/Engineer Evaluation & Award) */}
+                    {isAdminEngineer && (
+                      <div className="mt-4 rounded-xl border border-purple-200 bg-white p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-purple-900">
+                            Submitted Contractor Bid Proposals for {selectedBid.reference_no}
+                          </h4>
+                          <span className="text-[11px] text-gray-500">
+                            {(store.contractor_proposals || []).filter((p) => p.bid_id === selectedBid.id).length} proposal(s)
+                          </span>
+                        </div>
+                        {(store.contractor_proposals || []).filter((p) => p.bid_id === selectedBid.id).length === 0 ? (
+                          <p className="text-xs text-gray-500">
+                            No contractor proposals submitted for this bid yet.
+                          </p>
+                        ) : (
+                          <div className="space-y-2">
+                            {(store.contractor_proposals || [])
+                              .filter((p) => p.bid_id === selectedBid.id)
+                              .map((p) => (
+                                <div
+                                  key={p.id}
+                                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs"
+                                >
+                                  <div>
+                                    <div className="font-bold text-gray-900">
+                                      {p.contractor_name}{' '}
+                                      <span className="font-normal text-gray-500">
+                                        ({p.pcab_license})
+                                      </span>
+                                    </div>
+                                    <div className="text-gray-600 mt-0.5">
+                                      Bid Offer: <strong className="text-emerald-800">{formatPHP(p.bid_amount)}</strong> — {p.proposal_notes}
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold uppercase text-amber-900">
+                                      {p.status}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      disabled={busy || p.status === 'awarded'}
+                                      onClick={async () => {
+                                        const res = await callBiddingApi('evaluate_contractor_proposal', {
+                                          proposal_id: p.id,
+                                          status: 'awarded',
+                                        })
+                                        if (res?.ok) {
+                                          setNotice(`Awarded ${selectedBid.reference_no} to ${p.contractor_name}!`)
+                                        }
+                                      }}
+                                      className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                                    >
+                                      Award Bid
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={busy || p.status === 'not_selected'}
+                                      onClick={async () => {
+                                        await callBiddingApi('evaluate_contractor_proposal', {
+                                          proposal_id: p.id,
+                                          status: 'not_selected',
+                                        })
+                                      }}
+                                      className="rounded-lg border border-red-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                                    >
+                                      Reject
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
                       </div>
                     )}
 

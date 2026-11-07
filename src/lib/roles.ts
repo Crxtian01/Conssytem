@@ -8,16 +8,26 @@ export interface RoleDefinition {
   allowedModuleIds: string[]
   permissions: {
     manageUsers: boolean
+    approveRoleRequests: boolean
     manageProjects: boolean
+    updateProjectProgress: boolean
     prepareBids: boolean
+    submitContractorBid: boolean
     approveAndAwardBids: boolean
     viewBudgets: boolean
+    viewFinancialSummaries: boolean
+    createPendingExpenses: boolean
     approveExpenses: boolean
+    approveMaterialRequests: boolean
+    deleteRecords: boolean
     manageTasks: boolean
+    updateTaskProgress: boolean
     logDailyProgress: boolean
+    approveDailyLogs: boolean
     manageMaterials: boolean
     recordAttendance: boolean
     manageEquipment: boolean
+    uploadDocuments: boolean
     viewReports: boolean
     readOnly: boolean
   }
@@ -29,7 +39,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Admin / Engineer',
     badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
     typicalAccess:
-      'Full access to all 15 modules: Projects, Bidding (bid preparation, approval, submission & contract award), Budgets, Approvals, Engineering Tasks, Inventory, Attendance, Equipment, Reports, and User Role Management',
+      'Full access to all modules. Only role that can approve expenses and material requests, delete records, issue/award bids, manage users, and approve role requests.',
     allowedModuleIds: [
       'dashboard',
       'projects',
@@ -49,16 +59,26 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     ],
     permissions: {
       manageUsers: true,
+      approveRoleRequests: true,
       manageProjects: true,
+      updateProjectProgress: true,
       prepareBids: true,
+      submitContractorBid: false,
       approveAndAwardBids: true,
       viewBudgets: true,
+      viewFinancialSummaries: true,
+      createPendingExpenses: true,
       approveExpenses: true,
+      approveMaterialRequests: true,
+      deleteRecords: true,
       manageTasks: true,
+      updateTaskProgress: true,
       logDailyProgress: true,
+      approveDailyLogs: true,
       manageMaterials: true,
       recordAttendance: true,
       manageEquipment: true,
+      uploadDocuments: true,
       viewReports: true,
       readOnly: false,
     },
@@ -68,7 +88,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Assistant',
     badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
     typicalAccess:
-      'Can access all 15 modules across the system to assist Admin/Engineer with bid preparation (draft, BOQ estimating & RA 12009 checklist), projects, logs, inventory, attendance, expenses, documents, and reports',
+      'Dashboard (assigned projects only), Projects (view/update), Tasks (update status/progress), Materials (encode stock in/out, create requests), Workers/Attendance (record), Expenses (create as pending only), Daily Logs (create/submit), Documents (upload/view assigned), Bidding (prepare drafts & documents only, no issuing/awarding), Reports (limited, no financial summaries). No user/role management.',
     allowedModuleIds: [
       'dashboard',
       'projects',
@@ -77,27 +97,32 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
       'daily-logs',
       'materials',
       'attendance',
-      'equipment',
       'expenses',
       'documents',
       'reports',
-      'notifications',
-      'users',
-      'architecture',
-      'screen-design',
     ],
     permissions: {
       manageUsers: false,
-      manageProjects: true,
+      approveRoleRequests: false,
+      manageProjects: false,
+      updateProjectProgress: true,
       prepareBids: true,
+      submitContractorBid: false,
       approveAndAwardBids: false,
-      viewBudgets: true,
+      viewBudgets: false,
+      viewFinancialSummaries: false,
+      createPendingExpenses: true,
       approveExpenses: false,
+      approveMaterialRequests: false,
+      deleteRecords: false,
       manageTasks: true,
+      updateTaskProgress: true,
       logDailyProgress: true,
+      approveDailyLogs: false,
       manageMaterials: true,
       recordAttendance: true,
-      manageEquipment: true,
+      manageEquipment: false,
+      uploadDocuments: true,
       viewReports: true,
       readOnly: false,
     },
@@ -107,27 +132,37 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Contractor',
     badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
     typicalAccess:
-      'Limited strictly to 6 field & site operations modules: Dashboard, Tasks & Progress, Daily Logs, Materials & Inventory, Workers & Attendance, and Equipment (No Bidding, Budgets/Expenses, or Admin modules)',
+      'Dashboard (own bids/projects), Bidding (view open bids, submit own bid, view own status), Projects (assigned only), Tasks (assigned), Daily Logs (own), Documents (assigned).',
     allowedModuleIds: [
       'dashboard',
+      'bidding',
+      'projects',
       'tasks',
       'daily-logs',
-      'materials',
-      'attendance',
-      'equipment',
+      'documents',
     ],
     permissions: {
       manageUsers: false,
+      approveRoleRequests: false,
       manageProjects: false,
+      updateProjectProgress: false,
       prepareBids: false,
+      submitContractorBid: true,
       approveAndAwardBids: false,
       viewBudgets: false,
+      viewFinancialSummaries: false,
+      createPendingExpenses: false,
       approveExpenses: false,
-      manageTasks: true,
+      approveMaterialRequests: false,
+      deleteRecords: false,
+      manageTasks: false,
+      updateTaskProgress: true,
       logDailyProgress: true,
-      manageMaterials: true,
-      recordAttendance: true,
-      manageEquipment: true,
+      approveDailyLogs: false,
+      manageMaterials: false,
+      recordAttendance: false,
+      manageEquipment: false,
+      uploadDocuments: true,
       viewReports: false,
       readOnly: false,
     },
@@ -137,7 +172,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     label: 'Client',
     badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     typicalAccess:
-      'Limited strictly to 5 read-only project monitoring modules: Dashboard, Projects & Sites, Daily Logs, Project Documents, and Progress Reports',
+      'Read-only Dashboard, Project progress, Daily Logs (approved), Documents (shared), Reports (progress only).',
     allowedModuleIds: [
       'dashboard',
       'projects',
@@ -147,16 +182,26 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
     ],
     permissions: {
       manageUsers: false,
+      approveRoleRequests: false,
       manageProjects: false,
+      updateProjectProgress: false,
       prepareBids: false,
+      submitContractorBid: false,
       approveAndAwardBids: false,
-      viewBudgets: true,
+      viewBudgets: false,
+      viewFinancialSummaries: false,
+      createPendingExpenses: false,
       approveExpenses: false,
+      approveMaterialRequests: false,
+      deleteRecords: false,
       manageTasks: false,
+      updateTaskProgress: false,
       logDailyProgress: false,
+      approveDailyLogs: false,
       manageMaterials: false,
       recordAttendance: false,
       manageEquipment: false,
+      uploadDocuments: false,
       viewReports: true,
       readOnly: true,
     },
@@ -197,7 +242,7 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Dashboard',
     href: '/',
     icon: '📊',
-    description: 'Overview of project progress, alerts, and role summary',
+    description: 'Role-specific workspace overview, KPIs, and assigned project updates',
     allowedRoles: ['admin_engineer', 'assistant', 'contractor', 'client'],
     phase: 1,
   },
@@ -206,8 +251,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Projects & Sites',
     href: '/projects',
     icon: '🏗️',
-    description: 'Manage construction projects, locations, timelines, and members',
-    allowedRoles: ['admin_engineer', 'assistant', 'client'],
+    description: 'Manage construction projects, assigned sites, timelines, and progress',
+    allowedRoles: ['admin_engineer', 'assistant', 'contractor', 'client'],
     phase: 2,
   },
   {
@@ -215,8 +260,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Bidding',
     href: '/bidding',
     icon: '🔨',
-    description: 'RA 12009 bid preparation, BOQ cost estimating, checklist, approvals & award conversion',
-    allowedRoles: ['admin_engineer', 'assistant'],
+    description: 'RA 12009 bid drafts, contractor bid submissions, evaluation & contract awards',
+    allowedRoles: ['admin_engineer', 'assistant', 'contractor'],
     phase: 2,
   },
   {
@@ -233,7 +278,7 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Daily Logs',
     href: '/daily-logs',
     icon: '📝',
-    description: 'Record site weather, daily progress notes, and site photos',
+    description: 'Record site weather, daily progress notes, photos, and log approvals',
     allowedRoles: ['admin_engineer', 'assistant', 'contractor', 'client'],
     phase: 2,
   },
@@ -242,8 +287,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Materials & Inventory',
     href: '/materials',
     icon: '🧱',
-    description: 'Monitor stock in/out, reorder levels, and low-stock warnings',
-    allowedRoles: ['admin_engineer', 'assistant', 'contractor'],
+    description: 'Encode stock in/out, submit material requests, and approve requisitions',
+    allowedRoles: ['admin_engineer', 'assistant'],
     phase: 4,
   },
   {
@@ -251,8 +296,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Workers & Attendance',
     href: '/attendance',
     icon: '👷',
-    description: 'Log worker daily rates, hours worked, and site attendance',
-    allowedRoles: ['admin_engineer', 'assistant', 'contractor'],
+    description: 'Record worker daily rates, hours worked, and site attendance',
+    allowedRoles: ['admin_engineer', 'assistant'],
     phase: 5,
   },
   {
@@ -260,8 +305,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Equipment',
     href: '/equipment',
     icon: '🚜',
-    description: 'Track heavy machinery, tools, site assignment, and status',
-    allowedRoles: ['admin_engineer', 'assistant', 'contractor'],
+    description: 'Track heavy machinery, tools, site assignment, and maintenance status',
+    allowedRoles: ['admin_engineer'],
     phase: 5,
   },
   {
@@ -269,7 +314,7 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Expenses & Budget',
     href: '/expenses',
     icon: '💰',
-    description: 'Monitor project expenses against budget and approvals',
+    description: 'Submit pending project expenses and manage Admin/Engineer expense approvals',
     allowedRoles: ['admin_engineer', 'assistant'],
     phase: 6,
   },
@@ -278,8 +323,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Documents',
     href: '/documents',
     icon: '📁',
-    description: 'Blueprints, contracts, permits, and files linked to projects',
-    allowedRoles: ['admin_engineer', 'assistant', 'client'],
+    description: 'Blueprints, contracts, permits, and shared project files',
+    allowedRoles: ['admin_engineer', 'assistant', 'contractor', 'client'],
     phase: 7,
   },
   {
@@ -287,7 +332,7 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Reports',
     href: '/reports',
     icon: '📈',
-    description: 'Weekly progress reports, budget vs actual, and PDF/Excel export',
+    description: 'Project progress reports and Admin/Engineer financial summaries',
     allowedRoles: ['admin_engineer', 'assistant', 'client'],
     phase: 6,
   },
@@ -296,8 +341,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Email Notifications',
     href: '/notifications',
     icon: '✉️',
-    description: 'Welcome, password reset, task notices, low-stock alerts, approvals & weekly reports',
-    allowedRoles: ['admin_engineer', 'assistant'],
+    description: 'System email alerts for tasks, low-stock warnings, and approvals',
+    allowedRoles: ['admin_engineer'],
     phase: 7,
   },
   {
@@ -305,8 +350,8 @@ export const CORE_MODULES: CoreModule[] = [
     name: 'Users & Roles',
     href: '/users',
     icon: '🛡️',
-    description: 'Manage team accounts and assign the 4 system roles',
-    allowedRoles: ['admin_engineer', 'assistant'],
+    description: 'Manage team accounts, assign the 4 system roles, and approve role requests',
+    allowedRoles: ['admin_engineer'],
     phase: 1,
   },
   {
@@ -315,7 +360,7 @@ export const CORE_MODULES: CoreModule[] = [
     href: '/architecture',
     icon: '🗂️',
     description: 'User stories (Section 3) and 13-table Database Design & live status (Section 4)',
-    allowedRoles: ['admin_engineer', 'assistant'],
+    allowedRoles: ['admin_engineer'],
     phase: 1,
   },
   {
@@ -324,7 +369,7 @@ export const CORE_MODULES: CoreModule[] = [
     href: '/screen-design',
     icon: '📱',
     description: 'Phone-first wireframes (Section 5), Tech Stack (Section 6) & Setup (Section 7)',
-    allowedRoles: ['admin_engineer', 'assistant'],
+    allowedRoles: ['admin_engineer'],
     phase: 1,
   },
 ]

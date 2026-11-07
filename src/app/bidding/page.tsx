@@ -19,9 +19,12 @@ export default function BiddingPage() {
 
 async function BiddingContent() {
   const user = await requireAuth()
-  const isAllowed = user.role === 'admin_engineer' || user.role === 'assistant'
+  const isAllowed =
+    user.role === 'admin_engineer' ||
+    user.role === 'assistant' ||
+    user.role === 'contractor'
 
-  // Strict server-side guard: Contractor & Client never load any bidding store data
+  // Strict server-side guard: Client never loads any bidding store data
   if (!isAllowed) {
     return (
       <AppShell user={user}>
@@ -38,6 +41,7 @@ async function BiddingContent() {
         initialStore={biddingStore}
         userRole={user.role}
         userEmail={user.email}
+        userName={user.fullName || user.email}
       />
     </AppShell>
   )

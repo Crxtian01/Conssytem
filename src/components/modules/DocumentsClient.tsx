@@ -44,16 +44,28 @@ export default function DocumentsClient({
     }
   }
 
+  async function handleDelete(id: string) {
+    const res = await fetch('/api/modules/documents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id }),
+    })
+    if (res.ok) {
+      setDocs(docs.filter((d) => d.id !== id))
+      router.refresh()
+    }
+  }
+
   const projectMap = Object.fromEntries(projects.map((p) => [p.id, p.name]))
 
   return (
     <div className="space-y-6">
-      {!perms.readOnly && (
+      {perms.uploadDocuments && (
         <form
           onSubmit={handleAdd}
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4"
         >
-          <h2 className="text-base font-bold text-gray-900">+ Link Project Document / Blueprint</h2>
+          <h2 className="text-base font-bold text-gray-900">+ Upload / Link Project Document</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <select
               value={projectId}
@@ -114,18 +126,28 @@ export default function DocumentsClient({
                 {projectMap[d.project_id]} • Uploaded by {d.uploaded_by_email}
               </p>
             </div>
-            <a
-              href={d.file_url}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
-            >
-              Open File ↗
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href={d.file_url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Open File ↗
+              </a>
+              {perms.deleteRecords && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(d.id)}
+                  className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
     </div>
   )
 }
-

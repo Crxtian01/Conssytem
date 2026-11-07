@@ -64,6 +64,18 @@ export default function ExpensesClient({
     router.refresh()
   }
 
+  async function handleDelete(id: string) {
+    const res = await fetch('/api/modules/expenses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id }),
+    })
+    if (res.ok) {
+      setExpenses(expenses.filter((ex) => ex.id !== id))
+      router.refresh()
+    }
+  }
+
   const projectMap = Object.fromEntries(projects.map((p) => [p.id, p.name]))
 
   return (
@@ -74,45 +86,54 @@ export default function ExpensesClient({
         </div>
       )}
 
-      {/* Budget vs Actual Cost Per Project (User Story US-10) */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900">
-          Budget vs. Actual Cost per Project
-        </h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {projects.map((p) => {
-            const spent = expenses
-              .filter((e) => e.project_id === p.id && e.approval_status === 'approved')
-              .reduce((sum, e) => sum + e.amount, 0)
-            const pct = p.budget > 0 ? Math.min(100, Math.round((spent / p.budget) * 100)) : 0
-            return (
-              <div key={p.id} className="rounded-xl border border-gray-200 p-4 space-y-2">
-                <p className="font-bold text-gray-900 text-sm">{p.name}</p>
-                <div className="flex justify-between text-xs text-gray-600">
-                  <span>Approved Spent: ₱{spent.toLocaleString()}</span>
-                  <span>Budget: ₱{p.budget.toLocaleString()}</span>
+      {/* Budget vs Actual Cost Per Project (Admin / Engineer Only) */}
+      {perms.viewFinancialSummaries && (
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900">
+            Budget vs. Actual Cost per Project (Admin / Engineer Financial Summary)
+          </h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {projects.map((p) => {
+              const spent = expenses
+                .filter((e) => e.project_id === p.id && e.approval_status === 'approved')
+                .reduce((sum, e) => sum + e.amount, 0)
+              const pct = p.budget > 0 ? Math.min(100, Math.round((spent / p.budget) * 100)) : 0
+              return (
+                <div key={p.id} className="rounded-xl border border-gray-200 p-4 space-y-2">
+                  <p className="font-bold text-gray-900 text-sm">{p.name}</p>
+                  <div className="flex justify-between text-xs text-gray-600">
+                    <span>Approved Spent: ₱{spent.toLocaleString()}</span>
+                    <span>Budget: ₱{p.budget.toLocaleString()}</span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                    <div
+                      className={`h-full rounded-full ${
+                        pct > 90 ? 'bg-red-500' : 'bg-amber-500'
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-gray-500">{pct}% of budget utilized</p>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div
-                    className={`h-full rounded-full ${
-                      pct > 90 ? 'bg-red-500' : 'bg-amber-500'
-                    }`}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <p className="text-[11px] text-gray-500">{pct}% of budget utilized</p>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {!perms.readOnly && (
+      {perms.createPendingExpenses && (
         <form
           onSubmit={handleSubmit}
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4"
         >
-          <h2 className="text-base font-bold text-gray-900">+ Submit Project Expense</h2>
+          <div>
+            <h2 className="text-base font-bold text-gray-900">
+              + Create Project Expense (Submitted as Pending Only)
+            </h2>
+            <p className="text-xs text-gray-500">
+              All new expenses are recorded as Pending and require Admin / Engineer approval.
+            </p>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <select
               value={projectId}
@@ -161,16 +182,23 @@ export default function ExpensesClient({
             type="submit"
             className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
           >
-            Submit Expense for Approval
+            Submit Expense as Pending
           </button>
         </form>
       )}
 
-      {/* Expense List & Manager Approvals */}
+      {/* Expense List & Admin/Engineer Approvals */}
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900">
-          Project Expenses &amp; Manager Approvals
-        </h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">
+              Project Expenses &amp; Admin/Engineer Approvals
+            </h2>
+            <p className="text-xs text-gray-500">
+              Only Admin / Engineer can approve, reject, or delete expense records.
+            </p>
+          </div>
+        </div>
         <div className="mt-4 space-y-3">
           {expenses.map((ex) => (
             <div
@@ -189,7 +217,7 @@ export default function ExpensesClient({
                   {ex.submitted_by_email}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <span className="text-base font-bold text-gray-900">
                   ₱{ex.amount.toLocaleString()}
                 </span>
@@ -223,6 +251,16 @@ export default function ExpensesClient({
                     </button>
                   </div>
                 )}
+
+                {perms.deleteRecords && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(ex.id)}
+                    className="rounded border border-red-200 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -231,4 +269,3 @@ export default function ExpensesClient({
     </div>
   )
 }
-

@@ -23,12 +23,14 @@ async function MaterialsContent() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Materials &amp; Inventory</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Log materials received (Stock IN) and used (Stock OUT) with automatic low-stock warnings.
+            Encode Stock IN / Stock OUT, submit Material Requests, and manage Admin/Engineer
+            requisition approvals.
           </p>
         </div>
         <MaterialsClient
           initialMaterials={store.materials}
           initialTransactions={store.material_transactions}
+          initialRequests={store.material_requests}
           projects={store.projects}
           role={user.role}
         />
@@ -36,5 +38,3 @@ async function MaterialsContent() {
     </AppShell>
   )
 }
-
-

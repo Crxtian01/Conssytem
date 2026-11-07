@@ -111,12 +111,28 @@ export interface BidDocumentRecord {
   created_at: string
 }
 
+export interface ContractorBidProposal {
+  id: string
+  bid_id: string
+  bid_title: string
+  reference_no: string
+  contractor_name: string
+  contractor_email: string
+  pcab_license: string
+  bid_amount: number
+  proposal_notes: string
+  document_url?: string
+  status: 'submitted' | 'under_evaluation' | 'awarded' | 'not_selected'
+  submitted_at: string
+}
+
 export interface BiddingStoreData {
   rules: BiddingRulesRecord
   bids: BidRecord[]
   estimates: BidEstimateRecord[]
   checklist_items: BidChecklistItemRecord[]
   documents: BidDocumentRecord[]
+  contractor_proposals: ContractorBidProposal[]
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -530,6 +546,36 @@ const INITIAL_BIDDING_SEED: BiddingStoreData = {
       created_at: '2026-11-02T15:00:00Z',
     },
   ],
+  contractor_proposals: [
+    {
+      id: 'cprop-1',
+      bid_id: 'bid-1',
+      bid_title: 'Construction of 4-Storey Municipal Disaster Operations Center',
+      reference_no: 'ITB-2026-DPWH-014',
+      contractor_name: 'Apex Builders Corp.',
+      contractor_email: 'contractor@constructms.ph',
+      pcab_license: 'PCAB #44912 - Category B (Medium A)',
+      bid_amount: 17480000,
+      proposal_notes: 'Complete Envelope 1 Technical & Envelope 2 Financial package submitted with BSD.',
+      document_url: 'https://vpzorfwfbgyttsuwjshx.supabase.co/storage/v1/object/public/bidding/apex-bid1-proposal.pdf',
+      status: 'under_evaluation',
+      submitted_at: '2026-11-03T14:20:00Z',
+    },
+    {
+      id: 'cprop-2',
+      bid_id: 'bid-2',
+      bid_title: 'Rehabilitation & Seismic Retrofitting of Science Building',
+      reference_no: 'ITB-2026-DEPED-089',
+      contractor_name: 'Apex Builders Corp.',
+      contractor_email: 'contractor@constructms.ph',
+      pcab_license: 'PCAB #44912 - Category B (Medium A)',
+      bid_amount: 8795000,
+      proposal_notes: 'CFRP structural wrapping and seismic epoxy injection package.',
+      document_url: 'https://vpzorfwfbgyttsuwjshx.supabase.co/storage/v1/object/public/bidding/noa-deped-bid2.pdf',
+      status: 'awarded',
+      submitted_at: '2026-10-28T09:15:00Z',
+    },
+  ],
 }
 
 export function readBiddingStore(): BiddingStoreData {
@@ -542,7 +588,16 @@ export function readBiddingStore(): BiddingStoreData {
       return INITIAL_BIDDING_SEED
     }
     const raw = fs.readFileSync(BIDDING_STORE_PATH, 'utf-8')
-    return JSON.parse(raw) as BiddingStoreData
+    const parsed = JSON.parse(raw) as BiddingStoreData
+    let dirty = false
+    if (!Array.isArray(parsed.contractor_proposals)) {
+      parsed.contractor_proposals = INITIAL_BIDDING_SEED.contractor_proposals
+      dirty = true
+    }
+    if (dirty) {
+      fs.writeFileSync(BIDDING_STORE_PATH, JSON.stringify(parsed, null, 2), 'utf-8')
+    }
+    return parsed
   } catch {
     return INITIAL_BIDDING_SEED
   }
@@ -846,3 +901,81 @@ export async function updateBiddingRules(
   await trySyncSupabase('bidding_rules', store.rules as unknown as Record<string, unknown>)
   return store.rules
 }
+
+export async function submitContractorBidProposal(input: {
+  bid_id: string
+  contractor_name: string
+  contractor_email: string
+  pcab_license: string
+  bid_amount: number
+  proposal_notes: string
+  document_url?: string
+}): Promise<ContractorBidProposal | null> {
+  const store = readBiddingStore()
+  const bid = store.bids.find((b) => b.id === input.bid_id)
+  if (!bid) return null
+
+  const existingIdx = store.contractor_proposals.findIndex(
+    (p) => p.bid_id === input.bid_id && p.contractor_email.toLowerCase() === input.contractor_email.toLowerCase()
+  )
+
+  const record: ContractorBidProposal = {
+    id: existingIdx >= 0 ? store.contractor_proposals[existingIdx].id : `cprop-${randomUUID().slice(0, 8)}`,
+    bid_id: bid.id,
+    bid_title: bid.title,
+    reference_no: bid.reference_no,
+    contractor_name: input.contractor_name || input.contractor_email,
+    contractor_email: input.contractor_email,
+    pcab_license: input.pcab_license || 'PCAB Category B',
+    bid_amount: Number(input.bid_amount) || 0,
+    proposal_notes: input.proposal_notes || '',
+    document_url: input.document_url,
+    status: 'submitted',
+    submitted_at: new Date().toISOString(),
+  }
+
+  if (existingIdx >= 0) {
+    store.contractor_proposals[existingIdx] = record
+  } else {
+    store.contractor_proposals.unshift(record)
+  }
+
+  writeBiddingStore(store)
+  return record
+}
+
+export async function updateContractorProposalStatus(
+  proposalId: string,
+  status: ContractorBidProposal['status']
+): Promise<ContractorBidProposal | null> {
+  const store = readBiddingStore()
+  const prop = store.contractor_proposals.find((p) => p.id === proposalId)
+  if (!prop) return null
+  prop.status = status
+  if (status === 'awarded') {
+    const bid = store.bids.find((b) => b.id === prop.bid_id)
+    if (bid) {
+      bid.status = 'awarded'
+      bid.bid_amount = prop.bid_amount
+      bid.award_date = new Date().toISOString().slice(0, 10)
+      bid.award_notice_no = `NOA-2026-${bid.id.toUpperCase()}`
+      bid.award_remarks = `Awarded to Contractor: ${prop.contractor_name} (${prop.contractor_email})`
+    }
+  }
+  writeBiddingStore(store)
+  return prop
+}
+
+export async function deleteBidRecord(bidId: string): Promise<boolean> {
+  const store = readBiddingStore()
+  const before = store.bids.length
+  store.bids = store.bids.filter((b) => b.id !== bidId)
+  if (store.bids.length === before) return false
+  store.estimates = store.estimates.filter((e) => e.bid_id !== bidId)
+  store.checklist_items = store.checklist_items.filter((c) => c.bid_id !== bidId)
+  store.documents = store.documents.filter((d) => d.bid_id !== bidId)
+  store.contractor_proposals = store.contractor_proposals.filter((p) => p.bid_id !== bidId)
+  writeBiddingStore(store)
+  return true
+}
+

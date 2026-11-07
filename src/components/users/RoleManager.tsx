@@ -8,6 +8,7 @@ import {
   normalizeRole,
   type UserRole,
 } from '@/lib/roles'
+import type { RoleRequestRecord } from '@/lib/module-store'
 
 interface ProfileRow {
   id: string
@@ -23,17 +24,49 @@ interface RoleManagerProps {
   currentUserId: string
   currentUserRole: UserRole
   profiles: ProfileRow[]
+  roleRequests?: RoleRequestRecord[]
 }
 
 export default function RoleManager({
   currentUserId,
   currentUserRole,
   profiles,
+  roleRequests = [],
 }: RoleManagerProps) {
   const router = useRouter()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  async function handleRoleRequestDecision(
+    requestId: string,
+    decision: 'approve_request' | 'reject_request'
+  ) {
+    setUpdatingId(requestId)
+    setMessage(null)
+    setError(null)
+
+    const res = await fetch('/api/users/role', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: decision, requestId }),
+    })
+
+    const data = await res.json()
+    setUpdatingId(null)
+
+    if (!res.ok) {
+      setError(data.error || 'Failed to process role request')
+      return
+    }
+
+    setMessage(
+      decision === 'approve_request'
+        ? 'Role request approved and user permissions updated!'
+        : 'Role request rejected.'
+    )
+    router.refresh()
+  }
 
   async function handleRoleChange(userId: string, newRole: UserRole) {
     setUpdatingId(userId)
@@ -103,6 +136,81 @@ export default function RoleManager({
               )
             })}
           </div>
+        </div>
+      </div>
+
+      {/* Role Requests Approval Queue (Admin / Engineer Exclusive) */}
+      <div className="rounded-2xl border border-purple-200 bg-purple-50/50 p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-bold text-purple-950">
+              Role Upgrade Requests Queue ({roleRequests.filter((r) => r.status === 'pending').length} Pending)
+            </h2>
+            <p className="mt-0.5 text-xs text-purple-800">
+              Only <strong>Admin / Engineer</strong> can approve or reject role requests submitted by team members.
+            </p>
+          </div>
+          <span className="rounded-full bg-purple-100 border border-purple-200 px-3 py-1 text-xs font-bold text-purple-900">
+            Admin / Engineer Exclusive Authority
+          </span>
+        </div>
+
+        <div className="mt-4 space-y-2.5">
+          {roleRequests.length === 0 ? (
+            <p className="text-xs text-gray-500 py-2">No role requests submitted yet.</p>
+          ) : (
+            roleRequests.map((req) => (
+              <div
+                key={req.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-200 bg-white p-3.5 text-xs"
+              >
+                <div>
+                  <div className="font-bold text-gray-900">
+                    {req.user_name} ({req.user_email})
+                  </div>
+                  <div className="mt-0.5 text-gray-600">
+                    Current: <strong>{ROLES[req.current_role]?.label ?? req.current_role}</strong> →
+                    Requested: <strong className="text-purple-800">{ROLES[req.requested_role]?.label ?? req.requested_role}</strong>
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-gray-500">Reason: {req.reason}</div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                      req.status === 'approved'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : req.status === 'rejected'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {req.status}
+                  </span>
+                  {req.status === 'pending' && currentUserRole === 'admin_engineer' && (
+                    <>
+                      <button
+                        type="button"
+                        disabled={updatingId === req.id}
+                        onClick={() => handleRoleRequestDecision(req.id, 'approve_request')}
+                        className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Approve Role
+                      </button>
+                      <button
+                        type="button"
+                        disabled={updatingId === req.id}
+                        onClick={() => handleRoleRequestDecision(req.id, 'reject_request')}
+                        className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

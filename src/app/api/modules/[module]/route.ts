@@ -5,7 +5,7 @@ import { readStore, writeStore, newId } from '@/lib/module-store'
 import { sendEmail, buildBrandedEmailHtml } from '@/lib/email'
 
 // GET /api/modules/[module]
-// Enforces role permissions on the backend (e.g., strips project budgets for workers)
+// Enforces role permissions on the backend
 export async function GET(
   _request: NextRequest,
   context: { params: Promise<{ module: string }> }
@@ -16,22 +16,43 @@ export async function GET(
   const perms = ROLES[user.role].permissions
 
   if (module === 'projects') {
-    const projects = store.projects.map((p) => ({
-      ...p,
-      // Section 11: Workers should NOT see budgets on the backend
-      budget: perms.viewBudgets ? p.budget : 0,
-    }))
+    const projects = store.projects
+      .filter((p) => {
+        if (user.role === 'contractor') return p.assigned_contractor !== false
+        if (user.role === 'assistant') return p.assigned_assistant !== false
+        return true
+      })
+      .map((p) => ({
+        ...p,
+        budget: perms.viewBudgets ? p.budget : 0,
+      }))
     return NextResponse.json({ data: projects })
   }
 
   if (module === 'expenses') {
-    if (!perms.viewBudgets) {
+    if (!perms.createPendingExpenses && !perms.approveExpenses) {
       return NextResponse.json(
-        { error: 'Your role does not have permission to view budgets or expenses.' },
+        { error: 'Your role does not have permission to access expenses.' },
         { status: 403 }
       )
     }
     return NextResponse.json({ data: store.expenses })
+  }
+
+  if (module === 'daily_logs') {
+    if (user.role === 'client') {
+      return NextResponse.json({
+        data: store.daily_logs.filter((l) => l.approval_status === 'approved'),
+      })
+    }
+    if (user.role === 'contractor') {
+      return NextResponse.json({
+        data: store.daily_logs.filter(
+          (l) => l.author_email.toLowerCase() === user.email.toLowerCase()
+        ),
+      })
+    }
+    return NextResponse.json({ data: store.daily_logs })
   }
 
   if (module in store) {
@@ -42,7 +63,7 @@ export async function GET(
 }
 
 // POST /api/modules/[module]
-// Handles Create, Update, Delete, Stock In/Out, and Expense Approvals with strict server validation & role checks
+// Handles Create, Update, Delete, Stock In/Out, Material Requests, and Expense/Log Approvals
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ module: string }> }
@@ -60,20 +81,27 @@ export async function POST(
     )
   }
 
+  // Global rule: ONLY Admin/Engineer can delete records across any module
+  if (action === 'delete' && !perms.deleteRecords) {
+    return NextResponse.json(
+      { error: 'Only Admin / Engineer can delete records.' },
+      { status: 403 }
+    )
+  }
+
   const store = readStore()
 
   // -------------------------------------------------------------------
   // 1. PROJECTS & SITES
   // -------------------------------------------------------------------
   if (module === 'projects') {
-    if (!perms.manageProjects) {
-      return NextResponse.json(
-        { error: 'Only Admins and Project Managers can create or modify projects.' },
-        { status: 403 }
-      )
-    }
-
     if (action === 'create') {
+      if (!perms.manageProjects) {
+        return NextResponse.json(
+          { error: 'Only Admin / Engineer can create new projects.' },
+          { status: 403 }
+        )
+      }
       const name = (body.name ?? '').trim()
       const location = (body.location ?? '').trim()
       const budget = Number(body.budget ?? 0)
@@ -98,8 +126,15 @@ export async function POST(
         budget,
         start_date: body.start_date || new Date().toISOString().slice(0, 10),
         end_date: body.end_date || '',
-        status: body.status || 'planning',
+        status: (body.status || 'active') as
+          | 'planning'
+          | 'active'
+          | 'on_hold'
+          | 'completed'
+          | 'cancelled',
         progress: Math.min(100, Math.max(0, Number(body.progress ?? 0))),
+        assigned_assistant: true,
+        assigned_contractor: true,
         created_at: new Date().toISOString(),
       }
       store.projects.unshift(newProj)
@@ -108,6 +143,12 @@ export async function POST(
     }
 
     if (action === 'update_progress') {
+      if (!perms.updateProjectProgress) {
+        return NextResponse.json(
+          { error: 'Only Admin / Engineer and Assistant can update project progress.' },
+          { status: 403 }
+        )
+      }
       const proj = store.projects.find((p) => p.id === body.id)
       if (!proj) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
       const progress = Number(body.progress)
@@ -159,7 +200,6 @@ export async function POST(
       store.tasks.unshift(newTask)
       writeStore(store)
 
-      // Section 12: Send task assignment notice email
       await sendEmail({
         to: user.email,
         subject: `New Task Assigned: ${newTask.title}`,
@@ -174,7 +214,12 @@ export async function POST(
     }
 
     if (action === 'update') {
-      // Workers CAN update progress on assigned tasks; managers/engineers/foremen can update any task
+      if (!perms.updateTaskProgress) {
+        return NextResponse.json(
+          { error: 'Your role cannot update task progress.' },
+          { status: 403 }
+        )
+      }
       const task = store.tasks.find((t) => t.id === body.id)
       if (!task) return NextResponse.json({ error: 'Task not found' }, { status: 404 })
       const pct = Number(body.percent_complete ?? task.percent_complete)
@@ -189,9 +234,6 @@ export async function POST(
     }
 
     if (action === 'delete') {
-      if (!perms.manageTasks) {
-        return NextResponse.json({ error: 'Not allowed to delete tasks.' }, { status: 403 })
-      }
       store.tasks = store.tasks.filter((t) => t.id !== body.id)
       writeStore(store)
       return NextResponse.json({ ok: true })
@@ -199,7 +241,7 @@ export async function POST(
   }
 
   // -------------------------------------------------------------------
-  // 3. MATERIALS & INVENTORY (WITH STOCK IN/OUT & LOW-STOCK WARNING)
+  // 3. MATERIALS & INVENTORY (STOCK IN/OUT + MATERIAL REQUESTS)
   // -------------------------------------------------------------------
   if (module === 'materials') {
     if (!perms.manageMaterials) {
@@ -274,7 +316,6 @@ export async function POST(
       store.material_transactions.unshift(tx)
       writeStore(store)
 
-      // Section 12: Send low-stock alert email if stock <= reorder_level
       const lowStockTriggered = mat.current_stock <= mat.reorder_level
       if (lowStockTriggered) {
         await sendEmail({
@@ -290,16 +331,90 @@ export async function POST(
 
       return NextResponse.json({ ok: true, item: mat, transaction: tx, lowStockTriggered })
     }
+
+    if (action === 'create_request') {
+      const mat = store.materials.find((m) => m.id === body.material_id)
+      if (!mat) return NextResponse.json({ error: 'Material not found' }, { status: 404 })
+      const qty = Number(body.quantity)
+      if (isNaN(qty) || qty <= 0) {
+        return NextResponse.json(
+          { error: 'Requested quantity must be greater than zero.' },
+          { status: 400 }
+        )
+      }
+      const newReq = {
+        id: newId('mreq'),
+        material_id: mat.id,
+        material_name: mat.name,
+        project_id: body.project_id || (store.projects[0]?.id ?? 'proj-1'),
+        quantity: qty,
+        unit: mat.unit,
+        urgency: (body.urgency || 'Normal') as 'Normal' | 'High' | 'Critical',
+        notes: (body.notes ?? '').trim(),
+        approval_status: 'pending' as const,
+        requested_by_email: user.email,
+        created_at: new Date().toISOString(),
+      }
+      store.material_requests.unshift(newReq)
+      writeStore(store)
+      return NextResponse.json({ ok: true, item: newReq })
+    }
+
+    if (action === 'approve_request' || action === 'reject_request') {
+      if (!perms.approveMaterialRequests) {
+        return NextResponse.json(
+          { error: 'Only Admin / Engineer can approve or reject material requests.' },
+          { status: 403 }
+        )
+      }
+      const reqItem = store.material_requests.find((r) => r.id === body.id)
+      if (!reqItem) {
+        return NextResponse.json({ error: 'Material request not found.' }, { status: 404 })
+      }
+      reqItem.approval_status = action === 'approve_request' ? 'approved' : 'rejected'
+      reqItem.approved_by_email = user.email
+
+      // If approved, also restock inventory automatically
+      let updatedMat = null
+      if (action === 'approve_request') {
+        const mat = store.materials.find((m) => m.id === reqItem.material_id)
+        if (mat) {
+          mat.current_stock += reqItem.quantity
+          updatedMat = mat
+          store.material_transactions.unshift({
+            id: newId('mtx'),
+            material_id: mat.id,
+            material_name: mat.name,
+            project_id: reqItem.project_id,
+            transaction_type: 'in',
+            quantity: reqItem.quantity,
+            transaction_date: new Date().toISOString().slice(0, 10),
+            notes: `Approved Material Request (${reqItem.id}) by ${user.email}`,
+            created_at: new Date().toISOString(),
+          })
+        }
+      }
+
+      writeStore(store)
+      return NextResponse.json({ ok: true, item: reqItem, updatedMaterial: updatedMat })
+    }
+
+    if (action === 'delete') {
+      store.materials = store.materials.filter((m) => m.id !== body.id)
+      writeStore(store)
+      return NextResponse.json({ ok: true })
+    }
   }
 
   // -------------------------------------------------------------------
   // 4. WORKERS & ATTENDANCE
   // -------------------------------------------------------------------
   if (module === 'attendance') {
+    if (!perms.recordAttendance) {
+      return NextResponse.json({ error: 'Not allowed to record attendance.' }, { status: 403 })
+    }
+
     if (action === 'create_worker') {
-      if (!perms.recordAttendance) {
-        return NextResponse.json({ error: 'Not allowed to add workers.' }, { status: 403 })
-      }
       const full_name = (body.full_name ?? '').trim()
       const daily_rate = Number(body.daily_rate ?? 0)
       if (!full_name || daily_rate < 0) {
@@ -345,10 +460,16 @@ export async function POST(
       writeStore(store)
       return NextResponse.json({ ok: true, item: newAtt })
     }
+
+    if (action === 'delete') {
+      store.attendance = store.attendance.filter((a) => a.id !== body.id)
+      writeStore(store)
+      return NextResponse.json({ ok: true })
+    }
   }
 
   // -------------------------------------------------------------------
-  // 5. EQUIPMENT
+  // 5. EQUIPMENT (Admin/Engineer only)
   // -------------------------------------------------------------------
   if (module === 'equipment') {
     if (!perms.manageEquipment) {
@@ -386,13 +507,25 @@ export async function POST(
       writeStore(store)
       return NextResponse.json({ ok: true, item: eq })
     }
+
+    if (action === 'delete') {
+      store.equipment = store.equipment.filter((e) => e.id !== body.id)
+      writeStore(store)
+      return NextResponse.json({ ok: true })
+    }
   }
 
   // -------------------------------------------------------------------
-  // 6. EXPENSES & BUDGET (WITH MANAGER-ONLY APPROVAL ENFORCEMENT)
+  // 6. EXPENSES & BUDGET (Assistant creates as Pending only; Admin/Engineer approves/deletes)
   // -------------------------------------------------------------------
   if (module === 'expenses') {
     if (action === 'create') {
+      if (!perms.createPendingExpenses) {
+        return NextResponse.json(
+          { error: 'Your role cannot create expenses.' },
+          { status: 403 }
+        )
+      }
       const amount = Number(body.amount)
       const description = (body.description ?? '').trim()
       if (!description || isNaN(amount) || amount <= 0) {
@@ -418,10 +551,9 @@ export async function POST(
     }
 
     if (action === 'approve' || action === 'reject') {
-      // Section 11: "only managers can approve expenses" (Admin & Project Manager)
       if (!perms.approveExpenses) {
         return NextResponse.json(
-          { error: 'Only Project Managers and Admins can approve or reject expenses.' },
+          { error: 'Only Admin / Engineer can approve or reject expenses.' },
           { status: 403 }
         )
       }
@@ -431,7 +563,6 @@ export async function POST(
       exp.approved_by_email = user.email
       writeStore(store)
 
-      // Section 12: Expense approval notice email
       await sendEmail({
         to: exp.submitted_by_email,
         subject: `Expense ${exp.approval_status.toUpperCase()}: ${exp.description}`,
@@ -444,20 +575,25 @@ export async function POST(
 
       return NextResponse.json({ ok: true, item: exp })
     }
+
+    if (action === 'delete') {
+      store.expenses = store.expenses.filter((e) => e.id !== body.id)
+      writeStore(store)
+      return NextResponse.json({ ok: true })
+    }
   }
 
   // -------------------------------------------------------------------
-  // 7. DAILY LOGS WITH PHOTO UPLOAD
+  // 7. DAILY LOGS (Assistant/Contractor create/submit; Admin approves/deletes; Client views approved)
   // -------------------------------------------------------------------
   if (module === 'daily_logs') {
-    if (!perms.logDailyProgress) {
-      return NextResponse.json(
-        { error: 'Your role cannot submit site daily logs.' },
-        { status: 403 }
-      )
-    }
-
     if (action === 'create') {
+      if (!perms.logDailyProgress) {
+        return NextResponse.json(
+          { error: 'Your role cannot submit site daily logs.' },
+          { status: 403 }
+        )
+      }
       const notes = (body.notes ?? '').trim()
       if (!notes) {
         return NextResponse.json(
@@ -477,11 +613,34 @@ export async function POST(
         notes,
         photos,
         author_email: user.email,
+        approval_status: (user.role === 'admin_engineer' ? 'approved' : 'pending') as
+          | 'pending'
+          | 'approved',
         created_at: new Date().toISOString(),
       }
       store.daily_logs.unshift(newLog)
       writeStore(store)
       return NextResponse.json({ ok: true, item: newLog })
+    }
+
+    if (action === 'approve') {
+      if (!perms.approveDailyLogs) {
+        return NextResponse.json(
+          { error: 'Only Admin / Engineer can approve daily logs.' },
+          { status: 403 }
+        )
+      }
+      const log = store.daily_logs.find((l) => l.id === body.id)
+      if (!log) return NextResponse.json({ error: 'Daily log not found' }, { status: 404 })
+      log.approval_status = 'approved'
+      writeStore(store)
+      return NextResponse.json({ ok: true, item: log })
+    }
+
+    if (action === 'delete') {
+      store.daily_logs = store.daily_logs.filter((l) => l.id !== body.id)
+      writeStore(store)
+      return NextResponse.json({ ok: true })
     }
   }
 
@@ -490,6 +649,12 @@ export async function POST(
   // -------------------------------------------------------------------
   if (module === 'documents') {
     if (action === 'create') {
+      if (!perms.uploadDocuments) {
+        return NextResponse.json(
+          { error: 'Your role cannot upload documents.' },
+          { status: 403 }
+        )
+      }
       const title = (body.title ?? '').trim()
       const file_url = (body.file_url ?? '').trim()
       if (!title || !file_url) {
@@ -505,14 +670,20 @@ export async function POST(
         file_url,
         file_type: (body.file_type ?? 'Blueprint / PDF').trim(),
         uploaded_by_email: user.email,
+        shared_with_client: true,
         created_at: new Date().toISOString(),
       }
       store.documents.unshift(newDoc)
       writeStore(store)
       return NextResponse.json({ ok: true, item: newDoc })
     }
+
+    if (action === 'delete') {
+      store.documents = store.documents.filter((d) => d.id !== body.id)
+      writeStore(store)
+      return NextResponse.json({ ok: true })
+    }
   }
 
   return NextResponse.json({ error: 'Invalid module or action' }, { status: 400 })
 }
-

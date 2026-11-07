@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getOptionalAuthUser } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
 import { readStore } from '@/lib/module-store'
+import { readBiddingStore } from '@/lib/bidding-store'
 import AppShell from '@/components/layout/AppShell'
 import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import LandingPage from '@/components/landing/LandingPage'
@@ -34,9 +35,10 @@ async function HomeOrDashboardContent() {
   const pendingNotificationEmail = (meta.pending_notification_email as string) || null
 
   const store = readStore()
+  const biddingStore = readBiddingStore()
   const roleInfo = ROLES[user.role] ?? ROLES.contractor
   const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
-  const canManageUsers = user.role === 'admin_engineer' || user.role === 'assistant'
+  const canManageUsers = user.role === 'admin_engineer'
 
   return (
     <AppShell user={user}>
@@ -65,24 +67,29 @@ async function HomeOrDashboardContent() {
                 href="/welcome"
                 className="inline-flex items-center justify-center rounded-xl border border-white/90 bg-white/75 px-3.5 py-2 text-xs font-semibold text-gray-800 shadow-[inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md hover:bg-white transition"
               >
-                🌐 View Landing Page
+                View Landing Page
               </Link>
               {canManageUsers && (
                 <Link
                   href="/users"
                   className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-semibold text-white shadow-[0_6px_16px_rgba(217,119,6,0.3)] hover:from-amber-600 hover:to-amber-700 transition"
                 >
-                  Manage Users &amp; Roles
+                  Manage Users &amp; Role Requests
                 </Link>
               )}
             </div>
           </div>
         </div>
 
-        {/* Section 13: Dashboard KPIs, Project Progress, Budget vs Actual, Low-Stock, Attendance & Export */}
-        <DashboardAnalytics store={store} role={user.role} />
+        {/* Dedicated Role-Specific Dashboard (Admin/Engineer, Assistant, Contractor, Client) */}
+        <DashboardAnalytics
+          store={store}
+          biddingStore={biddingStore}
+          role={user.role}
+          userEmail={user.email}
+        />
 
-        {/* Section 10: Email for Notifications & Confirmation Flow */}
+        {/* Email for Notifications & Confirmation Flow */}
         <NotificationEmailCard
           primaryEmail={user.email}
           verifiedNotificationEmail={verifiedNotificationEmail}
@@ -109,17 +116,14 @@ async function HomeOrDashboardContent() {
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/90 bg-gradient-to-br from-amber-50/90 to-amber-100/70 text-xl shadow-[inset_0_1px_1px_rgba(255,255,255,1)]">
-                      {mod.icon}
-                    </span>
+                    <h3 className="font-bold text-gray-900 group-hover:text-amber-700">
+                      {mod.name}
+                    </h3>
                     <span className="rounded-full border border-white/90 bg-white/75 px-2.5 py-0.5 text-xs font-semibold text-gray-700 shadow-2xs">
                       Phase {mod.phase}
                     </span>
                   </div>
-                  <h3 className="mt-4 font-bold text-gray-900 group-hover:text-amber-700">
-                    {mod.name}
-                  </h3>
-                  <p className="mt-1 text-xs text-gray-600 leading-relaxed">{mod.description}</p>
+                  <p className="mt-2 text-xs text-gray-600 leading-relaxed">{mod.description}</p>
                 </div>
                 <div className="mt-4 text-xs font-semibold text-amber-700 group-hover:translate-x-1 transition">
                   Open module →

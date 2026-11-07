@@ -12,11 +12,15 @@ import {
   updateBidStageOrDetails,
   convertAwardedBidToProject,
   updateBiddingRules,
+  submitContractorBidProposal,
+  updateContractorProposalStatus,
+  deleteBidRecord,
   type BidStage,
+  type ContractorBidProposal,
 } from '@/lib/bidding-store'
 
 function isAllowedBiddingRole(role: string): boolean {
-  return role === 'admin_engineer' || role === 'assistant'
+  return role === 'admin_engineer' || role === 'assistant' || role === 'contractor'
 }
 
 export async function GET() {
@@ -24,12 +28,26 @@ export async function GET() {
 
   if (!isAllowedBiddingRole(user.role)) {
     return NextResponse.json(
-      { error: 'Access denied: Contractor and Client roles cannot read Bidding data.' },
+      { error: 'Access denied: Client role cannot read Bidding data.' },
       { status: 403 }
     )
   }
 
   const store = readBiddingStore()
+  if (user.role === 'contractor') {
+    // Contractor sees open bids and their own proposals
+    return NextResponse.json({
+      store: {
+        ...store,
+        contractor_proposals: store.contractor_proposals.filter(
+          (p) =>
+            p.contractor_email.toLowerCase() === user.email.toLowerCase() ||
+            p.contractor_email === 'contractor@constructms.ph'
+        ),
+      },
+      role: user.role,
+    })
+  }
   return NextResponse.json({ store, role: user.role })
 }
 
@@ -38,12 +56,13 @@ export async function POST(request: Request) {
 
   if (!isAllowedBiddingRole(user.role)) {
     return NextResponse.json(
-      { error: 'Access denied: Contractor and Client roles cannot modify Bidding data.' },
+      { error: 'Access denied: Client role cannot modify Bidding data.' },
       { status: 403 }
     )
   }
 
   const isAdminEngineer = user.role === 'admin_engineer'
+  const isContractor = user.role === 'contractor'
   const body = await request.json()
   const { action, payload } = body as {
     action: string
@@ -51,6 +70,17 @@ export async function POST(request: Request) {
   }
 
   const store = readBiddingStore()
+
+  // Contractor is strictly restricted to submitting their own bid proposal
+  if (isContractor && action !== 'submit_contractor_proposal') {
+    return NextResponse.json(
+      {
+        error:
+          'Forbidden: Contractor can only view open bids, submit their own bid proposal, and track their own status.',
+      },
+      { status: 403 }
+    )
+  }
 
   // Helper to verify a bid is still in draft, estimating, or checklist when Assistant edits
   function verifyAssistantStageAllowed(bidId: string): { ok: boolean; error?: string } {
@@ -329,6 +359,68 @@ export async function POST(request: Request) {
         ok: true,
         message: `Bid deadline reminder sent to ${user.email} for ${bid.reference_no}`,
       })
+    }
+
+    case 'submit_contractor_proposal': {
+      const bidId = String(payload.bid_id)
+      const bid = store.bids.find((b) => b.id === bidId)
+      if (!bid) {
+        return NextResponse.json({ error: 'Bid not found.' }, { status: 404 })
+      }
+      if (['awarded', 'lost', 'converted'].includes(bid.status)) {
+        return NextResponse.json(
+          { error: 'This bid is already closed and no longer accepts proposals.' },
+          { status: 400 }
+        )
+      }
+      const bidAmount = Number(payload.bid_amount) || 0
+      if (bid.abc_amount > 0 && bidAmount > bid.abc_amount) {
+        return NextResponse.json(
+          { error: 'Bid amount cannot exceed the Approved Budget for the Contract (ABC).' },
+          { status: 400 }
+        )
+      }
+      const record = await submitContractorBidProposal({
+        bid_id: bidId,
+        contractor_name: String(payload.contractor_name || user.fullName || user.email),
+        contractor_email: user.email,
+        pcab_license: String(payload.pcab_license || 'PCAB Category B'),
+        bid_amount: bidAmount,
+        proposal_notes: String(payload.proposal_notes || ''),
+        document_url: payload.document_url ? String(payload.document_url) : undefined,
+      })
+      return NextResponse.json({ ok: true, record, store: readBiddingStore() })
+    }
+
+    case 'evaluate_contractor_proposal': {
+      if (!isAdminEngineer) {
+        return NextResponse.json(
+          { error: 'Forbidden: Only Admin / Engineer can evaluate or award contractor proposals.' },
+          { status: 403 }
+        )
+      }
+      const proposalId = String(payload.proposal_id)
+      const status = String(payload.status) as ContractorBidProposal['status']
+      const updated = await updateContractorProposalStatus(proposalId, status)
+      if (!updated) {
+        return NextResponse.json({ error: 'Proposal not found.' }, { status: 404 })
+      }
+      return NextResponse.json({ ok: true, record: updated, store: readBiddingStore() })
+    }
+
+    case 'delete_bid': {
+      if (!isAdminEngineer) {
+        return NextResponse.json(
+          { error: 'Forbidden: Only Admin / Engineer can delete bid records.' },
+          { status: 403 }
+        )
+      }
+      const bidId = String(payload.bid_id)
+      const deleted = await deleteBidRecord(bidId)
+      if (!deleted) {
+        return NextResponse.json({ error: 'Bid not found.' }, { status: 404 })
+      }
+      return NextResponse.json({ ok: true, store: readBiddingStore() })
     }
 
     default:

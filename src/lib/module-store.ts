@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import { getAdminDb } from '@/lib/db'
+import type { UserRole } from '@/lib/roles'
 
 export interface ProjectRecord {
   id: string
@@ -13,6 +14,8 @@ export interface ProjectRecord {
   end_date: string
   status: 'planning' | 'active' | 'on_hold' | 'completed' | 'cancelled'
   progress: number
+  assigned_assistant?: boolean
+  assigned_contractor?: boolean
   created_at: string
 }
 
@@ -48,6 +51,21 @@ export interface MaterialTxRecord {
   quantity: number
   transaction_date: string
   notes: string
+  created_at: string
+}
+
+export interface MaterialRequestRecord {
+  id: string
+  material_id: string
+  material_name: string
+  project_id: string
+  quantity: number
+  unit: string
+  urgency: 'Normal' | 'High' | 'Critical'
+  notes: string
+  approval_status: 'pending' | 'approved' | 'rejected'
+  requested_by_email: string
+  approved_by_email?: string
   created_at: string
 }
 
@@ -103,6 +121,7 @@ export interface DailyLogRecord {
   notes: string
   photos: string[]
   author_email: string
+  approval_status?: 'pending' | 'approved'
   created_at: string
 }
 
@@ -113,6 +132,20 @@ export interface DocumentRecord {
   file_url: string
   file_type: string
   uploaded_by_email: string
+  shared_with_client?: boolean
+  created_at: string
+}
+
+export interface RoleRequestRecord {
+  id: string
+  user_id: string
+  user_email: string
+  user_name: string
+  current_role: UserRole
+  requested_role: UserRole
+  reason: string
+  status: 'pending' | 'approved' | 'rejected'
+  reviewed_by_email?: string
   created_at: string
 }
 
@@ -121,12 +154,14 @@ export interface StoreData {
   tasks: TaskRecord[]
   materials: MaterialRecord[]
   material_transactions: MaterialTxRecord[]
+  material_requests: MaterialRequestRecord[]
   workers: WorkerRecord[]
   attendance: AttendanceRecord[]
   equipment: EquipmentRecord[]
   expenses: ExpenseRecord[]
   daily_logs: DailyLogRecord[]
   documents: DocumentRecord[]
+  role_requests: RoleRequestRecord[]
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -144,6 +179,8 @@ const INITIAL_SEED: StoreData = {
       end_date: '2026-12-20',
       status: 'active',
       progress: 62,
+      assigned_assistant: true,
+      assigned_contractor: true,
       created_at: '2026-01-15T08:00:00Z',
     },
     {
@@ -156,6 +193,8 @@ const INITIAL_SEED: StoreData = {
       end_date: '2026-10-30',
       status: 'active',
       progress: 40,
+      assigned_assistant: true,
+      assigned_contractor: true,
       created_at: '2026-03-01T08:00:00Z',
     },
     {
@@ -168,6 +207,8 @@ const INITIAL_SEED: StoreData = {
       end_date: '2027-02-28',
       status: 'planning',
       progress: 15,
+      assigned_assistant: true,
+      assigned_contractor: false,
       created_at: '2026-06-01T08:00:00Z',
     },
   ],
@@ -266,6 +307,35 @@ const INITIAL_SEED: StoreData = {
       transaction_date: '2026-11-04',
       notes: 'Slab reinforcement — triggered low stock warning',
       created_at: '2026-11-04T09:00:00Z',
+    },
+  ],
+  material_requests: [
+    {
+      id: 'mreq-1',
+      material_id: 'mat-2',
+      material_name: 'Deformed Steel Rebar 16mm',
+      project_id: 'proj-1',
+      quantity: 120,
+      unit: 'pcs',
+      urgency: 'Critical',
+      notes: 'Urgent replenishment for 9th floor structural slab rebar tying',
+      approval_status: 'pending',
+      requested_by_email: 'christianlacuata83@gmail.com',
+      created_at: '2026-11-05T08:30:00Z',
+    },
+    {
+      id: 'mreq-2',
+      material_id: 'mat-3',
+      material_name: 'Marine Plywood 3/4"',
+      project_id: 'proj-2',
+      quantity: 40,
+      unit: 'sheets',
+      urgency: 'High',
+      notes: 'Formwork replacement for warehouse loading bay',
+      approval_status: 'approved',
+      requested_by_email: 'christianlacuata83@gmail.com',
+      approved_by_email: 'lacuatachristian01@gmail.com',
+      created_at: '2026-11-04T14:00:00Z',
     },
   ],
   workers: [
@@ -417,6 +487,7 @@ const INITIAL_SEED: StoreData = {
         'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80',
       ],
       author_email: 'lacuatachristian01@gmail.com',
+      approval_status: 'approved',
       created_at: '2026-11-04T17:00:00Z',
     },
     {
@@ -430,6 +501,7 @@ const INITIAL_SEED: StoreData = {
         'https://images.unsplash.com/photo-1590674899484-d5640e854abe?auto=format&fit=crop&w=800&q=80',
       ],
       author_email: 'christianlacuata83@gmail.com',
+      approval_status: 'approved',
       created_at: '2026-11-03T16:30:00Z',
     },
   ],
@@ -441,6 +513,7 @@ const INITIAL_SEED: StoreData = {
       file_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
       file_type: 'PDF Blueprint',
       uploaded_by_email: 'lacuatachristian01@gmail.com',
+      shared_with_client: true,
       created_at: '2026-10-15T09:00:00Z',
     },
     {
@@ -450,9 +523,11 @@ const INITIAL_SEED: StoreData = {
       file_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
       file_type: 'Permit',
       uploaded_by_email: 'lacuatachristian01@gmail.com',
+      shared_with_client: true,
       created_at: '2026-10-18T11:00:00Z',
     },
   ],
+  role_requests: [],
 }
 
 export function readStore(): StoreData {
@@ -465,7 +540,31 @@ export function readStore(): StoreData {
       return INITIAL_SEED
     }
     const raw = fs.readFileSync(STORE_PATH, 'utf8')
-    return JSON.parse(raw) as StoreData
+    const parsed = JSON.parse(raw) as Partial<StoreData>
+    return {
+      projects: (parsed.projects ?? INITIAL_SEED.projects).map((p) => ({
+        assigned_assistant: true,
+        assigned_contractor: p.status === 'active',
+        ...p,
+      })),
+      tasks: parsed.tasks ?? INITIAL_SEED.tasks,
+      materials: parsed.materials ?? INITIAL_SEED.materials,
+      material_transactions: parsed.material_transactions ?? INITIAL_SEED.material_transactions,
+      material_requests: parsed.material_requests ?? INITIAL_SEED.material_requests,
+      workers: parsed.workers ?? INITIAL_SEED.workers,
+      attendance: parsed.attendance ?? INITIAL_SEED.attendance,
+      equipment: parsed.equipment ?? INITIAL_SEED.equipment,
+      expenses: parsed.expenses ?? INITIAL_SEED.expenses,
+      daily_logs: (parsed.daily_logs ?? INITIAL_SEED.daily_logs).map((l) => ({
+        approval_status: 'approved',
+        ...l,
+      })),
+      documents: (parsed.documents ?? INITIAL_SEED.documents).map((d) => ({
+        shared_with_client: true,
+        ...d,
+      })),
+      role_requests: parsed.role_requests ?? INITIAL_SEED.role_requests,
+    }
   } catch {
     return INITIAL_SEED
   }
@@ -491,4 +590,3 @@ export async function trySupabaseInsert(table: string, payload: Record<string, u
     // Ignore if table not created yet in Supabase; local store has it
   }
 }
-

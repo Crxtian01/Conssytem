@@ -60,6 +60,31 @@ export default function DailyLogsClient({
     router.refresh()
   }
 
+  async function handleApproveLog(id: string) {
+    const res = await fetch('/api/modules/daily_logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'approve', id }),
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setLogs(logs.map((l) => (l.id === id ? data.item : l)))
+      router.refresh()
+    }
+  }
+
+  async function handleDeleteLog(id: string) {
+    const res = await fetch('/api/modules/daily_logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id }),
+    })
+    if (res.ok) {
+      setLogs(logs.filter((l) => l.id !== id))
+      router.refresh()
+    }
+  }
+
   const projectMap = Object.fromEntries(projects.map((p) => [p.id, p.name]))
 
   return (
@@ -76,7 +101,7 @@ export default function DailyLogsClient({
           className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4"
         >
           <h2 className="text-base font-bold text-gray-900">
-            + Record Daily Site Progress Log (with Photo Upload)
+            + Submit Daily Site Progress Log (with Photo Upload)
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <select
@@ -98,10 +123,10 @@ export default function DailyLogsClient({
               }
               className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900"
             >
-              <option value="Sunny">☀️ Sunny</option>
-              <option value="Cloudy">⛅ Cloudy</option>
-              <option value="Rainy">🌧️ Rainy</option>
-              <option value="Stormy">⛈️ Stormy</option>
+              <option value="Sunny">Sunny</option>
+              <option value="Cloudy">Cloudy</option>
+              <option value="Rainy">Rainy</option>
+              <option value="Stormy">Stormy</option>
             </select>
           </div>
 
@@ -161,12 +186,43 @@ export default function DailyLogsClient({
                   {projectMap[log.project_id] || 'Project Site'}
                 </span>
                 <p className="text-xs text-gray-500">
-                  📅 {log.log_date} • Author: {log.author_email}
+                  {log.log_date} • Author: {log.author_email}
                 </p>
               </div>
-              <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-900">
-                Weather: {log.weather}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${
+                    log.approval_status === 'approved'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  {log.approval_status ?? 'approved'}
+                </span>
+                <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-900">
+                  Weather: {log.weather}
+                </span>
+
+                {perms.approveDailyLogs && log.approval_status === 'pending' && (
+                  <button
+                    type="button"
+                    onClick={() => handleApproveLog(log.id)}
+                    className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
+                  >
+                    Approve for Client
+                  </button>
+                )}
+
+                {perms.deleteRecords && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteLog(log.id)}
+                    className="rounded border border-red-200 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
 
             <p className="text-sm text-gray-800 leading-relaxed">{log.notes}</p>
@@ -190,4 +246,3 @@ export default function DailyLogsClient({
     </div>
   )
 }
-

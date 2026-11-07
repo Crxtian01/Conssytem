@@ -32,6 +32,10 @@ export default function AppShell({ user, children }: AppShellProps) {
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
   const [showSignOutModal, setShowSignOutModal] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const [showRoleRequestBox, setShowRoleRequestBox] = useState(false)
+  const [requestedRole, setRequestedRole] = useState<UserRole>('assistant')
+  const [roleReqSent, setRoleReqSent] = useState<string | null>(null)
+  const [showDemoPreview, setShowDemoPreview] = useState(false)
 
   useEffect(() => {
     setNavigatingTo(null)
@@ -75,6 +79,25 @@ export default function AppShell({ user, children }: AppShellProps) {
     })
     setSwitchingRole(false)
     router.refresh()
+  }
+
+  async function handleSubmitRoleRequest() {
+    setSwitchingRole(true)
+    setRoleReqSent(null)
+    const res = await fetch('/api/users/role', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'request_role',
+        requestedRole,
+        reason: `Requested upgrade from ${roleInfo.label} to ${ROLES[requestedRole].label}`,
+      }),
+    })
+    setSwitchingRole(false)
+    if (res.ok) {
+      setRoleReqSent(`Request for ${ROLES[requestedRole].label} sent to Admin/Engineer!`)
+      setShowRoleRequestBox(false)
+    }
   }
 
   return (
@@ -203,25 +226,86 @@ export default function AppShell({ user, children }: AppShellProps) {
             </div>
           </div>
 
-          <div>
-            <label
-              htmlFor="sidebarRoleSelect"
-              className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1"
-            >
-              Active Role (4 System Roles)
-            </label>
-            <select
-              id="sidebarRoleSelect"
-              value={user.role}
-              disabled={switchingRole}
-              onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
-              className="liquid-droplet-pill w-full rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none disabled:opacity-50"
-            >
-              <option value="admin_engineer">Admin / Engineer (15 Modules)</option>
-              <option value="assistant">Assistant (15 Modules)</option>
-              <option value="contractor">Contractor (6 Site Modules)</option>
-              <option value="client">Client (5 Read-Only Modules)</option>
-            </select>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                Assigned Role
+              </span>
+              <span
+                className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${roleInfo.badgeColor}`}
+              >
+                {roleInfo.label}
+              </span>
+            </div>
+
+            {user.role !== 'admin_engineer' && (
+              <div className="space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowRoleRequestBox((v) => !v)}
+                  className="liquid-droplet-pill w-full rounded-xl px-2.5 py-1.5 text-[11px] font-bold text-slate-800 hover:bg-white/80 transition"
+                >
+                  {showRoleRequestBox ? 'Cancel Role Request' : 'Request Role Upgrade →'}
+                </button>
+
+                {showRoleRequestBox && (
+                  <div className="liquid-droplet-pill rounded-xl p-2.5 space-y-2">
+                    <p className="text-[10px] font-semibold text-slate-700">
+                      Requires Admin / Engineer Approval:
+                    </p>
+                    <select
+                      value={requestedRole}
+                      onChange={(e) => setRequestedRole(e.target.value as UserRole)}
+                      className="w-full rounded-lg border border-white/80 bg-white/80 px-2 py-1 text-xs font-semibold text-slate-900"
+                    >
+                      <option value="assistant">Assistant</option>
+                      <option value="contractor">Contractor</option>
+                      <option value="client">Client</option>
+                      <option value="admin_engineer">Admin / Engineer</option>
+                    </select>
+                    <button
+                      type="button"
+                      disabled={switchingRole}
+                      onClick={handleSubmitRoleRequest}
+                      className="w-full rounded-lg bg-amber-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-amber-700 disabled:opacity-50"
+                    >
+                      Submit Request
+                    </button>
+                  </div>
+                )}
+
+                {roleReqSent && (
+                  <p className="rounded-lg bg-emerald-50/90 px-2 py-1 text-[10px] font-semibold text-emerald-800">
+                    {roleReqSent}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Discrete Demo Role Preview toggle for testing the 4 separate role dashboards */}
+            <div className="pt-0.5">
+              <button
+                type="button"
+                onClick={() => setShowDemoPreview((v) => !v)}
+                className="text-[10px] font-semibold text-slate-500 hover:text-slate-800 underline"
+              >
+                {showDemoPreview ? 'Hide Role Preview' : 'Demo: Preview Other Role Dashboard'}
+              </button>
+              {showDemoPreview && (
+                <select
+                  aria-label="Preview role dashboard"
+                  value={user.role}
+                  disabled={switchingRole}
+                  onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
+                  className="liquid-droplet-pill mt-1 w-full rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none disabled:opacity-50"
+                >
+                  <option value="admin_engineer">Admin / Engineer (15 Modules)</option>
+                  <option value="assistant">Assistant (10 Modules)</option>
+                  <option value="contractor">Contractor (6 Modules)</option>
+                  <option value="client">Client (5 Read-Only Modules)</option>
+                </select>
+              )}
+            </div>
           </div>
         </div>
 

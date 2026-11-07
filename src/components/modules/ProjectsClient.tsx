@@ -75,6 +75,18 @@ export default function ProjectsClient({
     }
   }
 
+  async function handleDelete(id: string) {
+    const res = await fetch('/api/modules/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id }),
+    })
+    if (res.ok) {
+      setProjects(projects.filter((p) => p.id !== id))
+      router.refresh()
+    }
+  }
+
   return (
     <div className="space-y-6">
       {error && (
@@ -155,7 +167,7 @@ export default function ProjectsClient({
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{p.name}</h3>
-                  <p className="text-xs font-medium text-amber-700">📍 {p.location}</p>
+                  <p className="text-xs font-medium text-amber-700">{p.location}</p>
                 </div>
                 <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold uppercase text-amber-900">
                   {p.status}
@@ -174,7 +186,9 @@ export default function ProjectsClient({
                     Budget: ₱{p.budget.toLocaleString()}
                   </span>
                 ) : (
-                  <span className="italic text-gray-400">Budget hidden for {role} role</span>
+                  <span className="italic text-gray-400">
+                    Assigned Site ({ROLES[role].label})
+                  </span>
                 )}
               </div>
 
@@ -191,21 +205,35 @@ export default function ProjectsClient({
                 </div>
               </div>
 
-              {perms.manageProjects && (
-                <div className="flex items-center gap-2 pt-1">
-                  <span className="text-gray-500">Update %:</span>
-                  {[25, 50, 75, 100].map((pct) => (
-                    <button
-                      key={pct}
-                      type="button"
-                      onClick={() => handleProgressUpdate(p.id, pct)}
-                      className="rounded border border-gray-300 px-2 py-0.5 text-[11px] font-medium hover:bg-amber-50"
-                    >
-                      {pct}%
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div className="flex items-center justify-between pt-1">
+                {perms.updateProjectProgress ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-500">Update %:</span>
+                    {[25, 50, 75, 100].map((pct) => (
+                      <button
+                        key={pct}
+                        type="button"
+                        onClick={() => handleProgressUpdate(p.id, pct)}
+                        className="rounded border border-gray-300 px-2 py-0.5 text-[11px] font-medium hover:bg-amber-50"
+                      >
+                        {pct}%
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-[11px] text-gray-400">Progress view only</span>
+                )}
+
+                {perms.deleteRecords && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(p.id)}
+                    className="rounded border border-red-200 px-2.5 py-0.5 text-[11px] font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -213,4 +241,3 @@ export default function ProjectsClient({
     </div>
   )
 }
-
