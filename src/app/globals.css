@@ -112,25 +112,25 @@ body {
   animation: liquid-blob-flow 16s ease-in-out infinite;
 }
 
-/* Clean Luminous Liquid Glass Backdrop for Scattered Construction Materials */
+/* Slightly Darker Slate-Stone Liquid Glass Backdrop for All Modules & Roles */
 .liquid-mesh-bg {
-  background-color: #f1f5f9;
+  background-color: #cbd5e1;
   background-image:
-    radial-gradient(at 15% 18%, rgba(251, 191, 36, 0.34) 0px, transparent 48%),
-    radial-gradient(at 84% 16%, rgba(56, 189, 248, 0.32) 0px, transparent 50%),
-    radial-gradient(at 78% 82%, rgba(249, 115, 22, 0.28) 0px, transparent 50%),
-    radial-gradient(at 20% 84%, rgba(99, 102, 241, 0.24) 0px, transparent 48%),
-    linear-gradient(135deg, #f8fafc 0%, #eff6ff 45%, #fffbeb 100%);
+    radial-gradient(at 15% 18%, rgba(217, 119, 6, 0.28) 0px, transparent 50%),
+    radial-gradient(at 84% 16%, rgba(14, 116, 144, 0.26) 0px, transparent 52%),
+    radial-gradient(at 78% 82%, rgba(194, 65, 12, 0.22) 0px, transparent 50%),
+    radial-gradient(at 20% 84%, rgba(67, 56, 202, 0.20) 0px, transparent 48%),
+    linear-gradient(135deg, #cbd5e1 0%, #d5e0ec 48%, #e2dfd7 100%);
   background-attachment: fixed;
 }
 
 /* CAD Engineering Blueprint Grid Overlay */
 .construction-blueprint-grid {
   background-image:
-    linear-gradient(rgba(14, 116, 144, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 116, 144, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(217, 119, 6, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(217, 119, 6, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.09) 1px, transparent 1px),
+    linear-gradient(rgba(180, 83, 9, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 83, 9, 0.07) 1px, transparent 1px);
   background-size:
     120px 120px,
     120px 120px,

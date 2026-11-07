@@ -237,32 +237,32 @@ export default function ScatteredMaterialsBackdrop() {
         className="fixed inset-0 transition-opacity duration-300"
         style={{
           background:
-            'radial-gradient(560px circle at var(--lx, 50%) var(--ly, 30%), rgba(255,255,255,0.68), rgba(251,191,36,0.18) 45%, transparent 75%)',
+            'radial-gradient(560px circle at var(--lx, 50%) var(--ly, 30%), rgba(255,255,255,0.28), rgba(217,119,6,0.14) 45%, transparent 75%)',
         }}
       />
 
       {/* Soft ambient color glow orbs */}
       <div
-        className="liquid-orb absolute -top-24 -left-20 h-[28rem] w-[28rem] rounded-full opacity-55 blur-3xl"
+        className="liquid-orb absolute -top-24 -left-20 h-[28rem] w-[28rem] rounded-full opacity-45 blur-3xl"
         style={{
           background:
-            'radial-gradient(circle, rgba(251,191,36,0.5) 0%, rgba(245,158,11,0.2) 55%, transparent 75%)',
+            'radial-gradient(circle, rgba(217,119,6,0.38) 0%, rgba(180,83,9,0.16) 55%, transparent 75%)',
         }}
       />
       <div
-        className="liquid-orb absolute top-[12%] right-[-6%] h-[30rem] w-[30rem] rounded-full opacity-50 blur-3xl"
+        className="liquid-orb absolute top-[12%] right-[-6%] h-[30rem] w-[30rem] rounded-full opacity-45 blur-3xl"
         style={{
           animationDelay: '-5s',
           background:
-            'radial-gradient(circle, rgba(56,189,248,0.45) 0%, rgba(129,140,248,0.22) 55%, transparent 75%)',
+            'radial-gradient(circle, rgba(14,116,144,0.35) 0%, rgba(79,70,229,0.18) 55%, transparent 75%)',
         }}
       />
       <div
-        className="liquid-orb absolute bottom-[-12%] left-[28%] h-[30rem] w-[30rem] rounded-full opacity-50 blur-3xl"
+        className="liquid-orb absolute bottom-[-12%] left-[28%] h-[30rem] w-[30rem] rounded-full opacity-45 blur-3xl"
         style={{
           animationDelay: '-10s',
           background:
-            'radial-gradient(circle, rgba(249,115,22,0.4) 0%, rgba(52,211,153,0.22) 55%, transparent 75%)',
+            'radial-gradient(circle, rgba(194,65,12,0.32) 0%, rgba(15,118,110,0.18) 55%, transparent 75%)',
         }}
       />
 
