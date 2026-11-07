@@ -775,5 +775,35 @@
       "uploaded_by_email": "lacuatachristian01@gmail.com",
       "created_at": "2026-11-02T15:00:00Z"
     }
+  ],
+  "contractor_proposals": [
+    {
+      "id": "cprop-1",
+      "bid_id": "bid-1",
+      "bid_title": "Construction of 4-Storey Municipal Disaster Operations Center",
+      "reference_no": "ITB-2026-DPWH-014",
+      "contractor_name": "Apex Builders Corp.",
+      "contractor_email": "contractor@constructms.ph",
+      "pcab_license": "PCAB #44912 - Category B (Medium A)",
+      "bid_amount": 17480000,
+      "proposal_notes": "Complete Envelope 1 Technical & Envelope 2 Financial package submitted with BSD.",
+      "document_url": "https://vpzorfwfbgyttsuwjshx.supabase.co/storage/v1/object/public/bidding/apex-bid1-proposal.pdf",
+      "status": "under_evaluation",
+      "submitted_at": "2026-11-03T14:20:00Z"
+    },
+    {
+      "id": "cprop-2",
+      "bid_id": "bid-2",
+      "bid_title": "Rehabilitation & Seismic Retrofitting of Science Building",
+      "reference_no": "ITB-2026-DEPED-089",
+      "contractor_name": "Apex Builders Corp.",
+      "contractor_email": "contractor@constructms.ph",
+      "pcab_license": "PCAB #44912 - Category B (Medium A)",
+      "bid_amount": 8795000,
+      "proposal_notes": "CFRP structural wrapping and seismic epoxy injection package.",
+      "document_url": "https://vpzorfwfbgyttsuwjshx.supabase.co/storage/v1/object/public/bidding/noa-deped-bid2.pdf",
+      "status": "awarded",
+      "submitted_at": "2026-10-28T09:15:00Z"
+    }
   ]
 }

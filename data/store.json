@@ -1,6 +1,8 @@
 {
   "projects": [
     {
+      "assigned_assistant": true,
+      "assigned_contractor": true,
       "id": "proj-1",
       "name": "Metro Commercial Tower Phase 1",
       "location": "Makati Central Business District",
@@ -13,6 +15,8 @@
       "created_at": "2026-01-15T08:00:00Z"
     },
     {
+      "assigned_assistant": true,
+      "assigned_contractor": true,
       "id": "proj-2",
       "name": "Riverside Warehouse & Logistics Hub",
       "location": "Laguna Technopark, Biñan",
@@ -25,6 +29,8 @@
       "created_at": "2026-03-01T08:00:00Z"
     },
     {
+      "assigned_assistant": true,
+      "assigned_contractor": false,
       "id": "proj-3",
       "name": "Greenview Residential Townhomes",
       "location": "Quezon City",
@@ -143,6 +149,35 @@
       "transaction_date": "2026-11-04",
       "notes": "Slab reinforcement — triggered low stock warning",
       "created_at": "2026-11-04T09:00:00Z"
+    }
+  ],
+  "material_requests": [
+    {
+      "id": "mreq-1",
+      "material_id": "mat-2",
+      "material_name": "Deformed Steel Rebar 16mm",
+      "project_id": "proj-1",
+      "quantity": 120,
+      "unit": "pcs",
+      "urgency": "Critical",
+      "notes": "Urgent replenishment for 9th floor structural slab rebar tying",
+      "approval_status": "pending",
+      "requested_by_email": "christianlacuata83@gmail.com",
+      "created_at": "2026-11-05T08:30:00Z"
+    },
+    {
+      "id": "mreq-2",
+      "material_id": "mat-3",
+      "material_name": "Marine Plywood 3/4\"",
+      "project_id": "proj-2",
+      "quantity": 40,
+      "unit": "sheets",
+      "urgency": "High",
+      "notes": "Formwork replacement for warehouse loading bay",
+      "approval_status": "approved",
+      "requested_by_email": "christianlacuata83@gmail.com",
+      "approved_by_email": "lacuatachristian01@gmail.com",
+      "created_at": "2026-11-04T14:00:00Z"
     }
   ],
   "workers": [
@@ -292,6 +327,7 @@
   ],
   "daily_logs": [
     {
+      "approval_status": "approved",
       "id": "log-1",
       "project_id": "proj-1",
       "log_date": "2026-11-04",
@@ -305,6 +341,7 @@
       "created_at": "2026-11-04T17:00:00Z"
     },
     {
+      "approval_status": "approved",
       "id": "log-2",
       "project_id": "proj-2",
       "log_date": "2026-11-03",
@@ -319,6 +356,7 @@
   ],
   "documents": [
     {
+      "shared_with_client": true,
       "id": "doc-1",
       "project_id": "proj-1",
       "title": "Approved Structural & Foundation Blueprint v3.pdf",
@@ -328,6 +366,7 @@
       "created_at": "2026-10-15T09:00:00Z"
     },
     {
+      "shared_with_client": true,
       "id": "doc-2",
       "project_id": "proj-1",
       "title": "City Building Permit & Safety Clearance.pdf",
@@ -335,6 +374,20 @@
       "file_type": "Permit",
       "uploaded_by_email": "lacuatachristian01@gmail.com",
       "created_at": "2026-10-18T11:00:00Z"
+    }
+  ],
+  "role_requests": [
+    {
+      "id": "rreq-b7d93264",
+      "user_id": "3d588f25-8c77-4fc1-9d88-c29dd039fb1a",
+      "user_email": "lacuatachristian804@gmail.com",
+      "user_name": "Lacuata Tian",
+      "current_role": "assistant",
+      "requested_role": "contractor",
+      "reason": "Requested upgrade from Assistant to Contractor",
+      "status": "rejected",
+      "created_at": "2026-11-07T15:56:20.649Z",
+      "reviewed_by_email": "lacuatachristian804@gmail.com"
     }
   ]
 }

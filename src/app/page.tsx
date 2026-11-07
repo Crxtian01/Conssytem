@@ -4,6 +4,7 @@ import { getOptionalAuthUser } from '@/lib/auth'
 import { getAdminDb } from '@/lib/db'
 import { readStore } from '@/lib/module-store'
 import { readBiddingStore } from '@/lib/bidding-store'
+import { fetchAdminDashboardAnalytics } from '@/lib/admin-dashboard-service'
 import AppShell from '@/components/layout/AppShell'
 import ModuleLoadingSkeleton from '@/components/layout/ModuleLoadingSkeleton'
 import LandingPage from '@/components/landing/LandingPage'
@@ -39,6 +40,10 @@ async function HomeOrDashboardContent() {
   const roleInfo = ROLES[user.role] ?? ROLES.contractor
   const allowedModules = getModulesForRole(user.role).filter((m) => m.id !== 'dashboard')
   const canManageUsers = user.role === 'admin_engineer'
+  const adminDashboardPayload =
+    user.role === 'admin_engineer'
+      ? await fetchAdminDashboardAnalytics({ projectId: 'all', dateRange: 'this_quarter' })
+      : undefined
 
   return (
     <AppShell user={user}>
@@ -81,12 +86,13 @@ async function HomeOrDashboardContent() {
           </div>
         </div>
 
-        {/* Dedicated Role-Specific Dashboard (Admin/Engineer, Assistant, Contractor, Client) */}
+        {/* Dedicated Role-Specific Dashboard (Admin/Engineer uses Recharts + Framer Motion Command Center) */}
         <DashboardAnalytics
           store={store}
           biddingStore={biddingStore}
           role={user.role}
           userEmail={user.email}
+          adminDashboardPayload={adminDashboardPayload}
         />
 
         {/* Email for Notifications & Confirmation Flow */}
