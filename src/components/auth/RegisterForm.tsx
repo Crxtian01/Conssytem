@@ -17,56 +17,34 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Live Strong Password Criteria
+  // Compact 3-point password checks
   const passwordChecks = [
     {
       id: 'length',
-      label: 'At least 8 characters',
-      passed: password.length >= 8,
+      label: '6+ chars',
+      passed: password.length >= 6,
     },
     {
-      id: 'upper',
-      label: 'At least 1 uppercase letter (A–Z)',
-      passed: /[A-Z]/.test(password),
-    },
-    {
-      id: 'lower',
-      label: 'At least 1 lowercase letter (a–z)',
-      passed: /[a-z]/.test(password),
+      id: 'letter',
+      label: 'Letter',
+      passed: /[A-Za-z]/.test(password),
     },
     {
       id: 'number',
-      label: 'At least 1 number (0–9)',
+      label: 'Number',
       passed: /[0-9]/.test(password),
-    },
-    {
-      id: 'special',
-      label: 'At least 1 special symbol (!@#$%^&*)',
-      passed: /[^A-Za-z0-9]/.test(password),
     },
   ]
 
   const passedCount = passwordChecks.filter((c) => c.passed).length
-  const allChecksPassed = passedCount === passwordChecks.length
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword
-
-  const strengthInfo =
-    password.length === 0
-      ? { label: 'Enter a password', color: 'text-slate-500', barColor: 'bg-slate-300' }
-      : passedCount <= 2
-        ? { label: 'Weak', color: 'text-red-600', barColor: 'bg-red-500' }
-        : passedCount === 3
-          ? { label: 'Fair', color: 'text-amber-600', barColor: 'bg-amber-500' }
-          : passedCount === 4
-            ? { label: 'Good', color: 'text-sky-600', barColor: 'bg-sky-500' }
-            : { label: 'Strong ✓', color: 'text-emerald-700', barColor: 'bg-emerald-500' }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
 
-    if (!allChecksPassed) {
-      setError('Please complete all 5 strong password requirements below.')
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.')
       return
     }
 
@@ -96,12 +74,11 @@ export default function RegisterForm() {
       return
     }
 
-    // Redirect to the email confirmation notice page
     router.push(`/verify?email=${encodeURIComponent(cleanEmail)}`)
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {error && (
         <div className="rounded-xl border border-red-300/80 bg-red-50/80 p-3 text-xs font-semibold text-red-700 backdrop-blur-md">
           ⚠️ {error}
@@ -110,17 +87,17 @@ export default function RegisterForm() {
 
       <GoogleSignInButton />
 
-      <div className="relative flex items-center py-1">
+      <div className="relative flex items-center py-0.5">
         <div className="flex-grow border-t border-white/70" />
-        <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-wider text-slate-500">
+        <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-wider text-[#6e5a52]">
           or sign up with email
         </span>
         <div className="flex-grow border-t border-white/70" />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label htmlFor="fullName" className="block text-xs font-bold text-slate-800">
+          <label htmlFor="fullName" className="block text-xs font-bold text-[#1e1512]">
             Full name
           </label>
           <input
@@ -131,13 +108,13 @@ export default function RegisterForm() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Juan Dela Cruz"
-            className="mt-1 block w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-xl px-3.5 py-2 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-xs font-bold text-slate-800">
-            Email address (receives confirmation &amp; notifications)
+          <label htmlFor="email" className="block text-xs font-bold text-[#1e1512]">
+            Email address
           </label>
           <input
             id="email"
@@ -147,19 +124,31 @@ export default function RegisterForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="mt-1 block w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-xl px-3.5 py-2 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
           />
         </div>
 
-        {/* Password Field + Live Strength Meter + Requirements Checklist */}
-        <div className="space-y-2.5">
+        {/* Password Field + Minimal Single-Row Pills */}
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-xs font-bold text-slate-800">
+            <label htmlFor="password" className="block text-xs font-bold text-[#1e1512]">
               Password
             </label>
-            <span className={`text-[11px] font-bold ${strengthInfo.color}`}>
-              Strength: {strengthInfo.label}
-            </span>
+            <div className="flex items-center gap-1">
+              {passwordChecks.map((item) => (
+                <span
+                  key={item.id}
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold transition-colors ${
+                    item.passed
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : 'bg-black/5 text-[#7d6860]'
+                  }`}
+                >
+                  {item.passed ? '✓ ' : ''}
+                  {item.label}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="relative">
@@ -167,78 +156,65 @@ export default function RegisterForm() {
               id="password"
               type={showPassword ? 'text' : 'password'}
               required
-              minLength={8}
+              minLength={6}
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Create a strong password"
-              className="block w-full rounded-xl px-3.5 py-2.5 pr-16 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              placeholder="At least 6 characters"
+              className="block w-full rounded-xl px-3.5 py-2 pr-11 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-white/60 hover:text-slate-900"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-[#6e5a52] transition hover:text-[#1e1512]"
             >
-              {showPassword ? 'Hide' : 'Show'}
+              {showPassword ? (
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              ) : (
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              )}
             </button>
           </div>
 
-          {/* 5-Segment Password Strength Meter Bar */}
-          <div className="grid grid-cols-5 gap-1.5 pt-0.5">
-            {[1, 2, 3, 4, 5].map((step) => (
+          {/* Slim 3-segment bar */}
+          <div className="grid grid-cols-3 gap-1">
+            {[1, 2, 3].map((step) => (
               <div
                 key={step}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
+                className={`h-1 rounded-full transition-all duration-300 ${
                   password.length > 0 && passedCount >= step
-                    ? strengthInfo.barColor
-                    : 'bg-white/60 border border-white/80'
+                    ? passedCount === 3
+                      ? 'bg-emerald-500'
+                      : 'bg-[#c85a38]'
+                    : 'bg-white/60'
                 }`}
               />
             ))}
-          </div>
-
-          {/* Frosted Liquid Glass Strong Password Requirements Box */}
-          <div className="liquid-droplet-pill rounded-2xl p-3.5 space-y-2">
-            <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700">
-              Strong Password Requirements ({passedCount}/5 met):
-            </p>
-            <ul className="grid grid-cols-1 gap-1.5 text-xs">
-              {passwordChecks.map((item) => (
-                <li
-                  key={item.id}
-                  className={`flex items-center gap-2 transition-colors ${
-                    item.passed ? 'font-semibold text-emerald-800' : 'text-slate-600'
-                  }`}
-                >
-                  <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                      item.passed
-                        ? 'bg-emerald-500 text-white shadow-2xs'
-                        : 'border border-slate-400/70 bg-white/60 text-slate-400'
-                    }`}
-                  >
-                    {item.passed ? '✓' : '•'}
-                  </span>
-                  <span>{item.label}</span>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 
         {/* Confirm Password Field */}
         <div>
           <div className="flex items-center justify-between">
-            <label htmlFor="confirmPassword" className="block text-xs font-bold text-slate-800">
+            <label htmlFor="confirmPassword" className="block text-xs font-bold text-[#1e1512]">
               Confirm password
             </label>
             {confirmPassword.length > 0 && (
               <span
-                className={`text-[11px] font-bold ${
+                className={`text-[10px] font-bold ${
                   passwordsMatch ? 'text-emerald-700' : 'text-red-600'
                 }`}
               >
-                {passwordsMatch ? '✓ Passwords match' : '✕ Does not match'}
+                {passwordsMatch ? '✓ Match' : '✕ No match'}
               </span>
             )}
           </div>
@@ -247,19 +223,32 @@ export default function RegisterForm() {
               id="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
               required
-              minLength={8}
+              minLength={6}
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repeat your strong password"
-              className="block w-full rounded-xl px-3.5 py-2.5 pr-16 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              placeholder="Repeat password"
+              className="block w-full rounded-xl px-3.5 py-2 pr-11 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword((v) => !v)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-white/60 hover:text-slate-900"
+              aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-[#6e5a52] transition hover:text-[#1e1512]"
             >
-              {showConfirmPassword ? 'Hide' : 'Show'}
+              {showConfirmPassword ? (
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              ) : (
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -267,15 +256,15 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(217,119,6,0.35),inset_0_1px_1px_rgba(255,255,255,0.6)] transition hover:from-amber-600 hover:to-amber-700 disabled:opacity-60"
+          className="w-full rounded-2xl bg-gradient-to-r from-[#cc5c3b] to-[#94361d] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#94361d]/25 transition hover:from-[#b54829] hover:to-[#7c2b15] disabled:opacity-60"
         >
           {loading ? 'Creating account…' : 'Create Account'}
         </button>
       </form>
 
-      <p className="text-center text-sm font-medium text-slate-700">
+      <p className="text-center text-sm font-medium text-[#5c4942]">
         Already have an account?{' '}
-        <Link href="/login" className="font-bold text-amber-700 hover:text-amber-800 underline">
+        <Link href="/login" className="font-bold text-[#c85a38] hover:underline">
           Sign in
         </Link>
       </p>
