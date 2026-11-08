@@ -5,17 +5,26 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
 import GoogleSignInButton from './GoogleSignInButton'
+import ProjectCooperationWidget from './ProjectCooperationWidget'
 
 export default function RegisterForm() {
   const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [role, setRole] = useState<'contractor' | 'client' | 'assistant' | 'admin_engineer'>('contractor')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const roleOptions = [
+    { value: 'contractor', label: 'Contractor / Bidder', desc: 'Submit bids & manage site works' },
+    { value: 'client', label: 'Client / Project Owner', desc: 'Track project progress & budgets' },
+    { value: 'assistant', label: 'Engineering Assistant', desc: 'Assist in site logs & BOQ review' },
+    { value: 'admin_engineer', label: 'Admin / Lead Engineer', desc: 'Full project & bidding control' },
+  ] as const
 
   // Compact 3-point password checks
   const passwordChecks = [
@@ -63,6 +72,7 @@ export default function RegisterForm() {
       options: {
         data: {
           full_name: fullName.trim(),
+          role,
         },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
@@ -126,6 +136,27 @@ export default function RegisterForm() {
             placeholder="you@example.com"
             className="mt-1 block w-full rounded-xl px-3.5 py-2 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
           />
+        </div>
+
+        {/* User Role Selector */}
+        <div>
+          <label htmlFor="role" className="block text-xs font-bold text-[#1e1512]">
+            Your Role in the Project
+          </label>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) =>
+              setRole(e.target.value as 'contractor' | 'client' | 'assistant' | 'admin_engineer')
+            }
+            className="mt-1 block w-full rounded-xl border border-white/80 bg-white/75 px-3.5 py-2 text-sm font-semibold text-[#1e1512] shadow-sm backdrop-blur-md focus:border-[#c85a38] focus:outline-none"
+          >
+            {roleOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label} — {opt.desc}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Password Field + Minimal Single-Row Pills */}
@@ -268,6 +299,14 @@ export default function RegisterForm() {
           Sign in
         </Link>
       </p>
+
+      {/* Project Cooperation & Automatic Contractor Account Flow */}
+      <ProjectCooperationWidget
+        email={email}
+        password={password}
+        fullName={fullName}
+        role={role}
+      />
     </div>
   )
 }

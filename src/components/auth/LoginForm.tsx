@@ -1,27 +1,62 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
 import GoogleSignInButton from './GoogleSignInButton'
+import ProjectCooperationWidget from './ProjectCooperationWidget'
 
 export default function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const urlError = searchParams.get('error')
   const verified = searchParams.get('verified')
+  const coopApproved = searchParams.get('coop_approved')
+  const coopEmail = searchParams.get('email') || ''
+  const coopPw = searchParams.get('pw') || ''
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState(coopEmail)
+  const [password, setPassword] = useState(coopPw)
+  const [role, setRole] = useState<'contractor' | 'client' | 'assistant' | 'admin_engineer'>('contractor')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [resetSent, setResetSent] = useState<string | null>(null)
+  const [resetSent, setResetSent] = useState<string | null>(
+    coopApproved === '1'
+      ? `Request Approved by Engineer! Approval notice sent to ${coopEmail || 'your email'} and your Contractor account is active. Signing you into the Contractor Dashboard…`
+      : null
+  )
   const [error, setError] = useState<string | null>(
     urlError === 'auth_failed'
       ? 'Authentication failed or link expired. Please try signing in again.'
       : null
   )
+
+  useEffect(() => {
+    if (coopApproved === '1' && coopEmail && coopPw) {
+      const supabase = createClient()
+      supabase.auth
+        .signInWithPassword({
+          email: coopEmail.trim(),
+          password: coopPw,
+        })
+        .then(({ error: err }) => {
+          if (!err) {
+            setTimeout(() => {
+              router.push('/')
+              router.refresh()
+            }, 1200)
+          }
+        })
+    }
+  }, [coopApproved, coopEmail, coopPw, router])
+
+  const roleOptions = [
+    { value: 'contractor', label: 'Contractor / Bidder' },
+    { value: 'client', label: 'Client / Project Owner' },
+    { value: 'assistant', label: 'Engineering Assistant' },
+    { value: 'admin_engineer', label: 'Admin / Lead Engineer' },
+  ] as const
 
   async function handleForgotPassword() {
     if (!email.trim()) {
@@ -119,6 +154,26 @@ export default function LoginForm() {
         </div>
 
         <div>
+          <label htmlFor="loginRole" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+            Sign in role
+          </label>
+          <select
+            id="loginRole"
+            value={role}
+            onChange={(e) =>
+              setRole(e.target.value as 'contractor' | 'client' | 'assistant' | 'admin_engineer')
+            }
+            className="mt-1.5 block w-full rounded-xl border border-white/80 bg-white/75 px-3.5 py-2.5 text-sm font-semibold text-[#1e1512] shadow-sm backdrop-blur-md focus:border-[#c85a38] focus:outline-none"
+          >
+            {roleOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
               Password
@@ -180,6 +235,13 @@ export default function LoginForm() {
           Create account
         </Link>
       </p>
+
+      {/* Project Cooperation & Automatic Contractor Account Flow */}
+      <ProjectCooperationWidget
+        email={email}
+        password={password}
+        role={role}
+      />
     </div>
   )
 }

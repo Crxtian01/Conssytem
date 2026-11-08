@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // Routes anyone can open without being signed in (including the Landing Page at '/' and '/welcome')
-const PUBLIC_ROUTES = ['/login', '/register', '/verify', '/auth', '/welcome', '/reset-password']
+const PUBLIC_ROUTES = ['/login', '/register', '/verify', '/auth', '/welcome', '/reset-password', '/api/cooperation']
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

@@ -8,7 +8,7 @@ import {
   normalizeRole,
   type UserRole,
 } from '@/lib/roles'
-import type { RoleRequestRecord } from '@/lib/module-store'
+import type { RoleRequestRecord, CooperationRequestRecord } from '@/lib/module-store'
 
 interface ProfileRow {
   id: string
@@ -25,6 +25,7 @@ interface RoleManagerProps {
   currentUserRole: UserRole
   profiles: ProfileRow[]
   roleRequests?: RoleRequestRecord[]
+  cooperationRequests?: CooperationRequestRecord[]
 }
 
 export default function RoleManager({
@@ -32,6 +33,7 @@ export default function RoleManager({
   currentUserRole,
   profiles,
   roleRequests = [],
+  cooperationRequests = [],
 }: RoleManagerProps) {
   const router = useRouter()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
@@ -64,6 +66,36 @@ export default function RoleManager({
       decision === 'approve_request'
         ? 'Role request approved and user permissions updated!'
         : 'Role request rejected.'
+    )
+    router.refresh()
+  }
+
+  async function handleCooperationDecision(
+    requestId: string,
+    decision: 'approve_request' | 'reject_request'
+  ) {
+    setUpdatingId(requestId)
+    setMessage(null)
+    setError(null)
+
+    const res = await fetch('/api/cooperation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: decision, requestId }),
+    })
+
+    const data = await res.json()
+    setUpdatingId(null)
+
+    if (!res.ok) {
+      setError(data.error || 'Failed to process cooperation request')
+      return
+    }
+
+    setMessage(
+      decision === 'approve_request'
+        ? data.notice || 'Cooperation request accepted! Contractor account created and approval email sent.'
+        : 'Cooperation request rejected.'
     )
     router.refresh()
   }
@@ -201,6 +233,82 @@ export default function RoleManager({
                         type="button"
                         disabled={updatingId === req.id}
                         onClick={() => handleRoleRequestDecision(req.id, 'reject_request')}
+                        className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Project Cooperation & Automatic Contractor Account Requests */}
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">
+              Project Cooperation &amp; Contractor Join Requests ({cooperationRequests.filter((r) => r.status === 'pending').length} Pending)
+            </h2>
+            <p className="text-xs text-gray-600">
+              When you accept a request, the Contractor&apos;s account is automatically created, an approval email notice is sent, and they are redirected to the Contractor Dashboard.
+            </p>
+          </div>
+          <span className="rounded-full bg-emerald-100 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-900">
+            Auto-Account &amp; Email Notice
+          </span>
+        </div>
+
+        <div className="mt-4 space-y-2.5">
+          {cooperationRequests.length === 0 ? (
+            <p className="text-xs text-gray-500 py-2">
+              No project cooperation requests submitted from the Sign In / Create Account pages yet.
+            </p>
+          ) : (
+            cooperationRequests.map((req) => (
+              <div
+                key={req.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-white p-3.5 text-xs"
+              >
+                <div>
+                  <div className="font-bold text-gray-900">
+                    {req.full_name} ({req.email})
+                  </div>
+                  <div className="mt-0.5 text-gray-600">
+                    Project: <strong>{req.project_name}</strong> • Role: <strong className="text-emerald-800">Contractor / Bidder</strong>
+                  </div>
+                  <div className="mt-0.5 text-[11px] text-gray-500">{req.message}</div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                      req.status === 'approved'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : req.status === 'rejected'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {req.status === 'approved' ? 'Approved & Email Sent' : req.status}
+                  </span>
+                  {req.status === 'pending' && currentUserRole === 'admin_engineer' && (
+                    <>
+                      <button
+                        type="button"
+                        disabled={updatingId === req.id}
+                        onClick={() => handleCooperationDecision(req.id, 'approve_request')}
+                        className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Accept &amp; Auto-Create Contractor Account
+                      </button>
+                      <button
+                        type="button"
+                        disabled={updatingId === req.id}
+                        onClick={() => handleCooperationDecision(req.id, 'reject_request')}
                         className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
                       >
                         Reject

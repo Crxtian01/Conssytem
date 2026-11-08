@@ -149,6 +149,23 @@ export interface RoleRequestRecord {
   created_at: string
 }
 
+export interface CooperationRequestRecord {
+  id: string
+  full_name: string
+  email: string
+  password?: string
+  requested_role: UserRole
+  project_name: string
+  message: string
+  status: 'pending' | 'approved' | 'rejected'
+  engineer_email: string
+  approval_email_sent?: boolean
+  approved_by_email?: string
+  approved_at?: string
+  created_user_id?: string
+  created_at: string
+}
+
 export interface StoreData {
   projects: ProjectRecord[]
   tasks: TaskRecord[]
@@ -162,6 +179,7 @@ export interface StoreData {
   daily_logs: DailyLogRecord[]
   documents: DocumentRecord[]
   role_requests: RoleRequestRecord[]
+  cooperation_requests: CooperationRequestRecord[]
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -528,6 +546,7 @@ const INITIAL_SEED: StoreData = {
     },
   ],
   role_requests: [],
+  cooperation_requests: [],
 }
 
 let memoryStoreCache: StoreData | null = null
@@ -566,6 +585,7 @@ export function readStore(): StoreData {
         ...d,
       })),
       role_requests: parsed.role_requests ?? INITIAL_SEED.role_requests,
+      cooperation_requests: parsed.cooperation_requests ?? INITIAL_SEED.cooperation_requests,
     }
     return memoryStoreCache
   } catch {

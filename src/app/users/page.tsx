@@ -59,6 +59,7 @@ async function UsersContent() {
           currentUserRole={user.role}
           profiles={normalizedProfiles as never[]}
           roleRequests={store.role_requests}
+          cooperationRequests={store.cooperation_requests}
         />
       </div>
     </AppShell>

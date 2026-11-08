@@ -26,12 +26,17 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, full_name, avatar_url, email_verified)
+  insert into public.profiles (id, email, full_name, avatar_url, role, email_verified)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name'),
     coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture'),
+    case
+      when (new.raw_user_meta_data->>'role') in ('admin_engineer', 'assistant', 'contractor', 'client')
+        then new.raw_user_meta_data->>'role'
+      else 'contractor'
+    end,
     coalesce(new.raw_app_meta_data->>'provider', 'email') = 'google'
       or new.email_confirmed_at is not null
   )
