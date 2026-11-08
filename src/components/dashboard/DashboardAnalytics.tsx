@@ -91,31 +91,36 @@ export default function DashboardAnalytics({
 
     return (
       <div className="space-y-6">
-        <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold uppercase text-blue-800">
-              Assistant Operations Dashboard
+        <div className="codexr-terracotta-card flex flex-col gap-4 rounded-[28px] p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-50">
+              <span className="h-2 w-2 rounded-full bg-emerald-300" />
+              <span>Assistant Operations Workspace</span>
             </span>
-            <h2 className="mt-1 text-lg font-bold text-gray-900">
-              Assigned Projects, Bid Preparation &amp; Site Encoding Workspace
+            <h2 className="text-xl font-extrabold text-white sm:text-2xl">
+              Your site operations are on a{' '}
+              <span className="font-serif italic font-normal text-amber-100">
+                roll
+              </span>{' '}
+              this week
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-amber-50/85 max-w-2xl">
               Update assigned projects &amp; tasks, encode stock in/out &amp; material requests,
               record attendance, submit pending expenses, and prepare bid drafts.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5 shrink-0">
             <Link
               href="/bidding"
-              className="rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+              className="rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#1e1512] shadow-sm hover:bg-amber-50"
             >
-              Prepare Bid Drafts ({draftBids.length})
+              Prepare Bid Drafts ({draftBids.length}) →
             </Link>
             <Link
               href="/materials"
-              className="rounded-lg bg-amber-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-amber-700"
+              className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/25"
             >
-              Request Materials
+              + Request Materials
             </Link>
           </div>
         </div>
@@ -222,29 +227,34 @@ export default function DashboardAnalytics({
 
     return (
       <div className="space-y-6">
-        <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <span className="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold uppercase text-amber-900">
-              Contractor Portal &amp; Field Hub
+        <div className="codexr-terracotta-card flex flex-col gap-4 rounded-[28px] p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-50">
+              <span className="h-2 w-2 rounded-full bg-emerald-300" />
+              <span>Contractor Portal &amp; Field Hub</span>
             </span>
-            <h2 className="mt-1 text-lg font-bold text-gray-900">
-              My Bids, Assigned Projects, Site Tasks &amp; Daily Logs
+            <h2 className="text-xl font-extrabold text-white sm:text-2xl">
+              Your bids &amp; assigned sites are on a{' '}
+              <span className="font-serif italic font-normal text-amber-100">
+                roll
+              </span>{' '}
+              this week
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-amber-50/85 max-w-2xl">
               View open invitations to bid, submit your own bid &amp; track status, update assigned
               site tasks, and submit your own daily logs.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5 shrink-0">
             <Link
               href="/bidding"
-              className="rounded-lg bg-amber-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-amber-700"
+              className="rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#1e1512] shadow-sm hover:bg-amber-50"
             >
               View Open Bids &amp; Submit Bid →
             </Link>
             <Link
               href="/daily-logs"
-              className="rounded-lg bg-gray-900 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-gray-700"
+              className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/25"
             >
               + Submit My Daily Log
             </Link>
@@ -361,31 +371,36 @@ export default function DashboardAnalytics({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <span className="inline-block rounded-full bg-indigo-100 px-2.5 py-0.5 text-[11px] font-bold uppercase text-indigo-900">
-            Client Read-Only Project Portal
+      <div className="codexr-terracotta-card flex flex-col gap-4 rounded-[28px] p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1.5">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-50">
+            <span className="h-2 w-2 rounded-full bg-emerald-300" />
+            <span>Client Read-Only Project Portal</span>
           </span>
-          <h2 className="mt-1 text-lg font-bold text-gray-900">
-            Project Progress, Approved Site Logs &amp; Shared Documents
+          <h2 className="text-xl font-extrabold text-white sm:text-2xl">
+            Your project milestones are on a{' '}
+            <span className="font-serif italic font-normal text-amber-100">
+              roll
+            </span>{' '}
+            this week
           </h2>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-amber-50/85 max-w-2xl">
             Read-only monitoring of construction completion milestones, Engineer-approved site logs,
             and shared blueprints.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5 shrink-0">
           <button
             type="button"
             onClick={handleExportProgressCsv}
-            className="rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700"
+            className="rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#1e1512] shadow-sm hover:bg-amber-50"
           >
-            Export Progress Report (CSV)
+            Export Progress Report (CSV) →
           </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded-lg bg-gray-900 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-gray-700"
+            className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/25"
           >
             Print / Save Progress PDF
           </button>
