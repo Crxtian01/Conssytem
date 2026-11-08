@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
-import type { UserRole } from '@/lib/roles'
+import { ROLES, type UserRole } from '@/lib/roles'
 
 interface ProjectCooperationWidgetProps {
   email: string
@@ -89,7 +89,9 @@ export default function ProjectCooperationWidget({
       reqId
     )}&email=${encodeURIComponent(targetEmail)}&name=${encodeURIComponent(
       targetName
-    )}&project=${encodeURIComponent(projectName)}&pw=${encodeURIComponent(targetPass)}`
+    )}&project=${encodeURIComponent(projectName)}&role=${encodeURIComponent(
+      role
+    )}&pw=${encodeURIComponent(targetPass)}`
   }
 
   function buildMailtoHref(reqId: string) {
@@ -97,16 +99,18 @@ export default function ProjectCooperationWidget({
     const finalName = (customName || fullName || finalEmail.split('@')[0] || 'Contractor').trim()
     const finalPass = (customPassword || password || 'Contractor123').trim()
     const approvalUrl = buildApprovalUrl(reqId, finalEmail, finalName, finalPass)
+    const roleLabel = ROLES[role]?.label ?? 'Contractor / Bidder'
 
     const subject = `ConstructMS Project Cooperation Request — ${projectName}`
     const body = [
       'Hello Admin / Lead Engineer,',
       '',
-      `I would like to join and collaborate on ${projectName} as a Contractor.`,
+      `I would like to join and collaborate on ${projectName} as ${roleLabel}.`,
       '',
       `Full Name: ${finalName}`,
       `Email: ${finalEmail}`,
-      'Role: Contractor / Bidder',
+      `Chosen Role: ${roleLabel}`,
+      `Chosen Project: ${projectName}`,
       '',
       '------------------------------------------------------------',
       'ADMIN / ENGINEER — CLICK THIS LINK TO APPROVE & AUTO-CREATE ACCOUNT:',

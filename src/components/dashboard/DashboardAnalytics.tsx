@@ -25,10 +25,23 @@ export default function DashboardAnalytics({
   const perms = ROLES[role].permissions
 
   const bids = biddingStore?.bids ?? []
+  const userChosenProjects = (store.cooperation_requests ?? [])
+    .filter(
+      (r) =>
+        userEmail &&
+        r.email.toLowerCase() === userEmail.toLowerCase() &&
+        r.status === 'approved'
+    )
+    .map((r) => r.project_name.toLowerCase())
 
   // 1. ADMIN / ENGINEER DASHBOARD (Recharts + Framer Motion Command Center)
   if (role === 'admin_engineer' && adminDashboardPayload) {
-    return <AdminEngineerDashboard initialPayload={adminDashboardPayload} />
+    return (
+      <AdminEngineerDashboard
+        initialPayload={adminDashboardPayload}
+        initialCooperationRequests={store.cooperation_requests}
+      />
+    )
   }
 
   function handleExportProgressCsv() {
@@ -80,7 +93,11 @@ export default function DashboardAnalytics({
   // 2. ASSISTANT DASHBOARD (Assigned Projects, Operations & Draft Preparation)
   // ===========================================================================
   if (role === 'assistant') {
-    const assignedProjects = store.projects.filter((p) => p.assigned_assistant !== false)
+    const assignedProjects = store.projects.filter((p) =>
+      userChosenProjects.length > 0
+        ? userChosenProjects.includes(p.name.toLowerCase())
+        : p.assigned_assistant !== false
+    )
     const draftBids = bids.filter((b) =>
       ['draft', 'estimating', 'checklist'].includes(b.status)
     )
@@ -214,7 +231,11 @@ export default function DashboardAnalytics({
   // 3. CONTRACTOR DASHBOARD (Own Bids/Projects, Assigned Tasks, Own Daily Logs)
   // ===========================================================================
   if (role === 'contractor') {
-    const assignedProjects = store.projects.filter((p) => p.assigned_contractor !== false)
+    const assignedProjects = store.projects.filter((p) =>
+      userChosenProjects.length > 0
+        ? userChosenProjects.includes(p.name.toLowerCase())
+        : p.assigned_contractor !== false
+    )
     const openBids = bids.filter((b) =>
       ['estimating', 'checklist', 'approved', 'submitted', 'awarded'].includes(b.status)
     )
@@ -360,12 +381,17 @@ export default function DashboardAnalytics({
   // ===========================================================================
   // 4. CLIENT DASHBOARD (Read-Only Progress, Approved Daily Logs, Shared Docs)
   // ===========================================================================
+  const clientProjects = store.projects.filter((p) =>
+    userChosenProjects.length > 0
+      ? userChosenProjects.includes(p.name.toLowerCase())
+      : true
+  )
   const approvedLogs = store.daily_logs.filter((l) => l.approval_status === 'approved')
   const sharedDocs = store.documents.filter((d) => d.shared_with_client !== false)
   const avgProgress =
-    store.projects.length > 0
+    clientProjects.length > 0
       ? Math.round(
-          store.projects.reduce((s, p) => s + p.progress, 0) / store.projects.length
+          clientProjects.reduce((s, p) => s + p.progress, 0) / clientProjects.length
         )
       : 0
 
@@ -439,7 +465,7 @@ export default function DashboardAnalytics({
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          {store.projects.map((p) => (
+          {clientProjects.map((p) => (
             <div
               key={p.id}
               className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50/50"

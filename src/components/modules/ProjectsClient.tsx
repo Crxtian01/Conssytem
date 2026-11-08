@@ -2,19 +2,23 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { ProjectRecord } from '@/lib/module-store'
+import type { ProjectRecord, CooperationRequestRecord } from '@/lib/module-store'
 import { ROLES, type UserRole } from '@/lib/roles'
 
 export default function ProjectsClient({
   initialProjects,
   role,
+  joinedMembers = [],
 }: {
   initialProjects: ProjectRecord[]
   role: UserRole
+  joinedMembers?: CooperationRequestRecord[]
 }) {
   const router = useRouter()
   const perms = ROLES[role].permissions
   const [projects, setProjects] = useState(initialProjects)
+  const [members, setMembers] = useState<CooperationRequestRecord[]>(joinedMembers)
+  const [busyMemberId, setBusyMemberId] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
   const [description, setDescription] = useState('')
@@ -83,6 +87,23 @@ export default function ProjectsClient({
     })
     if (res.ok) {
       setProjects(projects.filter((p) => p.id !== id))
+      router.refresh()
+    }
+  }
+
+  async function handleApproveMember(requestId: string) {
+    setBusyMemberId(requestId)
+    const res = await fetch('/api/cooperation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'approve_request', requestId }),
+    })
+    const data = await res.json()
+    setBusyMemberId(null)
+    if (res.ok && data.request) {
+      setMembers((prev) =>
+        prev.map((m) => (m.id === requestId ? data.request : m))
+      )
       router.refresh()
     }
   }
@@ -204,6 +225,74 @@ export default function ProjectsClient({
                   />
                 </div>
               </div>
+
+              {/* Only display Joined Project Members on the specific project they chose */}
+              {(() => {
+                const membersForProject = members.filter(
+                  (m) =>
+                    m.project_name.toLowerCase() === p.name.toLowerCase() &&
+                    m.status !== 'rejected'
+                )
+                if (membersForProject.length === 0) return null
+
+                return (
+                  <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/40 p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-900">
+                        Joined Project Team ({membersForProject.length})
+                      </span>
+                      <span className="text-[10px] font-semibold text-emerald-800">
+                        Lead Engineer: lacuatachristian01@gmail.com
+                      </span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {membersForProject.map((m) => {
+                        const roleLabel =
+                          ROLES[m.requested_role]?.label || 'Contractor'
+                        return (
+                          <div
+                            key={m.id}
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-white px-2.5 py-2 text-[11px]"
+                          >
+                            <div>
+                              <span className="font-bold text-gray-900">
+                                {m.full_name}
+                              </span>{' '}
+                              <span className="text-gray-500">({m.email})</span>
+                              <div className="mt-0.5 text-[10px] font-semibold text-amber-800">
+                                Role: {roleLabel}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                                  m.status === 'approved'
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : 'bg-amber-100 text-amber-800'
+                                }`}
+                              >
+                                {m.status === 'approved'
+                                  ? `${roleLabel} • Joined`
+                                  : 'Pending Approval'}
+                              </span>
+                              {m.status === 'pending' && role === 'admin_engineer' && (
+                                <button
+                                  type="button"
+                                  disabled={busyMemberId === m.id}
+                                  onClick={() => handleApproveMember(m.id)}
+                                  className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-emerald-700 disabled:opacity-50"
+                                >
+                                  Approve
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
 
               <div className="flex items-center justify-between pt-1">
                 {perms.updateProjectProgress ? (

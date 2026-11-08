@@ -13,6 +13,7 @@ import {
   type AnimationMode,
 } from '@/lib/admin-dashboard-animation'
 import { ROLES } from '@/lib/roles'
+import type { CooperationRequestRecord } from '@/lib/module-store'
 import type {
   AdminDashboardPayload,
   DateRangePreset,
@@ -20,10 +21,12 @@ import type {
 
 interface AdminEngineerDashboardProps {
   initialPayload: AdminDashboardPayload
+  initialCooperationRequests?: CooperationRequestRecord[]
 }
 
 export default function AdminEngineerDashboard({
   initialPayload,
+  initialCooperationRequests = [],
 }: AdminEngineerDashboardProps) {
   const router = useRouter()
   const systemReducedMotion = Boolean(useReducedMotion())
@@ -49,6 +52,53 @@ export default function AdminEngineerDashboard({
   const [isFetchingFilter, setIsFetchingFilter] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [busyApprovalId, setBusyApprovalId] = useState<string | null>(null)
+  const [cooperationRequests, setCooperationRequests] = useState<CooperationRequestRecord[]>(
+    initialCooperationRequests
+  )
+  const [coopNotice, setCoopNotice] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/cooperation')
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.cooperation_requests)) {
+          setCooperationRequests(d.cooperation_requests)
+        }
+      })
+      .catch(() => {
+        // Keep initialCooperationRequests
+      })
+  }, [])
+
+  async function handleCooperationApproval(
+    requestId: string,
+    decision: 'approve_request' | 'reject_request'
+  ) {
+    setBusyApprovalId(requestId)
+    setCoopNotice(null)
+    try {
+      const res = await fetch('/api/cooperation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: decision, requestId }),
+      })
+      const data = await res.json()
+      setBusyApprovalId(null)
+      if (res.ok && data.request) {
+        setCooperationRequests((prev) =>
+          prev.map((item) => (item.id === requestId ? data.request : item))
+        )
+        setCoopNotice(
+          decision === 'approve_request'
+            ? `Approved ${data.request.full_name} (${data.request.email}) to join ${data.request.project_name}!`
+            : `Rejected request from ${data.request.email}.`
+        )
+        router.refresh()
+      }
+    } catch {
+      setBusyApprovalId(null)
+    }
+  }
 
   // Optional QA simulation toggles for testing skeleton, empty state, and reduced-motion fallback
   const [showQaChecklist, setShowQaChecklist] = useState<boolean>(false)

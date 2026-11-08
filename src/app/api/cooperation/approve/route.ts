@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { getAdminDb } from '@/lib/db'
 import { setCachedUserRole, clearAuthCache } from '@/lib/auth'
 import { readStore, writeStore, newId } from '@/lib/module-store'
-import type { UserRole } from '@/lib/roles'
+import { ROLES, normalizeRole, type UserRole } from '@/lib/roles'
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const nameParam = (searchParams.get('name') || '').trim() || 'Contractor'
     const projectParam =
       (searchParams.get('project') || '').trim() || 'Metro Commercial Tower Phase 1'
+    const roleParam: UserRole = normalizeRole(searchParams.get('role') || 'contractor')
     const pwParam = (searchParams.get('pw') || '').trim() || 'Contractor123'
 
     const store = readStore()
@@ -27,9 +28,9 @@ export async function GET(request: NextRequest) {
         full_name: nameParam,
         email: emailParam,
         password: pwParam,
-        requested_role: 'contractor',
+        requested_role: roleParam,
         project_name: projectParam,
-        message: `Requesting cooperation to join ${projectParam} as Contractor.`,
+        message: `Requesting cooperation to join ${projectParam} as ${ROLES[roleParam].label}.`,
         status: 'pending',
         engineer_email: 'lacuatachristian01@gmail.com',
         approval_email_sent: false,
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
     const adminDb = getAdminDb()
     const targetEmail = coopReq.email.trim().toLowerCase()
     const targetPassword = coopReq.password || pwParam || 'Contractor123'
-    const targetRole: UserRole = 'contractor'
+    const targetRole: UserRole = normalizeRole(coopReq.requested_role || roleParam)
 
     const { data: listData } = await adminDb.auth.admin.listUsers({
       page: 1,

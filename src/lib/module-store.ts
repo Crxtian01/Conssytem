@@ -546,7 +546,22 @@ const INITIAL_SEED: StoreData = {
     },
   ],
   role_requests: [],
-  cooperation_requests: [],
+  cooperation_requests: [
+    {
+      id: 'coop-seed-1',
+      full_name: 'Lacuata',
+      email: 'lacuatachristian904@gmail.com',
+      requested_role: 'contractor',
+      project_name: 'Metro Commercial Tower Phase 1',
+      message: 'Joined and collaborating on Metro Commercial Tower Phase 1 as Contractor.',
+      status: 'approved',
+      engineer_email: 'lacuatachristian01@gmail.com',
+      approval_email_sent: true,
+      approved_by_email: 'lacuatachristian01@gmail.com',
+      approved_at: '2026-11-08T14:15:00Z',
+      created_at: '2026-11-08T14:15:00Z',
+    },
+  ],
 }
 
 let memoryStoreCache: StoreData | null = null
@@ -585,7 +600,10 @@ export function readStore(): StoreData {
         ...d,
       })),
       role_requests: parsed.role_requests ?? INITIAL_SEED.role_requests,
-      cooperation_requests: parsed.cooperation_requests ?? INITIAL_SEED.cooperation_requests,
+      cooperation_requests:
+        parsed.cooperation_requests && parsed.cooperation_requests.length > 0
+          ? parsed.cooperation_requests
+          : INITIAL_SEED.cooperation_requests,
     }
     return memoryStoreCache
   } catch {

@@ -19,8 +19,19 @@ async function ProjectsContent() {
   const store = readStore()
   const perms = ROLES[user.role].permissions
 
+  const userChosenProjects = store.cooperation_requests
+    .filter(
+      (r) =>
+        r.email.toLowerCase() === user.email.toLowerCase() &&
+        r.status === 'approved'
+    )
+    .map((r) => r.project_name.toLowerCase())
+
   const projects = store.projects
     .filter((p) => {
+      if (user.role !== 'admin_engineer' && userChosenProjects.length > 0) {
+        return userChosenProjects.includes(p.name.toLowerCase())
+      }
       if (user.role === 'contractor') return p.assigned_contractor !== false
       if (user.role === 'assistant') return p.assigned_assistant !== false
       return true
@@ -49,7 +60,11 @@ async function ProjectsContent() {
                 : 'Monitor assigned construction site timelines and completion progress.'}
           </p>
         </div>
-        <ProjectsClient initialProjects={projects} role={user.role} />
+        <ProjectsClient
+          initialProjects={projects}
+          role={user.role}
+          joinedMembers={store.cooperation_requests}
+        />
       </div>
     </AppShell>
   )
