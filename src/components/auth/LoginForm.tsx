@@ -147,7 +147,7 @@ export default function LoginForm() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder="example@gmail.com"
             className="mt-1.5 block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 shadow-sm backdrop-blur-md focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>

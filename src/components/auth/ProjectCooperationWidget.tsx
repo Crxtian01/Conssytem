@@ -41,6 +41,7 @@ export default function ProjectCooperationWidget({
   const [projectName, setProjectName] = useState('Metro Commercial Tower Phase 1')
   const [submitting, setSubmitting] = useState(false)
   const [approving, setApproving] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [activeReq, setActiveReq] = useState<CooperationReqState | null>(null)
   const [approvalNotice, setApprovalNotice] = useState<string | null>(null)
@@ -288,13 +289,13 @@ export default function ProjectCooperationWidget({
               </div>
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">
-                  Email Address (for Approval Notice &amp; Auto-Account)
+                  Email Address (e.g. example@gmail.com)
                 </label>
                 <input
                   type="email"
                   value={customEmail}
                   onChange={(e) => setCustomEmail(e.target.value)}
-                  placeholder="contractor@example.com"
+                  placeholder="example@gmail.com"
                   className="mt-1 block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
@@ -302,13 +303,35 @@ export default function ProjectCooperationWidget({
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">
                   Password for Your Automatic Account
                 </label>
-                <input
-                  type="password"
-                  value={customPassword}
-                  onChange={(e) => setCustomPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  className="mt-1 block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
-                />
+                <div className="relative mt-1">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={customPassword}
+                    onChange={(e) => setCustomPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    className="block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 pr-11 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 transition hover:text-white"
+                  >
+                    {showPassword ? (
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    ) : (
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                        <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">

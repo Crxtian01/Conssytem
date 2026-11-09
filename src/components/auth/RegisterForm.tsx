@@ -9,7 +9,6 @@ import ProjectCooperationWidget from './ProjectCooperationWidget'
 
 export default function RegisterForm() {
   const router = useRouter()
-  const [registerMode, setRegisterMode] = useState<'create_account' | 'join_project'>('create_account')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<'contractor' | 'client' | 'assistant' | 'admin_engineer'>('contractor')
@@ -90,56 +89,25 @@ export default function RegisterForm() {
 
   return (
     <div className="space-y-5">
-      {/* 1. Mode Selector: Clear Choice between Direct Account vs Join a Project */}
-      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 backdrop-blur-xl">
-        <button
-          type="button"
-          onClick={() => setRegisterMode('create_account')}
-          className={`flex items-center justify-center gap-2 rounded-xl py-3 px-3 text-xs font-black transition ${
-            registerMode === 'create_account'
-              ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/25'
-              : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
-          }`}
-        >
-          <span className="text-sm">👤</span>
-          <span>Create Account</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setRegisterMode('join_project')}
-          className={`flex items-center justify-center gap-2 rounded-xl py-3 px-3 text-xs font-black transition ${
-            registerMode === 'join_project'
-              ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/25'
-              : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
-          }`}
-        >
-          <span className="text-sm">🤝</span>
-          <span>Join / Connect Project</span>
-        </button>
-      </div>
-
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-950/60 p-3 text-xs font-semibold text-red-300 backdrop-blur-md">
           ⚠️ {error}
         </div>
       )}
 
-      {/* OPTION A: DIRECT ACCOUNT REGISTRATION */}
-      {registerMode === 'create_account' ? (
-        <div className="space-y-4">
-          <GoogleSignInButton />
+      <GoogleSignInButton />
 
-          <div className="relative flex items-center py-0.5">
-            <div className="flex-grow border-t border-white/10" />
-            <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              or sign up with email
-            </span>
-            <div className="flex-grow border-t border-white/10" />
-          </div>
+      <div className="relative flex items-center py-0.5">
+        <div className="flex-grow border-t border-white/10" />
+        <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          or sign up with email
+        </span>
+        <div className="flex-grow border-t border-white/10" />
+      </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label htmlFor="fullName" className="block text-xs font-bold text-[#1e1512]">
+          <label htmlFor="fullName" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
             Full name
           </label>
           <input
@@ -150,12 +118,12 @@ export default function RegisterForm() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Juan Dela Cruz"
-            className="mt-1 block w-full rounded-xl px-3.5 py-2 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
+            className="mt-1 block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-xs font-bold text-[#1e1512]">
+          <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
             Email address
           </label>
           <input
@@ -165,14 +133,14 @@ export default function RegisterForm() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="mt-1 block w-full rounded-xl px-3.5 py-2 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
+            placeholder="example@gmail.com"
+            className="mt-1 block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>
 
         {/* User Role Selector */}
         <div>
-          <label htmlFor="role" className="block text-xs font-bold text-[#1e1512]">
+          <label htmlFor="role" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
             Your Role in the Project
           </label>
           <select
@@ -181,10 +149,10 @@ export default function RegisterForm() {
             onChange={(e) =>
               setRole(e.target.value as 'contractor' | 'client' | 'assistant' | 'admin_engineer')
             }
-            className="mt-1 block w-full rounded-xl border border-white/80 bg-white/75 px-3.5 py-2 text-sm font-semibold text-[#1e1512] shadow-sm backdrop-blur-md focus:border-[#c85a38] focus:outline-none"
+            className="mt-1 block w-full rounded-xl border border-white/20 bg-slate-900/90 px-3.5 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-md focus:border-cyan-400 focus:outline-none"
           >
             {roleOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
                 {opt.label} — {opt.desc}
               </option>
             ))}
@@ -194,7 +162,7 @@ export default function RegisterForm() {
         {/* Password Field + Minimal Single-Row Pills */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-xs font-bold text-[#1e1512]">
+            <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
               Password
             </label>
             <div className="flex items-center gap-1">
@@ -203,8 +171,8 @@ export default function RegisterForm() {
                   key={item.id}
                   className={`rounded-full px-2 py-0.5 text-[10px] font-bold transition-colors ${
                     item.passed
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-black/5 text-[#7d6860]'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30'
+                      : 'bg-white/5 text-slate-400 border border-white/10'
                   }`}
                 >
                   {item.passed ? '✓ ' : ''}
@@ -224,13 +192,13 @@ export default function RegisterForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 6 characters"
-              className="block w-full rounded-xl px-3.5 py-2 pr-11 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
+              className="block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2 pr-11 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-[#6e5a52] transition hover:text-[#1e1512]"
+              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 transition hover:text-white"
             >
               {showPassword ? (
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -256,9 +224,9 @@ export default function RegisterForm() {
                 className={`h-1 rounded-full transition-all duration-300 ${
                   password.length > 0 && passedCount >= step
                     ? passedCount === 3
-                      ? 'bg-emerald-500'
-                      : 'bg-[#c85a38]'
-                    : 'bg-white/60'
+                      ? 'bg-emerald-400'
+                      : 'bg-amber-400'
+                    : 'bg-white/10'
                 }`}
               />
             ))}
@@ -268,13 +236,13 @@ export default function RegisterForm() {
         {/* Confirm Password Field */}
         <div>
           <div className="flex items-center justify-between">
-            <label htmlFor="confirmPassword" className="block text-xs font-bold text-[#1e1512]">
+            <label htmlFor="confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
               Confirm password
             </label>
             {confirmPassword.length > 0 && (
               <span
                 className={`text-[10px] font-bold ${
-                  passwordsMatch ? 'text-emerald-700' : 'text-red-600'
+                  passwordsMatch ? 'text-emerald-300' : 'text-red-400'
                 }`}
               >
                 {passwordsMatch ? '✓ Match' : '✕ No match'}
@@ -291,13 +259,13 @@ export default function RegisterForm() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repeat password"
-              className="block w-full rounded-xl px-3.5 py-2 pr-11 text-sm text-[#1e1512] placeholder:text-[#8c7369] focus:outline-none"
+              className="block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2 pr-11 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword((v) => !v)}
               aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-[#6e5a52] transition hover:text-[#1e1512]"
+              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 transition hover:text-white"
             >
               {showConfirmPassword ? (
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -325,40 +293,20 @@ export default function RegisterForm() {
         </button>
       </form>
 
-      {/* Quick link to switch to project cooperation mode */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-        <p className="text-xs text-slate-300">
-          Want to collaborate on an existing project instead?
-        </p>
-        <button
-          type="button"
-          onClick={() => setRegisterMode('join_project')}
-          className="mt-1 text-xs font-bold text-cyan-300 hover:text-cyan-200 underline"
-        >
-          Join / Connect to a Project →
-        </button>
-      </div>
-    </div>
-  ) : (
-    /* OPTION B: JOIN / CONNECT TO A PROJECT DIRECTLY */
-    <div className="space-y-4">
+      <p className="text-center text-sm font-medium text-slate-400 pt-2 border-t border-white/10">
+        Already have an account?{' '}
+        <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
+          Sign in
+        </Link>
+      </p>
+
+      {/* Project Cooperation Flow */}
       <ProjectCooperationWidget
         email={email}
         password={password}
         fullName={fullName}
         role={role}
-        defaultExpanded={true}
-        hideHeaderToggle={true}
       />
     </div>
-  )}
-
-  <p className="text-center text-sm font-medium text-slate-400 pt-2 border-t border-white/10">
-    Already have an account?{' '}
-    <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
-      Sign in
-    </Link>
-  </p>
-</div>
-)
+  )
 }
