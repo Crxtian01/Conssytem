@@ -10,6 +10,8 @@ interface ProjectCooperationWidgetProps {
   password: string
   fullName?: string
   role: UserRole
+  defaultExpanded?: boolean
+  hideHeaderToggle?: boolean
 }
 
 interface CooperationReqState {
@@ -28,9 +30,11 @@ export default function ProjectCooperationWidget({
   password,
   fullName = '',
   role,
+  defaultExpanded = false,
+  hideHeaderToggle = false,
 }: ProjectCooperationWidgetProps) {
   const router = useRouter()
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const [customName, setCustomName] = useState(fullName)
   const [customEmail, setCustomEmail] = useState(email)
   const [customPassword, setCustomPassword] = useState(password)
@@ -231,31 +235,34 @@ export default function ProjectCooperationWidget({
   }
 
   return (
-    <div className="rounded-2xl border border-white/80 bg-white/60 p-4 text-left shadow-sm backdrop-blur-md space-y-3">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-xs font-bold text-[#1e1512]">
+    <div className="rounded-2xl border border-cyan-500/30 bg-[#0c1220]/95 p-5 text-left shadow-2xl backdrop-blur-2xl space-y-4 text-white">
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-300 text-base border border-cyan-400/30">
+          🤝
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-extrabold text-white sm:text-base">
             Want to join or connect to a project?
-          </p>
-          <p className="mt-0.5 text-[11px] text-[#5c4942]">
-            Send a cooperation request to the Admin / Lead Engineer. The email includes a direct <strong>Approve Link</strong>—once the Engineer clicks Approve, your Contractor account is automatically created, an approval notice is sent, and you go straight to the Contractor Dashboard.
+          </h3>
+          <p className="mt-1 text-xs text-slate-300 leading-relaxed">
+            Send a cooperation request to the Admin / Lead Engineer. The email includes a direct <strong className="text-cyan-300">Approve Link</strong>—once the Engineer clicks Approve, your Contractor account is automatically created, an approval notice is sent, and you go straight to the Contractor Dashboard.
           </p>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-300/80 bg-red-50/90 p-2.5 text-xs font-semibold text-red-700">
-          {error}
+        <div className="rounded-xl border border-red-500/30 bg-red-950/50 p-3 text-xs font-semibold text-red-300">
+          ⚠️ {error}
         </div>
       )}
 
       {approvalNotice && (
-        <div className="rounded-xl border border-emerald-400/90 bg-emerald-50/95 p-3 text-xs text-emerald-900 shadow-sm space-y-1">
+        <div className="rounded-xl border border-emerald-400/80 bg-emerald-950/60 p-3.5 text-xs text-emerald-200 shadow-md space-y-1">
           <div className="flex items-center justify-between">
-            <span className="font-extrabold uppercase tracking-wider text-emerald-800">
+            <span className="font-extrabold uppercase tracking-wider text-emerald-300">
               Request Approved by Engineer
             </span>
-            <span className="rounded-full bg-emerald-200/80 px-2 py-0.5 text-[10px] font-bold text-emerald-900">
+            <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
               Email Sent
             </span>
           </div>
@@ -264,23 +271,23 @@ export default function ProjectCooperationWidget({
       )}
 
       {!activeReq && (
-        <div className="space-y-2.5">
-          {expanded && (
-            <div className="space-y-2 rounded-xl border border-white/75 bg-white/50 p-3">
+        <div className="space-y-3">
+          {(expanded || hideHeaderToggle) && (
+            <div className="space-y-3 rounded-xl border border-white/10 bg-white/[0.04] p-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#5c4942]">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">
                   Full Name
                 </label>
                 <input
                   type="text"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="Juan Dela Cruz"
-                  className="mt-1 block w-full rounded-lg border border-white/80 bg-white/80 px-2.5 py-1.5 text-xs text-[#1e1512]"
+                  placeholder="e.g. Christian Lacuata"
+                  className="mt-1 block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#5c4942]">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">
                   Email Address (for Approval Notice &amp; Auto-Account)
                 </label>
                 <input
@@ -288,11 +295,11 @@ export default function ProjectCooperationWidget({
                   value={customEmail}
                   onChange={(e) => setCustomEmail(e.target.value)}
                   placeholder="contractor@example.com"
-                  className="mt-1 block w-full rounded-lg border border-white/80 bg-white/80 px-2.5 py-1.5 text-xs text-[#1e1512]"
+                  className="mt-1 block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#5c4942]">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">
                   Password for Your Automatic Account
                 </label>
                 <input
@@ -300,17 +307,17 @@ export default function ProjectCooperationWidget({
                   value={customPassword}
                   onChange={(e) => setCustomPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="mt-1 block w-full rounded-lg border border-white/80 bg-white/80 px-2.5 py-1.5 text-xs text-[#1e1512]"
+                  className="mt-1 block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#5c4942]">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-cyan-300">
                   Project to Join
                 </label>
                 <select
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-white/80 bg-white/80 px-2.5 py-1.5 text-xs font-semibold text-[#1e1512]"
+                  className="mt-1 block w-full rounded-xl border border-white/20 bg-[#070b14] px-3.5 py-2 text-sm font-semibold text-white focus:border-cyan-400 focus:outline-none"
                 >
                   <option value="Metro Commercial Tower Phase 1">
                     Metro Commercial Tower Phase 1
@@ -327,13 +334,13 @@ export default function ProjectCooperationWidget({
           )}
 
           <div className="flex flex-wrap items-center gap-2">
-            {!expanded ? (
+            {!expanded && !hideHeaderToggle ? (
               <button
                 type="button"
                 onClick={() => setExpanded(true)}
-                className="w-full rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+                className="w-full rounded-xl bg-cyan-400 hover:bg-cyan-300 px-4 py-3 text-xs font-black text-slate-950 shadow-md shadow-cyan-500/20 transition"
               >
-                Request Project Cooperation from Admin / Engineer
+                Request Project Cooperation from Admin / Engineer →
               </button>
             ) : (
               <>
@@ -341,7 +348,7 @@ export default function ProjectCooperationWidget({
                   type="button"
                   disabled={submitting}
                   onClick={() => handleSubmitCooperationRequest(false)}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-3 py-2 text-xs font-bold text-slate-950 shadow-sm transition hover:from-cyan-400 hover:to-blue-500 disabled:opacity-60"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 px-4 py-3 text-xs font-black text-slate-950 shadow-lg shadow-cyan-500/25 transition disabled:opacity-60"
                 >
                   {submitting ? 'Sending Request…' : 'Send Request to Engineer'}
                 </button>
@@ -349,9 +356,9 @@ export default function ProjectCooperationWidget({
                   type="button"
                   disabled={submitting}
                   onClick={() => handleSubmitCooperationRequest(true)}
-                  className="rounded-xl border border-white/10 bg-white/[0.06] hover:bg-white/[0.12] px-3 py-2 text-xs font-semibold text-slate-200 transition"
+                  className="rounded-xl border border-white/20 bg-white/[0.08] hover:bg-white/[0.15] px-4 py-3 text-xs font-bold text-white transition"
                 >
-                  Open Email App (with Approve Link)
+                  Open in Gmail
                 </button>
               </>
             )}
@@ -360,25 +367,25 @@ export default function ProjectCooperationWidget({
       )}
 
       {activeReq && activeReq.status === 'pending' && (
-        <div className="rounded-xl border border-cyan-500/40 bg-cyan-950/40 p-3 text-xs text-white space-y-2.5 backdrop-blur-md">
+        <div className="rounded-xl border border-cyan-500/40 bg-cyan-950/60 p-4 text-xs text-white space-y-3 backdrop-blur-md">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-cyan-300">
+            <span className="font-extrabold text-cyan-300 text-sm">
               Email Request Sent to Lead Engineer
             </span>
-            <span className="rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
+            <span className="rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2.5 py-0.5 text-[10px] font-bold text-cyan-300">
               Pending Approval
             </span>
           </div>
-          <p className="text-[11px] leading-relaxed text-slate-300">
+          <p className="text-xs leading-relaxed text-slate-200">
             Sent to <strong className="text-white">lacuatachristian01@gmail.com</strong> for project{' '}
             <strong className="text-white">{activeReq.project_name}</strong> ({activeReq.email}). Click the <strong className="text-cyan-300">Approve Link</strong> inside the email (or click below) to accept:
           </p>
-          <div className="flex flex-col gap-1.5 pt-1 border-t border-white/10">
+          <div className="flex flex-col gap-2 pt-1 border-t border-white/10">
             <button
               type="button"
               disabled={approving}
               onClick={handleEngineerAcceptRequest}
-              className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 px-3 py-2 text-xs font-bold text-slate-950 shadow-sm transition disabled:opacity-60"
+              className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-md transition disabled:opacity-60"
             >
               {approving
                 ? 'Approving & Creating Contractor Account…'
@@ -386,7 +393,7 @@ export default function ProjectCooperationWidget({
             </button>
             <a
               href={buildMailtoHref(activeReq.id)}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.05] hover:bg-white/[0.1] px-3 py-1.5 text-center text-[11px] font-semibold text-cyan-300"
+              className="w-full rounded-xl border border-cyan-500/40 bg-white/[0.06] hover:bg-white/[0.12] px-4 py-2 text-center text-xs font-bold text-cyan-300 transition"
             >
               Open Email in Gmail with Clickable Approve Link
             </a>

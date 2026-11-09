@@ -9,6 +9,7 @@ import ProjectCooperationWidget from './ProjectCooperationWidget'
 
 export default function RegisterForm() {
   const router = useRouter()
+  const [registerMode, setRegisterMode] = useState<'create_account' | 'join_project'>('create_account')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<'contractor' | 'client' | 'assistant' | 'admin_engineer'>('contractor')
@@ -88,24 +89,55 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* 1. Mode Selector: Clear Choice between Direct Account vs Join a Project */}
+      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 backdrop-blur-xl">
+        <button
+          type="button"
+          onClick={() => setRegisterMode('create_account')}
+          className={`flex items-center justify-center gap-2 rounded-xl py-3 px-3 text-xs font-black transition ${
+            registerMode === 'create_account'
+              ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/25'
+              : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
+          }`}
+        >
+          <span className="text-sm">👤</span>
+          <span>Create Account</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setRegisterMode('join_project')}
+          className={`flex items-center justify-center gap-2 rounded-xl py-3 px-3 text-xs font-black transition ${
+            registerMode === 'join_project'
+              ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/25'
+              : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
+          }`}
+        >
+          <span className="text-sm">🤝</span>
+          <span>Join / Connect Project</span>
+        </button>
+      </div>
+
       {error && (
-        <div className="rounded-xl border border-red-300/80 bg-red-50/80 p-3 text-xs font-semibold text-red-700 backdrop-blur-md">
+        <div className="rounded-xl border border-red-500/30 bg-red-950/60 p-3 text-xs font-semibold text-red-300 backdrop-blur-md">
           ⚠️ {error}
         </div>
       )}
 
-      <GoogleSignInButton />
+      {/* OPTION A: DIRECT ACCOUNT REGISTRATION */}
+      {registerMode === 'create_account' ? (
+        <div className="space-y-4">
+          <GoogleSignInButton />
 
-      <div className="relative flex items-center py-0.5">
-        <div className="flex-grow border-t border-white/70" />
-        <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-wider text-[#6e5a52]">
-          or sign up with email
-        </span>
-        <div className="flex-grow border-t border-white/70" />
-      </div>
+          <div className="relative flex items-center py-0.5">
+            <div className="flex-grow border-t border-white/10" />
+            <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              or sign up with email
+            </span>
+            <div className="flex-grow border-t border-white/10" />
+          </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
           <label htmlFor="fullName" className="block text-xs font-bold text-[#1e1512]">
             Full name
@@ -287,26 +319,59 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:from-cyan-400 hover:to-blue-500 disabled:opacity-60"
+          className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-3 text-sm font-black text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:from-cyan-300 hover:to-blue-400 disabled:opacity-60"
         >
           {loading ? 'Creating account…' : 'Create Account'}
         </button>
       </form>
 
-      <p className="text-center text-sm font-medium text-slate-400">
-        Already have an account?{' '}
-        <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
-          Sign in
-        </Link>
-      </p>
-
-      {/* Project Cooperation & Automatic Contractor Account Flow */}
+      {/* Quick link to switch to project cooperation mode */}
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
+        <p className="text-xs text-slate-300">
+          Want to collaborate on an existing project instead?
+        </p>
+        <button
+          type="button"
+          onClick={() => setRegisterMode('join_project')}
+          className="mt-1 text-xs font-bold text-cyan-300 hover:text-cyan-200 underline"
+        >
+          Join / Connect to a Project →
+        </button>
+      </div>
+    </div>
+  ) : (
+    /* OPTION B: JOIN / CONNECT TO A PROJECT DIRECTLY */
+    <div className="space-y-4">
       <ProjectCooperationWidget
         email={email}
         password={password}
         fullName={fullName}
         role={role}
+        defaultExpanded={true}
+        hideHeaderToggle={true}
       />
+
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
+        <p className="text-xs text-slate-300">
+          Need a direct personal/corporate account instead?
+        </p>
+        <button
+          type="button"
+          onClick={() => setRegisterMode('create_account')}
+          className="mt-1 text-xs font-bold text-cyan-300 hover:text-cyan-200 underline"
+        >
+          ← Create Standard Account
+        </button>
+      </div>
     </div>
-  )
+  )}
+
+  <p className="text-center text-sm font-medium text-slate-400 pt-2 border-t border-white/10">
+    Already have an account?{' '}
+    <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
+      Sign in
+    </Link>
+  </p>
+</div>
+)
 }
