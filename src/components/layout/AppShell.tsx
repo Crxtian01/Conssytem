@@ -626,7 +626,7 @@ export default function AppShell({ user, children }: AppShellProps) {
   return (
     <div
       ref={shellRef}
-      className="liquid-mesh-bg relative flex h-dvh w-full overflow-hidden text-slate-100 p-2.5 sm:p-4 md:p-5 lg:p-6"
+      className="liquid-mesh-bg relative flex h-dvh w-full overflow-hidden text-slate-100 p-0 sm:p-4 md:p-5 lg:p-6"
     >
       {/* Warm Ambient Studio Lighting Behind the visionOS Frame */}
       <ScatteredMaterialsBackdrop />
@@ -656,17 +656,17 @@ export default function AppShell({ user, children }: AppShellProps) {
            ===================================================================== */}
         {mobileDrawerOpen && (
           <div
-            className="fixed inset-0 z-40 flex md:hidden"
+            className="fixed inset-0 z-50 flex md:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation drawer"
           >
             <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+              className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity"
               onClick={() => setMobileDrawerOpen(false)}
               aria-hidden="true"
             />
-            <aside className="liquid-glass-sidebar relative z-10 flex h-dvh w-76 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-r border-white/10 shadow-2xl">
+            <aside className="liquid-glass-sidebar relative z-10 flex h-dvh w-72 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-r border-white/10 bg-[#090d18]/95 shadow-2xl backdrop-blur-2xl">
               {renderSidebarContents(true)}
             </aside>
           </div>
@@ -675,7 +675,7 @@ export default function AppShell({ user, children }: AppShellProps) {
         {/* =====================================================================
             3. RIGHT SIDE: Floating Dark Frosted Glass Canvas
            ===================================================================== */}
-        <div className="codexr-canvas-surface relative z-10 flex min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
+        <div className="codexr-canvas-surface relative z-10 flex min-w-0 flex-1 flex-col overflow-hidden rounded-none sm:rounded-3xl border-0 sm:border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
           {/* Top Header Bar (Shows on mobile or subpages) */}
           <header className={`codexr-header-surface shrink-0 px-4 py-3 md:px-7 ${isDashboardHome ? 'md:hidden' : ''}`}>
             <div className="flex items-center justify-between gap-3">
@@ -737,7 +737,7 @@ export default function AppShell({ user, children }: AppShellProps) {
           {/* Scrollable Main Content Container */}
           <main
             ref={mainScrollRef}
-            className="liquid-workspace flex-1 min-w-0 overflow-y-auto p-4 md:p-7"
+            className="liquid-workspace flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-5 md:p-7"
           >
             {isTransitioning && (
               <div className="liquid-glass-card mb-4 rounded-2xl px-4 py-2.5 text-xs font-bold text-[#1e1512] flex items-center gap-2.5">

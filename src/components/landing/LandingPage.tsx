@@ -472,17 +472,17 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </div>
 
       {/* --------------------------- Product Showcase --------------------------- */}
-      <section className="relative z-20 -mt-2 px-6 py-20 lg:px-10 lg:py-28 overflow-hidden">
+      <section className="relative z-20 -mt-2 px-3 sm:px-6 py-12 sm:py-20 lg:px-10 lg:py-28 overflow-hidden">
         <ScrollReveal>
-          <div className="mb-10 text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.2em] text-cyan-300 backdrop-blur-md">
+          <div className="mb-8 sm:mb-10 text-center px-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1 text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.16em] sm:tracking-[0.2em] text-cyan-300 backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
               Live Admin &amp; Lead Engineer Command Center
             </span>
-            <h3 className="mt-3 text-3xl font-black text-white sm:text-4xl">
+            <h3 className="mt-3 text-2xl font-black text-white sm:text-4xl">
               One unified cockpit for every site, bid &amp; budget.
             </h3>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-slate-400">
+            <p className="mx-auto mt-2 max-w-xl text-xs sm:text-sm text-slate-400">
               Live executive telemetry showing verified S-Curve progress curves, RA 12009 public bidding packages, and real-time capital disbursement.
             </p>
           </div>

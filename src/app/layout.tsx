@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
@@ -19,6 +19,13 @@ const instrumentSerif = Instrument_Serif({
   weight: "400",
   style: ["normal", "italic"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#05070e",
+};
 
 export const metadata: Metadata = {
   title: "Construction Management System",

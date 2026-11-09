@@ -119,7 +119,7 @@ export default function DashboardShowcase() {
         transform: 'perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
         transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
       }}
-      className="relative mx-auto w-full max-w-[1340px] rounded-[32px] border border-cyan-500/30 bg-[#090e1c]/95 p-5 shadow-[0_32px_120px_rgba(0,180,216,0.22)] backdrop-blur-3xl sm:p-7 md:p-9 text-white selection:bg-cyan-500/30"
+      className="relative mx-auto w-full max-w-[1340px] rounded-2xl sm:rounded-[32px] border border-cyan-500/30 bg-[#090e1c]/95 p-3.5 sm:p-6 md:p-8 shadow-[0_32px_120px_rgba(0,180,216,0.22)] backdrop-blur-3xl text-white selection:bg-cyan-500/30"
     >
       {/* Top Specular Glint */}
       <div
@@ -167,70 +167,70 @@ export default function DashboardShowcase() {
       </div>
 
       {/* Top 4 Key Construction KPIs (Matching Real Admin / Engineer Dashboard) */}
-      <div className="mt-6 grid grid-cols-2 gap-3.5 sm:grid-cols-4 sm:gap-4">
+      <div className="mt-5 sm:mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-4">
         {/* Metric 1: Total Contract Value */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 backdrop-blur-xl transition hover:border-cyan-400/40 hover:bg-slate-900/90 shadow-lg">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-300 text-xs">
+        <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-slate-900/70 p-3 sm:p-4 backdrop-blur-xl transition hover:border-cyan-400/40 hover:bg-slate-900/90 shadow-lg">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-300">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-300 text-xs">
               ₱
             </span>
-            <span>Total Contract Value</span>
+            <span className="truncate">Contract Value</span>
           </div>
-          <p className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
+          <p className="mt-1.5 sm:mt-2 text-xl font-black tracking-tight text-white sm:text-3xl">
             ₱48.5M
           </p>
-          <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
-            <span>+₱12.4M new award</span>
-            <span>↑ 15.2%</span>
+          <div className="mt-0.5 sm:mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400">
+            <span>+₱12.4M</span>
+            <span>↑ 15%</span>
           </div>
         </div>
 
         {/* Metric 2: S-Curve Overall Completion */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 backdrop-blur-xl transition hover:border-emerald-400/40 hover:bg-slate-900/90 shadow-lg">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300 text-xs">
+        <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-slate-900/70 p-3 sm:p-4 backdrop-blur-xl transition hover:border-emerald-400/40 hover:bg-slate-900/90 shadow-lg">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-300">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300 text-xs">
               📈
             </span>
-            <span>S-Curve Progress</span>
+            <span className="truncate">S-Curve Progress</span>
           </div>
-          <p className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
+          <p className="mt-1.5 sm:mt-2 text-xl font-black tracking-tight text-white sm:text-3xl">
             68.4%
           </p>
-          <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
-            <span>▲ Ahead of baseline</span>
+          <div className="mt-0.5 sm:mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400">
+            <span>Ahead</span>
             <span>+4.2%</span>
           </div>
         </div>
 
         {/* Metric 3: Disbursed Budget vs Actual */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 backdrop-blur-xl transition hover:border-amber-400/40 hover:bg-slate-900/90 shadow-lg">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 text-xs">
+        <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-slate-900/70 p-3 sm:p-4 backdrop-blur-xl transition hover:border-amber-400/40 hover:bg-slate-900/90 shadow-lg">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-300">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 text-xs">
               🏗️
             </span>
-            <span>Disbursed Capital</span>
+            <span className="truncate">Disbursed</span>
           </div>
-          <p className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
+          <p className="mt-1.5 sm:mt-2 text-xl font-black tracking-tight text-white sm:text-3xl">
             ₱32.1M
           </p>
-          <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-cyan-300">
-            <span>66.2% of ₱48.5M Budget</span>
+          <div className="mt-0.5 sm:mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-cyan-300">
+            <span>66% of Budget</span>
           </div>
         </div>
 
         {/* Metric 4: RA 12009 Procurement Compliance */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 backdrop-blur-xl transition hover:border-purple-400/40 hover:bg-slate-900/90 shadow-lg">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-purple-500/20 text-purple-300 text-xs">
+        <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-slate-900/70 p-3 sm:p-4 backdrop-blur-xl transition hover:border-purple-400/40 hover:bg-slate-900/90 shadow-lg">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-300">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-lg bg-purple-500/20 text-purple-300 text-xs">
               ⚖️
             </span>
-            <span>RA 12009 Procurement</span>
+            <span className="truncate">RA 12009</span>
           </div>
-          <p className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
+          <p className="mt-1.5 sm:mt-2 text-xl font-black tracking-tight text-white sm:text-3xl">
             100%
           </p>
-          <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
-            <span>ABC &amp; NFCC Guards Verified</span>
+          <div className="mt-0.5 sm:mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400">
+            <span>Verified</span>
           </div>
         </div>
       </div>
