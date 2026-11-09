@@ -14,19 +14,6 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
       {/* Exact city night photography bokeh background from the dashboard */}
       <ScatteredMaterialsBackdrop />
 
-      {/* Top-Left Floating Navigation: Back to Landing Page */}
-      <div className="fixed top-5 left-5 z-20 sm:top-7 sm:left-8">
-        <Link
-          href="/welcome"
-          className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-semibold text-slate-200 shadow-xl backdrop-blur-2xl transition-all hover:border-cyan-400/40 hover:bg-white/10 hover:text-white"
-        >
-          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 text-[11px] transition-transform group-hover:-translate-x-0.5">
-            ←
-          </span>
-          <span>Back to Landing Page</span>
-        </Link>
-      </div>
-
       {/* Main Dark Frosted Glass Auth Card (Matches Dashboard Aesthetic) */}
       <div className="relative z-10 w-full max-w-md rounded-[32px] border border-white/10 bg-[#121624]/90 p-8 sm:p-9 shadow-[0_32px_90px_rgba(0,0,0,0.75)] backdrop-blur-3xl text-white">
         {/* Top Specular Liquid Glint */}
@@ -54,6 +41,19 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
         </div>
 
         {children}
+      </div>
+
+      {/* Navigation: Back to Landing Page (Centered below the Auth Card) */}
+      <div className="relative z-10 mt-6 text-center">
+        <Link
+          href="/welcome"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-semibold text-slate-300 shadow-lg backdrop-blur-xl transition hover:border-cyan-400/40 hover:bg-white/10 hover:text-white"
+        >
+          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 text-[11px] transition-transform group-hover:-translate-x-0.5">
+            ←
+          </span>
+          <span>Back to Landing Page</span>
+        </Link>
       </div>
     </main>
   )
