@@ -315,12 +315,12 @@ export default function DashboardAnalytics({
 
         {/* Contractor Assigned Projects & Open Bids */}
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-gray-900">
+              <h3 className="text-base font-extrabold text-white">
                 Open Invitations to Bid &amp; My Bid Status
               </h3>
-              <Link href="/bidding" className="text-xs font-semibold text-amber-600 hover:underline">
+              <Link href="/bidding" className="text-xs font-bold text-amber-400 hover:text-amber-300 hover:underline">
                 Open Bidding Portal →
               </Link>
             </div>
@@ -328,15 +328,15 @@ export default function DashboardAnalytics({
               {openBids.slice(0, 4).map((b) => (
                 <div
                   key={b.id}
-                  className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs"
+                  className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/70 p-3.5 text-xs shadow-md"
                 >
                   <div>
-                    <p className="font-bold text-gray-900">{b.title}</p>
-                    <p className="text-[11px] text-gray-500">
+                    <p className="font-bold text-white">{b.title}</p>
+                    <p className="text-[11px] text-slate-400">
                       {b.reference_no} • Deadline: {b.submission_deadline}
                     </p>
                   </div>
-                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold uppercase text-amber-900">
+                  <span className="rounded-full bg-amber-500/20 border border-amber-400/30 px-2.5 py-0.5 text-[10px] font-bold uppercase text-amber-300">
                     {b.status === 'awarded' ? 'Awarded' : 'Open for Bid'}
                   </span>
                 </div>
@@ -344,30 +344,45 @@ export default function DashboardAnalytics({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-gray-900">
+              <h3 className="text-base font-extrabold text-white">
                 My Assigned Projects ({assignedProjects.length})
               </h3>
-              <Link href="/projects" className="text-xs font-semibold text-amber-600 hover:underline">
+              <Link href="/projects" className="text-xs font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
                 View Assigned Sites →
               </Link>
             </div>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {assignedProjects.map((p) => (
                 <div
                   key={p.id}
-                  className="rounded-xl border border-gray-100 bg-gray-50 p-3.5 text-xs space-y-2"
+                  className="rounded-xl border border-white/10 bg-slate-900/80 p-4 text-xs space-y-3 shadow-lg backdrop-blur-md"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900">{p.name}</span>
-                    <span className="font-semibold text-amber-700">{p.progress}%</span>
+                    <div>
+                      <span className="font-extrabold text-sm text-white">{p.name}</span>
+                      <p className="text-[11px] text-slate-400 mt-0.5">{p.location}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                        {p.status === 'active' ? 'Active Site' : p.status}
+                      </span>
+                      <span className="font-black text-sm text-cyan-400">{p.progress}%</span>
+                    </div>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+
+                  {/* High-Contrast Recessed Channel + Glowing Progress Bar */}
+                  <div className="relative h-3.5 w-full overflow-hidden rounded-full bg-slate-950/90 border border-white/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] p-0.5">
                     <div
-                      className="h-full rounded-full bg-amber-500"
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 shadow-[0_0_14px_rgba(34,211,238,0.65)] transition-all duration-700"
                       style={{ width: `${p.progress}%` }}
                     />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5 border-t border-white/5">
+                    <span>Schedule: {p.start_date} → {p.end_date || 'TBD'}</span>
+                    <span className="text-emerald-400 font-semibold">{p.progress}% • On Track</span>
                   </div>
                 </div>
               ))}
