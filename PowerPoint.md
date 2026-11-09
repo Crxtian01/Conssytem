@@ -1,8 +1,12 @@
 # ConstructMS — Final Project Presentation & Teacher Demo Guide (`PowerPoint.md`)
 
+> **🎉 Live Presentation Ready:**
+> - **Ready-to-Open PowerPoint File:** [**`ConstructMS_Defense_Presentation.pptx`**](file:///c:/Users/christian/OneDrive/Desktop/ConstructionSystem/ConstructMS_Defense_Presentation.pptx) is already generated in the root directory! It has the exact **Deep Midnight Obsidian Blueprint Background (`#050811`)**, subtle architectural grid, frosted glass bento cards, neon accents, and embedded speaker notes for all 12 slides.
+> - **Re-generate Any Time:** Run `python scripts/generate_pptx.py` in your terminal.
+>
 > **How to use this document:**
-> 1. **For Presenting Directly to Your Teacher:** Use the 12-slide walkthrough below. Every slide includes **"What to Say to Your Teacher"** (Speaker Notes) and **"Live Demo Action"** (exact clicks and steps in the browser).
-> 2. **For AI Slide Generators (Claude / Gamma / Canva / PowerPoint Copilot):** Copy the text inside the prompt section to automatically generate a downloadable `.pptx` or interactive slide deck.
+> 1. **For Presenting Directly to Your Teacher:** Open `ConstructMS_Defense_Presentation.pptx` in Microsoft PowerPoint or Google Slides and follow the 12-slide walkthrough below. Every slide includes **"What to Say to Your Teacher"** (Speaker Notes) and **"Live Demo Action"** (exact clicks in your web prototype).
+> 2. **For AI Slide Generators (Claude / Gamma / Canva / PowerPoint Copilot):** Copy the text inside the prompt section at the bottom.
 > 3. **Grading Alignment:** Strictly follows the **CS PC 12 — Interactive Design and Prototyping Final Laboratory Project Rubric** (Problems, Personas, Flows, Screens, Usability Testing, and V1 → V2 Iteration).
 
 ---
