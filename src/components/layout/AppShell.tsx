@@ -511,7 +511,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                     <select
                       value={requestedRole}
                       onChange={(e) => setRequestedRole(e.target.value as UserRole)}
-                      className="w-full rounded-lg border border-white/20 bg-white/90 px-2 py-1.5 text-xs font-semibold text-slate-900"
+                      className="w-full rounded-lg border border-white/15 bg-slate-900 px-2 py-1.5 text-xs font-semibold text-white focus:outline-none"
                     >
                       <option value="assistant">Assistant</option>
                       <option value="contractor">Contractor</option>
@@ -551,7 +551,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                   value={user.role}
                   disabled={switchingRole}
                   onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
-                  className="mt-1.5 w-full rounded-xl border border-white/20 bg-white/90 px-2.5 py-2 text-xs font-bold text-slate-900 focus:outline-none disabled:opacity-50"
+                  className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-900 px-2.5 py-2 text-xs font-bold text-white focus:outline-none disabled:opacity-50"
                 >
                   <option value="admin_engineer">Admin / Engineer (15 Modules)</option>
                   <option value="assistant">Assistant (10 Modules)</option>

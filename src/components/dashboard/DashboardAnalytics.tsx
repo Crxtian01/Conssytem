@@ -108,20 +108,16 @@ export default function DashboardAnalytics({
 
     return (
       <div className="space-y-6">
-        <div className="codexr-terracotta-card flex flex-col gap-4 rounded-[28px] p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-50">
-              <span className="h-2 w-2 rounded-full bg-emerald-300" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-cyan-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
               <span>Assistant Operations Workspace</span>
             </span>
             <h2 className="text-xl font-extrabold text-white sm:text-2xl">
-              Your site operations are on a{' '}
-              <span className="font-serif italic font-normal text-amber-100">
-                roll
-              </span>{' '}
-              this week
+              Assigned Projects, Bid Preparation &amp; Site Encoding
             </h2>
-            <p className="text-xs text-amber-50/85 max-w-2xl">
+            <p className="text-xs text-slate-300 max-w-2xl">
               Update assigned projects &amp; tasks, encode stock in/out &amp; material requests,
               record attendance, submit pending expenses, and prepare bid drafts.
             </p>
@@ -129,13 +125,13 @@ export default function DashboardAnalytics({
           <div className="flex flex-wrap gap-2.5 shrink-0">
             <Link
               href="/bidding"
-              className="rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#1e1512] shadow-sm hover:bg-amber-50"
+              className="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 transition"
             >
               Prepare Bid Drafts ({draftBids.length}) →
             </Link>
             <Link
               href="/materials"
-              className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/25"
+              className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-bold text-slate-200 hover:bg-white/10 hover:text-white transition"
             >
               + Request Materials
             </Link>
@@ -248,20 +244,16 @@ export default function DashboardAnalytics({
 
     return (
       <div className="space-y-6">
-        <div className="codexr-terracotta-card flex flex-col gap-4 rounded-[28px] p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-50">
-              <span className="h-2 w-2 rounded-full bg-emerald-300" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
               <span>Contractor Portal &amp; Field Hub</span>
             </span>
             <h2 className="text-xl font-extrabold text-white sm:text-2xl">
-              Your bids &amp; assigned sites are on a{' '}
-              <span className="font-serif italic font-normal text-amber-100">
-                roll
-              </span>{' '}
-              this week
+              My Bids, Assigned Projects, Site Tasks &amp; Daily Logs
             </h2>
-            <p className="text-xs text-amber-50/85 max-w-2xl">
+            <p className="text-xs text-slate-300 max-w-2xl">
               View open invitations to bid, submit your own bid &amp; track status, update assigned
               site tasks, and submit your own daily logs.
             </p>
@@ -269,13 +261,13 @@ export default function DashboardAnalytics({
           <div className="flex flex-wrap gap-2.5 shrink-0">
             <Link
               href="/bidding"
-              className="rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#1e1512] shadow-sm hover:bg-amber-50"
+              className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-amber-500/25 hover:from-amber-400 hover:to-amber-500 transition"
             >
               View Open Bids &amp; Submit Bid →
             </Link>
             <Link
               href="/daily-logs"
-              className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/25"
+              className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-bold text-slate-200 hover:bg-white/10 hover:text-white transition"
             >
               + Submit My Daily Log
             </Link>
@@ -284,32 +276,32 @@ export default function DashboardAnalytics({
 
         {/* 4 Contractor KPI Cards */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Open Bids Available</p>
-            <p className="mt-2 text-2xl font-bold text-amber-700">{openBids.length}</p>
-            <p className="mt-1 text-xs text-gray-500">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Open Bids Available</p>
+            <p className="mt-2 text-2xl font-black text-amber-400">{openBids.length}</p>
+            <p className="mt-1 text-xs text-slate-300">
               {mySubmittedProposals.length} own bid submission(s) tracked
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Assigned Projects</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{assignedProjects.length}</p>
-            <p className="mt-1 text-xs text-gray-500">Active contractor site assignments</p>
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Assigned Projects</p>
+            <p className="mt-2 text-2xl font-black text-white">{assignedProjects.length}</p>
+            <p className="mt-1 text-xs text-cyan-300">Active contractor site assignments</p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Assigned Site Tasks</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{store.tasks.length}</p>
-            <p className="mt-1 text-xs text-emerald-700 font-medium">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Assigned Site Tasks</p>
+            <p className="mt-2 text-2xl font-black text-emerald-400">{store.tasks.length}</p>
+            <p className="mt-1 text-xs text-emerald-300 font-semibold">
               Update task progress % on site
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">My Daily Logs</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{ownDailyLogs.length}</p>
-            <p className="mt-1 text-xs text-gray-500">Submitted site reports &amp; photos</p>
+          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">My Daily Logs</p>
+            <p className="mt-2 text-2xl font-black text-indigo-300">{ownDailyLogs.length}</p>
+            <p className="mt-1 text-xs text-slate-300">Submitted site reports &amp; photos</p>
           </div>
         </div>
 
@@ -412,20 +404,16 @@ export default function DashboardAnalytics({
 
   return (
     <div className="space-y-6">
-      <div className="codexr-terracotta-card flex flex-col gap-4 rounded-[28px] p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1.5">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-50">
-            <span className="h-2 w-2 rounded-full bg-emerald-300" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-purple-400/30 bg-purple-500/20 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-purple-300">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
             <span>Client Read-Only Project Portal</span>
           </span>
           <h2 className="text-xl font-extrabold text-white sm:text-2xl">
-            Your project milestones are on a{' '}
-            <span className="font-serif italic font-normal text-amber-100">
-              roll
-            </span>{' '}
-            this week
+            Project Progress, Approved Site Logs &amp; Shared Documents
           </h2>
-          <p className="text-xs text-amber-50/85 max-w-2xl">
+          <p className="text-xs text-slate-300 max-w-2xl">
             Read-only monitoring of construction completion milestones, Engineer-approved site logs,
             and shared blueprints.
           </p>
@@ -434,14 +422,14 @@ export default function DashboardAnalytics({
           <button
             type="button"
             onClick={handleExportProgressCsv}
-            className="rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#1e1512] shadow-sm hover:bg-amber-50"
+            className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-purple-600/25 hover:bg-purple-500 transition"
           >
             Export Progress Report (CSV) →
           </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded-full border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold text-white hover:bg-white/25"
+            className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-bold text-slate-200 hover:bg-white/10 hover:text-white transition"
           >
             Print / Save Progress PDF
           </button>
@@ -450,32 +438,32 @@ export default function DashboardAnalytics({
 
       {/* 3 Client Read-Only KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase text-gray-400">Overall Completion</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{avgProgress}% Avg</p>
-          <p className="mt-1 text-xs text-indigo-700 font-medium">
+        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Overall Completion</p>
+          <p className="mt-2 text-2xl font-black text-white">{avgProgress}% Avg</p>
+          <p className="mt-1 text-xs text-purple-300 font-medium">
             Across {store.projects.length} monitored projects
           </p>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase text-gray-400">Approved Daily Logs</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{approvedLogs.length}</p>
-          <p className="mt-1 text-xs text-gray-500">Verified site updates &amp; photos</p>
+        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Approved Daily Logs</p>
+          <p className="mt-2 text-2xl font-black text-emerald-400">{approvedLogs.length}</p>
+          <p className="mt-1 text-xs text-slate-300">Verified site updates &amp; photos</p>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase text-gray-400">Shared Documents</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{sharedDocs.length}</p>
-          <p className="mt-1 text-xs text-gray-500">Approved blueprints &amp; permits</p>
+        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Shared Documents</p>
+          <p className="mt-2 text-2xl font-black text-cyan-400">{sharedDocs.length}</p>
+          <p className="mt-1 text-xs text-slate-300">Approved blueprints &amp; permits</p>
         </div>
       </div>
 
       {/* Read-Only Project Progress Cards */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+      <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-gray-900">Project Progress Milestones</h3>
-          <Link href="/projects" className="text-xs font-semibold text-indigo-600 hover:underline">
+          <h3 className="text-base font-extrabold text-white">Project Progress Milestones</h3>
+          <Link href="/projects" className="text-xs font-bold text-purple-300 hover:text-purple-200 hover:underline">
             View Projects →
           </Link>
         </div>
@@ -483,30 +471,30 @@ export default function DashboardAnalytics({
           {clientProjects.map((p) => (
             <div
               key={p.id}
-              className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50/50"
+              className="rounded-xl border border-white/10 bg-slate-900/80 p-4 space-y-3 shadow-md backdrop-blur-md"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-bold text-gray-900 text-sm">{p.name}</p>
-                  <p className="text-xs text-gray-500">{p.location}</p>
+                  <p className="font-extrabold text-white text-sm">{p.name}</p>
+                  <p className="text-xs text-slate-400">{p.location}</p>
                 </div>
-                <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold uppercase text-indigo-900">
+                <span className="rounded-full bg-purple-500/20 border border-purple-400/30 px-2 py-0.5 text-[10px] font-bold uppercase text-purple-300">
                   {p.status}
                 </span>
               </div>
               <div>
-                <div className="mb-1 flex justify-between text-xs font-semibold text-gray-700">
+                <div className="mb-1.5 flex justify-between text-xs font-bold text-slate-300">
                   <span>Completion</span>
-                  <span>{p.progress}%</span>
+                  <span className="text-cyan-400">{p.progress}%</span>
                 </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-200">
+                <div className="relative h-3 w-full overflow-hidden rounded-full bg-slate-950/90 border border-white/10 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] p-0.5">
                   <div
-                    className="h-full rounded-full bg-indigo-600"
+                    className="h-full rounded-full bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-400 shadow-[0_0_12px_rgba(168,85,247,0.6)] transition-all duration-700"
                     style={{ width: `${p.progress}%` }}
                   />
                 </div>
               </div>
-              <p className="text-[11px] text-gray-500">
+              <p className="text-[11px] text-slate-400 pt-1 border-t border-white/5">
                 Target Completion: {p.end_date || 'TBD'}
               </p>
             </div>

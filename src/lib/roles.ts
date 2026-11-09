@@ -37,7 +37,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
   admin_engineer: {
     role: 'admin_engineer',
     label: 'Admin / Engineer',
-    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
+    badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 shadow-xs',
     typicalAccess:
       'Full access to all modules. Only role that can approve expenses and material requests, delete records, issue/award bids, manage users, and approve role requests.',
     allowedModuleIds: [
@@ -86,7 +86,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
   assistant: {
     role: 'assistant',
     label: 'Assistant',
-    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
+    badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 shadow-xs',
     typicalAccess:
       'Dashboard (assigned projects only), Projects (view/update), Tasks (update status/progress), Materials (encode stock in/out, create requests), Workers/Attendance (record), Expenses (create as pending only), Daily Logs (create/submit), Documents (upload/view assigned), Bidding (prepare drafts & documents only, no issuing/awarding), Reports (limited, no financial summaries). No user/role management.',
     allowedModuleIds: [
@@ -130,7 +130,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
   contractor: {
     role: 'contractor',
     label: 'Contractor',
-    badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-400/40 shadow-xs',
     typicalAccess:
       'Dashboard (own bids/projects), Bidding (view open bids, submit own bid, view own status), Projects (assigned only), Tasks (assigned), Daily Logs (own), Documents (assigned).',
     allowedModuleIds: [
@@ -170,7 +170,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
   client: {
     role: 'client',
     label: 'Client',
-    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-400/40 shadow-xs',
     typicalAccess:
       'Read-only Dashboard, Project progress, Daily Logs (approved), Documents (shared), Reports (progress only).',
     allowedModuleIds: [
