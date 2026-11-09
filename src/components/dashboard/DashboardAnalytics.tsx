@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import AssetManagementDashboard from '@/components/dashboard/AssetManagementDashboard'
 import AdminEngineerDashboard from '@/components/dashboard/admin/AdminEngineerDashboard'
 import type { StoreData } from '@/lib/module-store'
 import type { BiddingStoreData } from '@/lib/bidding-store'
@@ -22,6 +23,7 @@ export default function DashboardAnalytics({
   adminDashboardPayload?: AdminDashboardPayload
 }) {
   const [store] = useState(initialStore)
+  const [activeTab, setActiveTab] = useState<'asset_mgmt' | 'engineer_cmd'>('asset_mgmt')
   const perms = ROLES[role].permissions
 
   const bids = biddingStore?.bids ?? []
@@ -144,48 +146,48 @@ export default function DashboardAnalytics({
 
         {/* 4 Assistant KPI Cards (No Financial Budget Totals) */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Assigned Projects</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{assignedProjects.length}</p>
-            <p className="mt-1 text-xs text-blue-700 font-medium">
+          <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl text-white">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Assigned Projects</p>
+            <p className="mt-2 text-2xl font-extrabold text-white">{assignedProjects.length}</p>
+            <p className="mt-1 text-xs text-cyan-300 font-semibold">
               View &amp; update progress
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Draft Bids in Prep</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{draftBids.length}</p>
-            <p className="mt-1 text-xs text-gray-500">
+          <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl text-white">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Draft Bids in Prep</p>
+            <p className="mt-2 text-2xl font-extrabold text-white">{draftBids.length}</p>
+            <p className="mt-1 text-xs text-slate-300">
               Drafts, BOQ &amp; documents (Admin issues/awards)
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Material Requests</p>
-            <p className="mt-2 text-2xl font-bold text-amber-700">
+          <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl text-white">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Material Requests</p>
+            <p className="mt-2 text-2xl font-extrabold text-amber-400">
               {pendingMaterialReqs.length} Pending
             </p>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-slate-300">
               Awaiting Admin / Engineer approval
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-gray-400">Pending Expenses</p>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{myPendingExpenses.length}</p>
-            <p className="mt-1 text-xs text-gray-500">
+          <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl text-white">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Expenses</p>
+            <p className="mt-2 text-2xl font-extrabold text-white">{myPendingExpenses.length}</p>
+            <p className="mt-1 text-xs text-slate-300">
               Encoded as pending for Engineer sign-off
             </p>
           </div>
         </div>
 
         {/* Assigned Projects List (Progress Only — No Financial Summary) */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+        <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-6 shadow-lg backdrop-blur-xl space-y-4 text-white">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900">
+            <h3 className="text-base font-extrabold text-white">
               Assigned Projects ({assignedProjects.length})
             </h3>
-            <Link href="/projects" className="text-xs font-semibold text-amber-600 hover:underline">
+            <Link href="/projects" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline">
               Update Project Progress →
             </Link>
           </div>
@@ -193,30 +195,30 @@ export default function DashboardAnalytics({
             {assignedProjects.map((p) => (
               <div
                 key={p.id}
-                className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50/50"
+                className="rounded-xl border border-white/[0.08] p-4 space-y-3 bg-white/[0.03] hover:border-cyan-400/30 transition"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-bold text-gray-900 text-sm">{p.name}</p>
-                    <p className="text-xs text-gray-500">{p.location}</p>
+                    <p className="font-extrabold text-white text-sm">{p.name}</p>
+                    <p className="text-xs text-slate-400">{p.location}</p>
                   </div>
-                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold uppercase text-blue-900">
+                  <span className="rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2 py-0.5 text-[10px] font-bold uppercase text-cyan-300">
                     {p.status}
                   </span>
                 </div>
                 <div>
-                  <div className="mb-1 flex justify-between text-xs font-semibold text-gray-700">
+                  <div className="mb-1 flex justify-between text-xs font-semibold text-slate-300">
                     <span>Site Progress</span>
-                    <span>{p.progress}%</span>
+                    <span className="text-cyan-300 font-bold">{p.progress}%</span>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
                     <div
-                      className="h-full rounded-full bg-blue-600"
+                      className="h-full rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4] transition-all duration-1000 ease-out"
                       style={{ width: `${p.progress}%` }}
                     />
                   </div>
                 </div>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-slate-400">
                   Schedule: {p.start_date} → {p.end_date || 'TBD'}
                 </p>
               </div>

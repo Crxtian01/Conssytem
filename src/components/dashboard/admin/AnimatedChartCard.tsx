@@ -86,13 +86,13 @@ export default function AnimatedChartCard({
   return (
     <motion.section
       variants={cardVariants}
-      className="min-h-[350px] min-w-0 rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs flex flex-col justify-between"
+      className="min-h-[350px] min-w-0 rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl flex flex-col justify-between text-white"
     >
       {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-100 pb-3.5">
+      <div className="flex flex-wrap items-start justify-between gap-2 border-b border-white/[0.08] pb-3.5">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-sm font-bold text-gray-900 sm:text-base">{title}</h3>
+            <h3 className="text-sm font-extrabold text-white sm:text-base">{title}</h3>
             {badgeLabel && (
               <span
                 className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeColorClass}`}
@@ -101,13 +101,13 @@ export default function AnimatedChartCard({
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs text-gray-500">{subtitle}</p>
+          <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>
         </div>
 
         {actionHref && actionLabel && (
           <Link
             href={actionHref}
-            className="text-xs font-semibold text-amber-700 hover:text-amber-900 hover:underline shrink-0"
+            className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline shrink-0"
           >
             {actionLabel} →
           </Link>
@@ -117,13 +117,13 @@ export default function AnimatedChartCard({
       {/* Body */}
       <div className="pt-4 flex-1 flex flex-col justify-center min-h-[250px]">
         {errorMessage ? (
-          <div className="rounded-xl border border-red-200 bg-red-50/70 p-4 text-center text-xs text-red-700">
+          <div className="rounded-xl border border-red-500/30 bg-red-950/40 p-4 text-center text-xs text-red-300">
             <p className="font-bold">Unable to load chart data</p>
             <p className="mt-1">{errorMessage}</p>
           </div>
         ) : isEmpty ? (
-          <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50/60 p-6 text-center text-xs text-gray-500">
-            <p className="font-semibold text-gray-700">Friendly Empty State</p>
+          <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-6 text-center text-xs text-slate-400">
+            <p className="font-semibold text-slate-300">Friendly Empty State</p>
             <p className="mt-1">{emptyMessage}</p>
           </div>
         ) : (

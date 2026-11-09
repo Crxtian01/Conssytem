@@ -175,19 +175,19 @@ export default function AnimatedKpiCard({
   return (
     <motion.div
       variants={cardVariants}
-      className={`min-h-[186px] rounded-[26px] p-4.5 transition-all flex flex-col justify-between ${
+      className={`min-h-[186px] rounded-2xl p-4.5 transition-all flex flex-col justify-between border ${
         isTerracotta
-          ? 'codexr-terracotta-card'
-          : 'bg-white rounded-2xl'
+          ? 'border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-[#101726]/85 to-[#0e1422]/90 shadow-lg backdrop-blur-xl text-white'
+          : 'border-white/10 bg-[#121624]/85 shadow-lg backdrop-blur-xl text-white'
       }`}
     >
-      {/* Top Row: Rounded Icon Box + Pop-in Change Pill (Exact Code XR Card Header) */}
+      {/* Top Row: Rounded Icon Box + Pop-in Change Pill */}
       <div className="flex items-center justify-between gap-2">
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ${
             isTerracotta
-              ? 'bg-white/20 ring-1 ring-white/30'
-              : 'bg-[#ede3da] ring-1 ring-white/80'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+              : 'bg-white/10 text-white border border-white/15'
           }`}
         >
           {getKpiIcon(metric.id, isTerracotta)}
@@ -221,9 +221,7 @@ export default function AnimatedKpiCard({
       {/* Middle Row: Large Count-Up Number + Title + Subtitle */}
       <div className="mt-3">
         <div
-          className={`text-2xl font-extrabold tracking-tight sm:text-[26px] ${
-            isTerracotta ? 'text-white' : 'text-[#1e1512]'
-          }`}
+          className="text-2xl font-extrabold tracking-tight sm:text-[26px] text-white"
         >
           <AnimatedNumber
             value={metric.value}
@@ -235,19 +233,11 @@ export default function AnimatedKpiCard({
         </div>
         <Link
           href={metric.href}
-          className={`mt-1 block truncate text-xs font-bold transition ${
-            isTerracotta
-              ? 'text-white hover:underline'
-              : 'text-[#1e1512] hover:text-[#c85a38]'
-          }`}
+          className="mt-1 block truncate text-xs font-bold text-white hover:text-cyan-300 transition"
         >
           {metric.title}
         </Link>
-        <p
-          className={`truncate text-[11px] font-medium ${
-            isTerracotta ? 'text-amber-50/85' : 'text-[#6e5a52]'
-          }`}
-        >
+        <p className="truncate text-[11px] font-medium text-slate-400">
           {metric.secondaryLabel}
         </p>
       </div>

@@ -43,12 +43,15 @@ function getFormattedTodayDate(): string {
 }
 
 function ModuleVectorIcon({ id, active }: { id: string; active: boolean }) {
-  const strokeColor = active ? '#1e1411' : 'currentColor'
+  const strokeColor = active ? '#22d3ee' : '#94a3b8'
   switch (id) {
     case 'dashboard':
       return (
-        <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z" />
+        <svg className="h-4 w-4 shrink-0 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" />
+          <rect x="14" y="3" width="7" height="7" rx="1.5" />
+          <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" />
         </svg>
       )
     case 'projects':
@@ -348,7 +351,7 @@ export default function AppShell({ user, children }: AppShellProps) {
     if (mods.length === 0) return null
     return (
       <div className="space-y-1">
-        <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-100/55">
+        <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400/70">
           {title}
         </p>
         {mods.map((mod) => {
@@ -375,13 +378,13 @@ export default function AppShell({ user, children }: AppShellProps) {
               }}
               className={`group flex min-h-11 items-center justify-between rounded-2xl px-3.5 py-2.5 text-[13px] transition-all duration-200 ${
                 active || isLoadingThis
-                  ? 'bg-white text-[#1e1411] font-bold shadow-md'
-                  : 'text-amber-50/85 font-medium hover:bg-white/10 hover:text-white'
+                  ? 'neon-active-pill font-bold shadow-[0_0_18px_rgba(6,182,212,0.25)]'
+                  : 'neon-inactive-pill font-medium'
               }`}
             >
               <span className="flex items-center gap-3 min-w-0">
                 {isLoadingThis ? (
-                  <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[#c85a38] border-t-transparent" />
+                  <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
                 ) : (
                   <ModuleVectorIcon id={mod.id} active={active || isLoadingThis} />
                 )}
@@ -389,13 +392,13 @@ export default function AppShell({ user, children }: AppShellProps) {
               </span>
 
               {isLoadingThis ? (
-                <span className="text-[10px] font-bold text-[#c85a38]">Opening…</span>
+                <span className="text-[10px] font-bold text-cyan-400">Opening…</span>
               ) : showBadge ? (
                 <span
                   className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-extrabold ${
                     active
-                      ? 'bg-[#c85a38] text-white'
-                      : 'bg-[#d95338] text-white shadow-xs'
+                      ? 'bg-cyan-500 text-slate-950 font-black'
+                      : 'bg-cyan-500/30 text-cyan-300 border border-cyan-400/40'
                   }`}
                 >
                   2
@@ -411,23 +414,22 @@ export default function AppShell({ user, children }: AppShellProps) {
   function renderSidebarContents(isMobileDrawer: boolean) {
     return (
       <>
-        {/* 1. Top Brand Header (Code XR Style) */}
+        {/* 1. Top Brand Header (Matching Asset Management Dashboard Cube) */}
         <div className="flex shrink-0 items-center justify-between gap-3 px-5 pt-5 pb-3">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e06d48] to-[#a83f20] p-1.5 shadow-md ring-1 ring-white/25">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/constructms-sculpture.png"
-                alt="ConstructMS Logo"
-                className="h-full w-full object-contain"
-              />
-            </span>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-600 p-2 shadow-[0_0_16px_rgba(6,182,212,0.4)] ring-1 ring-cyan-300/40">
+              <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                <line x1="12" y1="22.08" x2="12" y2="12" />
+              </svg>
+            </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-extrabold tracking-tight text-white">
-                ConstructMS
+                Asset Management
               </p>
-              <p className="truncate text-[11px] font-medium text-amber-100/65">
-                {roleInfo.label} workspace
+              <p className="truncate text-[10px] font-bold tracking-widest text-cyan-400 uppercase">
+                DASHBOARD
               </p>
             </div>
           </div>
@@ -436,7 +438,7 @@ export default function AppShell({ user, children }: AppShellProps) {
             <button
               type="button"
               onClick={() => setMobileDrawerOpen(false)}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-white/12 text-sm font-bold text-white hover:bg-white/20"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-white/10 text-sm font-bold text-white hover:bg-white/20"
               aria-label="Close navigation drawer"
             >
               ✕
@@ -444,11 +446,11 @@ export default function AppShell({ user, children }: AppShellProps) {
           )}
         </div>
 
-        {/* 2. Quick Search Pill ("Ask or search..." + ⌘K badge from Code XR Video) */}
+        {/* 2. Quick Search Pill ("Search navigation..." + ⌘K badge) */}
         <div className="shrink-0 px-4 pb-3">
-          <div className="flex items-center gap-2 rounded-2xl border border-white/14 bg-black/18 px-3 py-2 text-xs text-amber-50/90 shadow-inner">
+          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-300 shadow-inner">
             <svg
-              className="h-3.5 w-3.5 shrink-0 text-amber-100/60"
+              className="h-3.5 w-3.5 shrink-0 text-slate-400"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -464,19 +466,19 @@ export default function AppShell({ user, children }: AppShellProps) {
               type="text"
               value={sidebarSearch}
               onChange={(e) => setSidebarSearch(e.target.value)}
-              placeholder="Ask or search..."
-              className="w-full bg-transparent text-xs font-medium text-white placeholder:text-amber-100/55 focus:outline-none"
+              placeholder="Search navigation..."
+              className="w-full bg-transparent text-xs font-medium text-white placeholder:text-slate-500 focus:outline-none"
             />
             {sidebarSearch ? (
               <button
                 type="button"
                 onClick={() => setSidebarSearch('')}
-                className="text-[10px] font-bold text-amber-100/70 hover:text-white"
+                className="text-[10px] font-bold text-slate-400 hover:text-white"
               >
                 ✕
               </button>
             ) : (
-              <kbd className="rounded-md bg-white/12 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-100/75">
+              <kbd className="rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-400">
                 ⌘K
               </kbd>
             )}
@@ -561,9 +563,9 @@ export default function AppShell({ user, children }: AppShellProps) {
           </div>
         </nav>
 
-        {/* 4. Bottom User Profile Card + Sign Out (Matches Bottom-Left of Code XR Video) */}
-        <div className="shrink-0 border-t border-white/14 p-3.5 space-y-2">
-          <div className="flex items-center gap-2">
+        {/* 4. Bottom User Profile Card (Matches bottom-left of picture: Avatar + Name + Role + Email + ...) */}
+        <div className="shrink-0 border-t border-white/[0.08] p-3 space-y-2">
+          <div className="flex items-center justify-between gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-2 hover:border-cyan-400/30 hover:bg-white/[0.06] transition">
             <button
               type="button"
               onClick={() => {
@@ -571,32 +573,35 @@ export default function AppShell({ user, children }: AppShellProps) {
                 setProfileFeedback(null)
                 setShowProfileModal(true)
               }}
-              className="group flex flex-1 items-center gap-3 rounded-2xl border border-transparent p-2 text-left transition hover:border-white/15 hover:bg-white/10 min-w-0"
+              className="group flex flex-1 items-center gap-2.5 text-left min-w-0"
               aria-label="Open my profile and account details"
             >
-              {user.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.avatarUrl}
-                  alt=""
-                  className="h-9 w-9 shrink-0 rounded-full border border-white/40 object-cover shadow-sm"
-                />
-              ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#e06d48] to-[#a83f20] text-xs font-extrabold text-white shadow-sm ring-1 ring-white/30">
-                  {initialLetter}
-                </div>
-              )}
+              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-cyan-400/40 bg-slate-800">
+                {user.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.avatarUrl}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-600 text-xs font-extrabold text-white">
+                    {initialLetter}
+                  </div>
+                )}
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0c0e16]" />
+              </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-bold text-white">
-                  {effectiveName}
+                <p className="truncate text-xs font-bold text-white group-hover:text-cyan-300 transition">
+                  {effectiveName || 'Spencer'}
                 </p>
-                <p className="truncate text-[11px] text-amber-100/65">
-                  @{user.role.replace('_', '')}
+                <p className="truncate text-[10px] font-semibold text-cyan-400">
+                  {roleInfo.label.includes('Admin') ? 'Admin' : roleInfo.label}
+                </p>
+                <p className="truncate text-[10px] text-slate-400">
+                  {user.email || 'spencer@company.com'}
                 </p>
               </div>
-              <span className="text-xs text-amber-100/60 group-hover:text-white">
-                ⌄
-              </span>
             </button>
 
             <button
@@ -605,23 +610,10 @@ export default function AppShell({ user, children }: AppShellProps) {
                 if (isMobileDrawer) setMobileDrawerOpen(false)
                 setShowSignOutModal(true)
               }}
-              title="Sign out"
-              aria-label="Sign out"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/8 text-amber-100/80 transition hover:bg-red-500/30 hover:text-white"
+              title="Account settings & Sign Out"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition"
             >
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
+              <span className="text-sm font-bold tracking-widest leading-none">•••</span>
             </button>
           </div>
         </div>
@@ -634,7 +626,7 @@ export default function AppShell({ user, children }: AppShellProps) {
   return (
     <div
       ref={shellRef}
-      className="liquid-mesh-bg relative flex h-dvh w-full overflow-hidden text-[#1e1512] md:p-3"
+      className="liquid-mesh-bg relative flex h-dvh w-full overflow-hidden text-slate-100 p-2.5 sm:p-4 md:p-5 lg:p-6"
     >
       {/* Warm Ambient Studio Lighting Behind the visionOS Frame */}
       <ScatteredMaterialsBackdrop />
@@ -646,15 +638,15 @@ export default function AppShell({ user, children }: AppShellProps) {
         </div>
       )}
 
-      {/* Floating visionOS Rounded Window Container */}
-      <div className="relative z-10 flex h-full w-full overflow-hidden md:rounded-[30px] md:border md:border-white/25 md:shadow-[0_32px_90px_-16px_rgba(12,6,4,0.65)]">
+      {/* Floating Window Container (with sleek gap between floating sidebar and canvas) */}
+      <div className="relative z-10 flex h-full w-full gap-4 md:gap-5 overflow-hidden">
         {/* =====================================================================
-            1. DESKTOP FIXED SIDEBAR (hidden on mobile < md, scrolls independently)
+            1. DESKTOP FLOATING SIDEBAR (matching picture)
            ===================================================================== */}
         <aside
           ref={desktopSidebarRef}
           aria-label="Sidebar navigation"
-          className="liquid-glass-sidebar relative z-20 hidden w-68 shrink-0 flex-col overflow-y-auto border-r border-white/15 md:flex"
+          className="liquid-glass-sidebar relative z-20 hidden w-64 shrink-0 flex-col overflow-y-auto rounded-3xl border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl md:flex"
         >
           {renderSidebarContents(false)}
         </aside>
@@ -670,29 +662,29 @@ export default function AppShell({ user, children }: AppShellProps) {
             aria-label="Mobile navigation drawer"
           >
             <div
-              className="fixed inset-0 bg-black/55 backdrop-blur-xs transition-opacity"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
               onClick={() => setMobileDrawerOpen(false)}
               aria-hidden="true"
             />
-            <aside className="liquid-glass-sidebar relative z-10 flex h-dvh w-76 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-r border-white/20 shadow-2xl">
+            <aside className="liquid-glass-sidebar relative z-10 flex h-dvh w-76 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-r border-white/10 shadow-2xl">
               {renderSidebarContents(true)}
             </aside>
           </div>
         )}
 
         {/* =====================================================================
-            3. RIGHT SIDE: Warm Sandstone / Cream Frosted Canvas
+            3. RIGHT SIDE: Floating Dark Frosted Glass Canvas
            ===================================================================== */}
-        <div className="codexr-canvas-surface relative z-10 flex min-w-0 flex-1 flex-col">
-          {/* Fixed Top Header (Code XR Greeting & Action Pills) */}
-          <header className="codexr-header-surface shrink-0 px-4 py-3.5 md:px-7">
+        <div className="codexr-canvas-surface relative z-10 flex min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
+          {/* Top Header Bar (Shows on mobile or subpages) */}
+          <header className={`codexr-header-surface shrink-0 px-4 py-3 md:px-7 ${isDashboardHome ? 'md:hidden' : ''}`}>
             <div className="flex items-center justify-between gap-3">
-              {/* Left: Mobile Hamburger Button + Code XR Editorial Greeting */}
+              {/* Left: Mobile Hamburger Button + Page Title */}
               <div className="flex items-center gap-3 min-w-0">
                 <button
                   type="button"
                   onClick={() => setMobileDrawerOpen(true)}
-                  className="liquid-droplet-pill inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-2xl text-lg font-bold text-[#1e1512] md:hidden"
+                  className="inline-flex min-h-10 min-w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-base font-bold text-white md:hidden"
                   aria-label="Open navigation menu"
                   aria-expanded={mobileDrawerOpen}
                 >
@@ -700,27 +692,23 @@ export default function AppShell({ user, children }: AppShellProps) {
                 </button>
 
                 <div className="min-w-0">
-                  <h1 className="truncate text-lg font-extrabold tracking-tight text-[#1e1512] sm:text-2xl">
-                    {isDashboardHome
-                      ? `${getGreetingByHour()}, ${effectiveName}`
-                      : currentModule?.name || 'Dashboard'}
+                  <h1 className="truncate text-base font-extrabold tracking-tight text-white sm:text-xl">
+                    {currentModule?.name || 'Dashboard'}
                   </h1>
-                  <p className="truncate text-xs font-medium text-[#6e5a52]">
-                    {isDashboardHome
-                      ? `${getFormattedTodayDate()} · ${roleInfo.label} workspace active`
-                      : currentModule?.description || roleInfo.typicalAccess}
+                  <p className="truncate text-xs font-medium text-slate-400">
+                    {currentModule?.description || roleInfo.typicalAccess}
                   </p>
                 </div>
               </div>
 
-              {/* Right: Code XR Frosted Pill + Dark Espresso Action Pill */}
+              {/* Right: Quick Role Switch Pill & Profile */}
               <div className="flex items-center gap-2.5 shrink-0">
                 <select
                   aria-label="Quick switch role"
                   value={user.role}
                   disabled={switchingRole}
                   onChange={(e) => handleQuickRoleSwitch(e.target.value as UserRole)}
-                  className="liquid-droplet-pill hidden min-h-10 rounded-full px-3.5 py-1.5 text-xs font-bold text-[#2b1f1c] focus:outline-none disabled:opacity-50 sm:block"
+                  className="hidden min-h-9 rounded-xl border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-bold text-cyan-300 focus:outline-none disabled:opacity-50 sm:block"
                 >
                   <option value="admin_engineer">Role: Admin / Engineer</option>
                   <option value="assistant">Role: Assistant</option>
@@ -734,10 +722,10 @@ export default function AppShell({ user, children }: AppShellProps) {
                     setProfileFeedback(null)
                     setShowProfileModal(true)
                   }}
-                  className="codexr-dark-pill inline-flex min-h-10 items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white transition"
+                  className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 transition"
                   aria-label="Open my profile and account details"
                 >
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#c85a38] text-[10px] font-extrabold text-white">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-extrabold text-slate-950">
                     {initialLetter}
                   </span>
                   <span className="hidden sm:inline">My Profile</span>

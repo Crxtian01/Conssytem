@@ -444,26 +444,26 @@ export default function AdminEngineerDashboard({
           </div>
         </div>
 
-        {/* Right: Schedule & Site Milestones Card (Matches "09 Monday" Calendar Card in Video) */}
-        <div className="bg-white rounded-3xl flex flex-col justify-between p-6 lg:col-span-5">
+        {/* Right: Schedule & Site Milestones Card */}
+        <div className="rounded-3xl border border-white/10 bg-[#121624]/85 p-6 backdrop-blur-xl flex flex-col justify-between lg:col-span-5 text-white shadow-lg">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3.5">
-                <span className="text-4xl font-extrabold tracking-tight text-[#c85a38]">
+                <span className="text-4xl font-extrabold tracking-tight text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
                   {dayNum}
                 </span>
                 <div>
-                  <p className="text-sm font-extrabold text-[#1e1512]">
+                  <p className="text-sm font-extrabold text-white">
                     {weekdayName}
                   </p>
-                  <p className="text-xs font-medium text-[#6e5a52]">
+                  <p className="text-xs font-medium text-slate-400">
                     {monthYearName} · {totalPendingAttention} pending reviews
                   </p>
                 </div>
               </div>
               <Link
                 href="/tasks"
-                className="liquid-droplet-pill rounded-full px-3 py-1 text-[11px] font-bold text-[#1e1512] hover:bg-white"
+                className="rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1 text-[11px] font-bold text-cyan-300 hover:bg-white/10 hover:text-white transition"
               >
                 Schedule →
               </Link>
@@ -482,8 +482,8 @@ export default function AdminEngineerDashboard({
                   key={d.day}
                   className={`flex flex-col items-center rounded-2xl py-2 text-xs font-bold transition ${
                     d.active
-                      ? 'bg-[#c85a38] text-white shadow-sm'
-                      : 'bg-[#ede3da]/70 text-[#5c4942]'
+                      ? 'bg-cyan-500/25 border border-cyan-400/50 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+                      : 'border border-white/10 bg-white/[0.04] text-slate-400'
                   }`}
                 >
                   <span className="text-[10px] opacity-75">{d.day}</span>
@@ -495,38 +495,38 @@ export default function AdminEngineerDashboard({
 
           {/* Upcoming Site Inspections & Milestones */}
           <div className="mt-4 space-y-2.5">
-            <div className="flex items-center justify-between rounded-2xl bg-[#f3ebe4] px-3.5 py-2.5 text-xs">
+            <div className="flex items-center justify-between rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-xs hover:border-cyan-400/30 transition">
               <div className="flex items-center gap-3 min-w-0">
-                <span className="font-mono text-[11px] font-bold text-[#6e5a52]">
+                <span className="font-mono text-[11px] font-bold text-slate-400">
                   09:30
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate font-bold text-[#1e1512]">
+                  <p className="truncate font-bold text-white">
                     RA 12009 Bid &amp; BOQ Review
                   </p>
-                  <p className="truncate text-[11px] text-[#6e5a52]">
+                  <p className="truncate text-[11px] text-slate-400">
                     Engineering Office · Envelope 1 &amp; 2
                   </p>
                 </div>
               </div>
-              <span className="shrink-0 text-[#c85a38] font-bold">→</span>
+              <span className="shrink-0 text-cyan-400 font-bold">→</span>
             </div>
 
-            <div className="flex items-center justify-between rounded-2xl bg-[#f3ebe4] px-3.5 py-2.5 text-xs">
+            <div className="flex items-center justify-between rounded-2xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-xs hover:border-cyan-400/30 transition">
               <div className="flex items-center gap-3 min-w-0">
-                <span className="font-mono text-[11px] font-bold text-[#6e5a52]">
+                <span className="font-mono text-[11px] font-bold text-slate-400">
                   13:30
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate font-bold text-[#1e1512]">
+                  <p className="truncate font-bold text-white">
                     Structural Rebar &amp; Slab Inspection
                   </p>
-                  <p className="truncate text-[11px] text-[#6e5a52]">
+                  <p className="truncate text-[11px] text-slate-400">
                     Metro Commercial Tower · 8th Floor
                   </p>
                 </div>
               </div>
-              <span className="shrink-0 text-[#c85a38] font-bold">→</span>
+              <span className="shrink-0 text-cyan-400 font-bold">→</span>
             </div>
           </div>
         </div>
@@ -651,25 +651,25 @@ export default function AdminEngineerDashboard({
       {/* 4. ADMIN / ENGINEER EXCLUSIVE APPROVAL QUEUES (EXPENSES, MATERIALS, ROLES) */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Pending Expense Approvals */}
-        <div className="rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs space-y-3.5">
+        <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl space-y-3.5 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className="text-sm font-extrabold text-white">
                 Pending Expenses ({payload.approvalsQueue.pendingExpenses.length})
               </h3>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-400">
                 Encoded by Assistants — requires Engineer sign-off
               </p>
             </div>
             <Link
               href="/expenses"
-              className="text-xs font-semibold text-amber-700 hover:underline"
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline"
             >
               View All →
             </Link>
           </div>
           {payload.approvalsQueue.pendingExpenses.length === 0 ? (
-            <p className="rounded-xl bg-gray-50 p-4 text-xs text-gray-500">
+            <p className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-slate-400">
               All submitted expenses have been reviewed.
             </p>
           ) : (
@@ -677,13 +677,13 @@ export default function AdminEngineerDashboard({
               {payload.approvalsQueue.pendingExpenses.map((ex) => (
                 <div
                   key={ex.id}
-                  className="flex flex-col gap-2 rounded-xl border border-amber-200 bg-amber-50/40 p-3 text-xs sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-xs sm:flex-row sm:items-center sm:justify-between text-white"
                 >
                   <div>
-                    <p className="font-bold text-gray-900">
+                    <p className="font-bold text-white">
                       {ex.description} — ₱{ex.amount.toLocaleString('en-PH')}
                     </p>
-                    <p className="text-[11px] text-gray-600">
+                    <p className="text-[11px] text-slate-300">
                       {projectMap[ex.project_id] || 'Site'} • {ex.category}
                     </p>
                   </div>
@@ -692,7 +692,7 @@ export default function AdminEngineerDashboard({
                       type="button"
                       disabled={busyApprovalId === ex.id}
                       onClick={() => handleExpenseApproval(ex.id, 'approve')}
-                      className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                      className="rounded-lg bg-emerald-500 hover:bg-emerald-400 px-2.5 py-1 text-xs font-bold text-slate-950 disabled:opacity-50 transition"
                     >
                       Approve
                     </button>
@@ -700,7 +700,7 @@ export default function AdminEngineerDashboard({
                       type="button"
                       disabled={busyApprovalId === ex.id}
                       onClick={() => handleExpenseApproval(ex.id, 'reject')}
-                      className="rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                      className="rounded-lg border border-red-500/40 bg-red-950/40 hover:bg-red-900/60 px-2.5 py-1 text-xs font-semibold text-red-300 disabled:opacity-50 transition"
                     >
                       Reject
                     </button>
@@ -712,25 +712,25 @@ export default function AdminEngineerDashboard({
         </div>
 
         {/* Pending Material Requests */}
-        <div className="rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs space-y-3.5">
+        <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl space-y-3.5 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className="text-sm font-extrabold text-white">
                 Material Requests ({payload.approvalsQueue.pendingMaterialRequests.length})
               </h3>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-400">
                 Approving automatically restocks site inventory
               </p>
             </div>
             <Link
               href="/materials"
-              className="text-xs font-semibold text-amber-700 hover:underline"
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline"
             >
               Materials →
             </Link>
           </div>
           {payload.approvalsQueue.pendingMaterialRequests.length === 0 ? (
-            <p className="rounded-xl bg-gray-50 p-4 text-xs text-gray-500">
+            <p className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-slate-400">
               No pending material restock requests.
             </p>
           ) : (
@@ -738,16 +738,16 @@ export default function AdminEngineerDashboard({
               {payload.approvalsQueue.pendingMaterialRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="flex flex-col gap-2 rounded-xl border border-blue-200 bg-blue-50/40 p-3 text-xs sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-xl border border-blue-500/30 bg-blue-950/20 p-3 text-xs sm:flex-row sm:items-center sm:justify-between text-white"
                 >
                   <div>
-                    <p className="font-bold text-gray-900">
+                    <p className="font-bold text-white">
                       {req.quantity} {req.unit} × {req.material_name}{' '}
-                      <span className="ml-1 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-800">
+                      <span className="ml-1 rounded bg-red-500/30 border border-red-400/40 px-1.5 py-0.5 text-[10px] font-bold text-red-200">
                         {req.urgency}
                       </span>
                     </p>
-                    <p className="text-[11px] text-gray-600">
+                    <p className="text-[11px] text-slate-300">
                       {projectMap[req.project_id] || 'Site'} • {req.notes}
                     </p>
                   </div>
@@ -758,7 +758,7 @@ export default function AdminEngineerDashboard({
                       onClick={() =>
                         handleMaterialRequestApproval(req.id, 'approve_request')
                       }
-                      className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                      className="rounded-lg bg-emerald-500 hover:bg-emerald-400 px-2.5 py-1 text-xs font-bold text-slate-950 disabled:opacity-50 transition"
                     >
                       Approve
                     </button>
@@ -768,7 +768,7 @@ export default function AdminEngineerDashboard({
                       onClick={() =>
                         handleMaterialRequestApproval(req.id, 'reject_request')
                       }
-                      className="rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                      className="rounded-lg border border-red-500/40 bg-red-950/40 hover:bg-red-900/60 px-2.5 py-1 text-xs font-semibold text-red-300 disabled:opacity-50 transition"
                     >
                       Reject
                     </button>
@@ -780,25 +780,25 @@ export default function AdminEngineerDashboard({
         </div>
 
         {/* Pending Role Upgrade Requests */}
-        <div className="rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs space-y-3.5">
+        <div className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl space-y-3.5 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className="text-sm font-extrabold text-white">
                 Role Requests ({payload.approvalsQueue.pendingRoleRequests.length})
               </h3>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-400">
                 Team role upgrade requests awaiting Admin sign-off
               </p>
             </div>
             <Link
               href="/users"
-              className="text-xs font-semibold text-amber-700 hover:underline"
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline"
             >
               Users &amp; Roles →
             </Link>
           </div>
           {payload.approvalsQueue.pendingRoleRequests.length === 0 ? (
-            <p className="rounded-xl bg-gray-50 p-4 text-xs text-gray-500">
+            <p className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-slate-400">
               No pending role upgrade requests.
             </p>
           ) : (
@@ -806,13 +806,13 @@ export default function AdminEngineerDashboard({
               {payload.approvalsQueue.pendingRoleRequests.map((rr) => (
                 <div
                   key={rr.id}
-                  className="flex flex-col gap-2 rounded-xl border border-purple-200 bg-purple-50/40 p-3 text-xs sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-xl border border-purple-500/30 bg-purple-950/20 p-3 text-xs sm:flex-row sm:items-center sm:justify-between text-white"
                 >
                   <div>
-                    <p className="font-bold text-gray-900">{rr.user_email}</p>
-                    <p className="text-[11px] text-gray-600">
+                    <p className="font-bold text-white">{rr.user_email}</p>
+                    <p className="text-[11px] text-slate-300">
                       {ROLES[rr.current_role]?.label} →{' '}
-                      <strong className="text-purple-900">
+                      <strong className="text-cyan-300">
                         {ROLES[rr.requested_role]?.label}
                       </strong>
                     </p>
@@ -824,7 +824,7 @@ export default function AdminEngineerDashboard({
                       onClick={() =>
                         handleRoleRequestApproval(rr.id, 'approve_request')
                       }
-                      className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                      className="rounded-lg bg-emerald-500 hover:bg-emerald-400 px-2.5 py-1 text-xs font-bold text-slate-950 disabled:opacity-50 transition"
                     >
                       Approve
                     </button>
@@ -834,7 +834,7 @@ export default function AdminEngineerDashboard({
                       onClick={() =>
                         handleRoleRequestApproval(rr.id, 'reject_request')
                       }
-                      className="rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                      className="rounded-lg border border-red-500/40 bg-red-950/40 hover:bg-red-900/60 px-2.5 py-1 text-xs font-semibold text-red-300 disabled:opacity-50 transition"
                     >
                       Reject
                     </button>
@@ -844,6 +844,73 @@ export default function AdminEngineerDashboard({
             </div>
           )}
         </div>
+      </section>
+
+      {/* 4.5 PROJECT COOPERATION REQUESTS (Contractors / Team members requesting to join projects) */}
+      <section className="rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl space-y-3.5 text-white">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-extrabold text-white">
+              Project Join &amp; Cooperation Requests ({cooperationRequests.filter((r) => r.status === 'pending').length} Pending)
+            </h3>
+            <p className="text-xs text-slate-400">
+              Contractors and team members requesting to join specific projects
+            </p>
+          </div>
+          {coopNotice && (
+            <span className="rounded-lg bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-1 text-xs font-semibold text-emerald-300">
+              {coopNotice}
+            </span>
+          )}
+        </div>
+
+        {cooperationRequests.filter((r) => r.status === 'pending').length === 0 ? (
+          <p className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-slate-400">
+            No pending project cooperation requests.
+          </p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {cooperationRequests
+              .filter((r) => r.status === 'pending')
+              .map((req) => (
+                <div
+                  key={req.id}
+                  className="flex flex-col justify-between rounded-xl border border-cyan-500/30 bg-cyan-950/20 p-3.5 text-xs text-white space-y-2.5"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-extrabold text-sm text-white">{req.full_name}</p>
+                      <span className="rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2 py-0.5 text-[10px] font-bold text-cyan-300 uppercase">
+                        {req.requested_role}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300">{req.email}</p>
+                    <p className="mt-1 text-xs font-semibold text-cyan-200">
+                      Project: <span className="text-white">{req.project_name}</span>
+                    </p>
+                  </div>
+                  <div className="flex gap-2 pt-1 border-t border-white/10">
+                    <button
+                      type="button"
+                      disabled={busyApprovalId === req.id}
+                      onClick={() => handleCooperationApproval(req.id, 'approve_request')}
+                      className="flex-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 px-3 py-1.5 text-xs font-bold text-slate-950 transition disabled:opacity-50"
+                    >
+                      Approve &amp; Grant Access
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busyApprovalId === req.id}
+                      onClick={() => handleCooperationApproval(req.id, 'reject_request')}
+                      className="rounded-lg border border-red-400/40 bg-red-950/40 hover:bg-red-900/60 px-3 py-1.5 text-xs font-semibold text-red-300 transition disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
       </section>
 
       {/* 5. INTERACTIVE QA & VERIFICATION TEST CHECKLIST DRAWER */}

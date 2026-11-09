@@ -119,27 +119,32 @@ export default function AdminDashboardCharts({
                 data={charts.plannedVsActual}
                 margin={{ top: 10, right: 16, left: -10, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis
                   dataKey="period"
-                  tick={{ fontSize: 11, fill: '#475569' }}
-                  axisLine={{ stroke: '#cbd5e1' }}
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                 />
                 <YAxis
                   domain={[0, 100]}
                   tickFormatter={(v) => `${v}%`}
-                  tick={{ fontSize: 11, fill: '#475569' }}
-                  axisLine={{ stroke: '#cbd5e1' }}
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                 />
                 <Tooltip
                   contentStyle={{
                     fontSize: '12px',
                     borderRadius: '12px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    backgroundColor: '#0d121f',
+                    color: '#ffffff',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
                   }}
+                  itemStyle={{ color: '#22d3ee' }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                   formatter={(val, name) => [`${val}%`, String(name)]}
                 />
-                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '6px' }} />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '6px', color: '#cbd5e1' }} />
 
                 {showTargetLines && (
                   <ReferenceLine
@@ -208,29 +213,34 @@ export default function AdminDashboardCharts({
                 data={charts.monthlyExpensesVsBudget}
                 margin={{ top: 10, right: 16, left: 0, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis
                   dataKey="month"
-                  tick={{ fontSize: 11, fill: '#475569' }}
-                  axisLine={{ stroke: '#cbd5e1' }}
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                 />
                 <YAxis
                   tickFormatter={(v) => formatPHPCompact(Number(v))}
-                  tick={{ fontSize: 11, fill: '#475569' }}
-                  axisLine={{ stroke: '#cbd5e1' }}
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                 />
                 <Tooltip
                   contentStyle={{
                     fontSize: '12px',
                     borderRadius: '12px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    backgroundColor: '#0d121f',
+                    color: '#ffffff',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
                   }}
+                  itemStyle={{ color: '#f59e0b' }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                   formatter={(val, name) => [
                     `₱${Number(val).toLocaleString('en-PH')}`,
                     String(name),
                   ]}
                 />
-                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '6px' }} />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '6px', color: '#cbd5e1' }} />
 
                 <Bar
                   dataKey="monthlySpent"

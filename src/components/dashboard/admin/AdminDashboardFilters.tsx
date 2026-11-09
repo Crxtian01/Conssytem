@@ -52,30 +52,30 @@ export default function AdminDashboardFilters({
       variants={headerVariants}
       initial="hidden"
       animate="visible"
-      className="pointer-events-auto rounded-2xl border border-gray-200/90 bg-white p-5 shadow-xs space-y-4"
+      className="pointer-events-auto rounded-2xl border border-white/10 bg-[#121624]/85 p-5 shadow-lg backdrop-blur-xl space-y-4 text-white"
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center rounded-full border border-purple-200 bg-purple-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-purple-900">
+            <span className="inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.25)]">
               Admin / Engineer Command Center
             </span>
             {reducedMotion && (
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold text-slate-700">
+              <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-[10px] font-semibold text-slate-300">
                 Reduced Motion Active
               </span>
             )}
             {isFetchingFilter && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-900">
-                <span className="h-2.5 w-2.5 animate-spin rounded-full border-2 border-amber-700 border-t-transparent" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/30 px-2.5 py-0.5 text-[10px] font-bold text-cyan-200">
+                <span className="h-2.5 w-2.5 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
                 Updating metrics…
               </span>
             )}
           </div>
-          <h2 className="mt-1.5 text-lg font-extrabold tracking-tight text-gray-900 sm:text-xl">
+          <h2 className="mt-1.5 text-lg font-extrabold tracking-tight text-white sm:text-xl">
             Executive Construction Analytics, S-Curve &amp; Financial Oversight
           </h2>
-          <p className="mt-0.5 text-xs text-gray-500">
+          <p className="mt-0.5 text-xs text-slate-400">
             Real-time KPIs, Planned vs. Actual S-Curve, Monthly Spend vs. Budget, Material Reorder
             Thresholds, Attendance Trends, and RA 12009 Bidding Pipeline.
           </p>
@@ -85,14 +85,14 @@ export default function AdminDashboardFilters({
           <button
             type="button"
             onClick={onReplayAnimations}
-            className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition"
+            className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
           >
             ↻ Replay Entrance
           </button>
           <button
             type="button"
             onClick={onExportCsv}
-            className="rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 transition"
+            className="rounded-xl bg-cyan-500 hover:bg-cyan-400 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-sm transition"
           >
             Export CSV
           </button>
@@ -107,12 +107,12 @@ export default function AdminDashboardFilters({
       </div>
 
       {/* Filter Bar: Project Selector + Date Range Selector */}
-      <div className="flex flex-col gap-3 border-t border-gray-100 pt-3.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-white/10 pt-3.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         {/* Project Selector */}
         <div className="flex flex-wrap items-center gap-2">
           <label
             htmlFor="admin-dashboard-project-filter"
-            className="text-xs font-bold uppercase tracking-wider text-gray-500"
+            className="text-xs font-bold uppercase tracking-wider text-slate-400"
           >
             Project Scope:
           </label>
@@ -120,7 +120,7 @@ export default function AdminDashboardFilters({
             id="admin-dashboard-project-filter"
             value={selectedProjectId}
             onChange={(e) => onProjectChange(e.target.value)}
-            className="rounded-xl border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-900 focus:border-amber-500 focus:outline-none"
+            className="rounded-xl border border-white/20 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
           >
             <option value="all">All Projects ({projects.length} Active Sites)</option>
             {projects.map((p) => (
@@ -133,7 +133,7 @@ export default function AdminDashboardFilters({
 
         {/* Date Range Preset Buttons + Custom Date Pickers */}
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs font-bold uppercase tracking-wider text-gray-500">
+          <span className="mr-1 text-xs font-bold uppercase tracking-wider text-slate-400">
             Period:
           </span>
           {DATE_PRESETS.map((preset) => {
@@ -145,8 +145,8 @@ export default function AdminDashboardFilters({
                 onClick={() => onDateRangeChange(preset.key)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
                   active
-                    ? 'bg-amber-600 text-white shadow-2xs'
-                    : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                    ? 'bg-cyan-500/25 border border-cyan-400/50 text-cyan-300 font-bold shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+                    : 'border border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white'
                 }`}
               >
                 {preset.label}
