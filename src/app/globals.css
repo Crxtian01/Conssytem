@@ -174,67 +174,238 @@ body {
   transform: translateX(2px);
 }
 
-/* Bento Cards Styling for general workspace */
-.liquid-workspace .bg-white.rounded-2xl:not(.codexr-terracotta-card),
-.liquid-workspace .bg-white.rounded-3xl:not(.codexr-terracotta-card) {
+/* ------------------------------------------------------------------ */
+/* HIGH-CONTRAST READABLE SURFACES ACROSS ALL 15 MODULES              */
+/* ------------------------------------------------------------------ */
+
+/* Clean dark frosted cards for all module pages */
+.liquid-workspace .bg-white.rounded-2xl,
+.liquid-workspace .bg-white.rounded-3xl,
+.liquid-workspace .bg-white.rounded-xl,
+.liquid-workspace .liquid-glass-card {
   position: relative;
-  border-radius: 20px !important;
-  background: linear-gradient(
-    145deg,
-    rgba(22, 28, 43, 0.75) 0%,
-    rgba(17, 22, 33, 0.82) 55%,
-    rgba(13, 17, 26, 0.88) 100%
-  ) !important;
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(18, 24, 38, 0.90) !important;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow:
-    0 18px 40px -12px rgba(0, 0, 0, 0.55),
-    inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
-  color: #f1f5f9 !important;
+    0 18px 40px -12px rgba(0, 0, 0, 0.65),
+    0 2px 10px rgba(0, 0, 0, 0.35) !important;
+  color: #ffffff !important;
 }
 
-.liquid-workspace .bg-white.rounded-xl {
-  border-radius: 16px !important;
-  background: rgba(20, 26, 40, 0.75) !important;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #f1f5f9 !important;
+/* Hover effects for actionable module cards */
+.liquid-workspace a.rounded-2xl:hover,
+.liquid-workspace button.rounded-2xl:hover {
+  border-color: rgba(34, 211, 238, 0.4) !important;
+  box-shadow:
+    0 22px 50px -10px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(6, 182, 212, 0.15) !important;
 }
 
+/* Secondary & inner panels inside modules (e.g. gray-50 / gray-100 items) */
 .liquid-workspace .bg-gray-50,
+.liquid-workspace .bg-gray-50\/50,
 .liquid-workspace .bg-gray-100 {
   background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-color: rgba(255, 255, 255, 0.08) !important;
-  color: #e2e8f0 !important;
+  color: #f1f5f9 !important;
 }
+
+.liquid-workspace .bg-amber-50,
+.liquid-workspace .bg-amber-50\/40,
+.liquid-workspace .bg-amber-50\/50,
+.liquid-workspace .bg-amber-50\/60,
+.liquid-workspace .bg-amber-50\/70 {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fef3c7 !important;
+}
+
+/* ================================================================== */
+/* TYPOGRAPHY: CRYSTAL-CLEAR HIGH CONTRAST (WCAG AAA) IN ALL MODULES */
+/* ================================================================== */
+
+/* Pure White for All Headings & Bold Titles */
+.liquid-workspace h1,
+.liquid-workspace h2,
+.liquid-workspace h3,
+.liquid-workspace h4,
+.liquid-workspace h5,
+.liquid-workspace .text-gray-900,
+.liquid-workspace .text-slate-900,
+.liquid-workspace .text-[#1e1512],
+.liquid-workspace .text-[#2b1f1c] {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+/* Bright Slate for Paragraphs, Labels & Table Data */
+.liquid-workspace p,
+.liquid-workspace label,
+.liquid-workspace .text-gray-800,
+.liquid-workspace .text-gray-700,
+.liquid-workspace .text-slate-800,
+.liquid-workspace .text-slate-700 {
+  color: #f1f5f9 !important;
+}
+
+/* Readable Crisp Secondary Subtitles & Captions */
+.liquid-workspace .text-gray-600,
+.liquid-workspace .text-gray-500,
+.liquid-workspace .text-slate-600,
+.liquid-workspace .text-slate-500,
+.liquid-workspace .text-[#6e5a52] {
+  color: #cbd5e1 !important;
+}
+
+.liquid-workspace .text-gray-400,
+.liquid-workspace .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+/* High-Contrast Brand Accents */
+.liquid-workspace .text-amber-600,
+.liquid-workspace .text-amber-700,
+.liquid-workspace .text-amber-800,
+.liquid-workspace .text-amber-900,
+.liquid-workspace .text-[#c85a38] {
+  color: #38bdf8 !important;
+}
+
+.liquid-workspace .text-blue-600,
+.liquid-workspace .text-blue-700 {
+  color: #38bdf8 !important;
+}
+
+.liquid-workspace .text-emerald-700,
+.liquid-workspace .text-green-700 {
+  color: #34d399 !important;
+}
+
+/* High-Contrast Dividers & Borders */
+.liquid-workspace .border-gray-100,
+.liquid-workspace .border-gray-200,
+.liquid-workspace .border-gray-300,
+.liquid-workspace .border-slate-200 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* ================================================================== */
+/* INPUTS & FORMS: HIGH-CONTRAST & CRISP READABILITY                  */
+/* ================================================================== */
 
 .liquid-workspace input:not([type="checkbox"]):not([type="radio"]),
 .liquid-workspace select,
 .liquid-workspace textarea {
-  background: rgba(18, 23, 35, 0.85) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(11, 16, 28, 0.92) !important;
   color: #ffffff !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 0.75rem !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.liquid-workspace input:not([type="checkbox"]):not([type="radio"])::placeholder,
+.liquid-workspace textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
 }
 
 .liquid-workspace input:not([type="checkbox"]):not([type="radio"]):focus,
 .liquid-workspace select:focus,
 .liquid-workspace textarea:focus {
-  background: rgba(22, 28, 43, 0.95) !important;
-  border-color: rgba(56, 189, 248, 0.8) !important;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+  background: rgba(14, 21, 38, 0.98) !important;
+  border-color: #22d3ee !important;
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.35) !important;
+  color: #ffffff !important;
+  outline: none !important;
 }
 
+.liquid-workspace select option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* ================================================================== */
+/* TABLES: CRISP HEADERS & ROW CELLS                                  */
+/* ================================================================== */
+
+.liquid-workspace table {
+  color: #f1f5f9 !important;
+}
+
+.liquid-workspace th {
+  color: #22d3ee !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.liquid-workspace td {
+  color: #e2e8f0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.liquid-workspace tr:hover td {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ================================================================== */
+/* STATUS BADGES: VIVID NEON CONTRAST                                 */
+/* ================================================================== */
+
+.liquid-workspace .bg-blue-100 {
+  background: rgba(14, 165, 233, 0.2) !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
+}
+
+.liquid-workspace .bg-emerald-100,
+.liquid-workspace .bg-green-100 {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border: 1px solid rgba(52, 211, 153, 0.4) !important;
+  color: #34d399 !important;
+}
+
+.liquid-workspace .bg-amber-100,
+.liquid-workspace .bg-yellow-100 {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  color: #fbbf24 !important;
+}
+
+.liquid-workspace .bg-red-100,
+.liquid-workspace .bg-rose-100 {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border: 1px solid rgba(248, 113, 113, 0.4) !important;
+  color: #f87171 !important;
+}
+
+.liquid-workspace .bg-purple-100 {
+  background: rgba(168, 85, 247, 0.2) !important;
+  border: 1px solid rgba(192, 132, 252, 0.4) !important;
+  color: #c084fc !important;
+}
+
+/* 3D Liquid Glass Droplet Pill */
 .liquid-droplet-pill {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  color: #f1f5f9;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  color: #ffffff;
 }
 
 .codexr-dark-pill {

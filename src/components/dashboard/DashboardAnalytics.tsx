@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import AssetManagementDashboard from '@/components/dashboard/AssetManagementDashboard'
 import AdminEngineerDashboard from '@/components/dashboard/admin/AdminEngineerDashboard'
 import type { StoreData } from '@/lib/module-store'
 import type { BiddingStoreData } from '@/lib/bidding-store'
@@ -23,7 +22,6 @@ export default function DashboardAnalytics({
   adminDashboardPayload?: AdminDashboardPayload
 }) {
   const [store] = useState(initialStore)
-  const [activeTab, setActiveTab] = useState<'asset_mgmt' | 'engineer_cmd'>('asset_mgmt')
   const perms = ROLES[role].permissions
 
   const bids = biddingStore?.bids ?? []

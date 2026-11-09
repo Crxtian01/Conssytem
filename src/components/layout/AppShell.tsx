@@ -818,17 +818,17 @@ export default function AppShell({ user, children }: AppShellProps) {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/60 px-6 py-4">
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
               <div className="flex items-center gap-3 min-w-0">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#c85a38] text-base font-bold text-white shadow-sm">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-500 text-base font-extrabold text-slate-950 shadow-md">
                   {initialLetter}
                 </span>
                 <div className="min-w-0">
-                  <h2 className="truncate text-base font-extrabold text-[#1e1512] sm:text-lg">
-                    My Profile & Account Details
+                  <h2 className="truncate text-base font-extrabold text-white sm:text-lg">
+                    My Profile &amp; Account Details
                   </h2>
-                  <p className="truncate text-xs text-[#6e5a52]">
-                    ConstructMS Identity, Assigned Role & Permissions Matrix
+                  <p className="truncate text-xs text-slate-400">
+                    ConstructMS Identity, Assigned Role &amp; Permissions Matrix
                   </p>
                 </div>
               </div>
@@ -839,7 +839,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                   setShowProfileModal(false)
                   setIsEditingName(false)
                 }}
-                className="liquid-droplet-pill inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl text-sm font-bold text-[#1e1512] hover:bg-white/90"
+                className="liquid-droplet-pill inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl text-sm font-bold text-slate-200 hover:text-white hover:bg-white/10"
                 aria-label="Close profile dialog"
               >
                 ✕
@@ -849,7 +849,7 @@ export default function AppShell({ user, children }: AppShellProps) {
             {/* Scrollable Modal Body */}
             <div className="flex-1 space-y-5 overflow-y-auto p-6">
               {/* 1. Identity Card */}
-              <div className="liquid-droplet-pill rounded-2xl p-4 sm:p-5">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-4 min-w-0">
                     {user.avatarUrl ? (
@@ -857,10 +857,10 @@ export default function AppShell({ user, children }: AppShellProps) {
                       <img
                         src={user.avatarUrl}
                         alt={effectiveName}
-                        className="h-16 w-16 shrink-0 rounded-full border-2 border-white object-cover shadow-md"
+                        className="h-16 w-16 shrink-0 rounded-full border-2 border-cyan-400 object-cover shadow-md"
                       />
                     ) : (
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[#c85a38] text-2xl font-extrabold text-white shadow-md">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-cyan-400 bg-cyan-500/20 text-2xl font-extrabold text-cyan-300 shadow-md">
                         {initialLetter}
                       </div>
                     )}
@@ -868,7 +868,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                     <div className="min-w-0 flex-1 space-y-1">
                       {!isEditingName ? (
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="truncate text-lg font-extrabold text-[#1e1512]">
+                          <h3 className="truncate text-lg font-extrabold text-white">
                             {effectiveName}
                           </h3>
                           <button
@@ -880,7 +880,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                               setIsEditingName(true)
                               setProfileFeedback(null)
                             }}
-                            className="rounded-lg border border-white/80 bg-white/80 px-2.5 py-0.5 text-[11px] font-bold text-[#1e1512] hover:bg-white"
+                            className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300 hover:bg-white/20"
                           >
                             Edit Name
                           </button>
@@ -892,13 +892,13 @@ export default function AppShell({ user, children }: AppShellProps) {
                             value={nameInput}
                             onChange={(e) => setNameInput(e.target.value)}
                             placeholder="Enter your full name"
-                            className="rounded-xl border border-[#c85a38] bg-white px-3 py-1.5 text-sm font-bold text-[#1e1512] focus:outline-none"
+                            className="rounded-xl border border-cyan-400 bg-slate-900 px-3 py-1.5 text-sm font-bold text-white focus:outline-none"
                           />
                           <button
                             type="button"
                             disabled={savingName}
                             onClick={handleSaveProfileName}
-                            className="rounded-xl bg-[#c85a38] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#b04628] disabled:opacity-50"
+                            className="rounded-xl bg-cyan-500 px-3 py-1.5 text-xs font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-50"
                           >
                             {savingName ? 'Saving…' : 'Save'}
                           </button>
@@ -906,14 +906,14 @@ export default function AppShell({ user, children }: AppShellProps) {
                             type="button"
                             disabled={savingName}
                             onClick={() => setIsEditingName(false)}
-                            className="rounded-xl border border-white/80 bg-white/80 px-2.5 py-1.5 text-xs font-bold text-[#5c4942] hover:bg-white"
+                            className="rounded-xl border border-white/20 bg-white/10 px-2.5 py-1.5 text-xs font-bold text-slate-300 hover:bg-white/20"
                           >
                             Cancel
                           </button>
                         </div>
                       )}
 
-                      <p className="truncate text-xs font-semibold text-[#5c4942]">
+                      <p className="truncate text-xs font-semibold text-slate-400">
                         {user.email}
                       </p>
 
@@ -926,8 +926,8 @@ export default function AppShell({ user, children }: AppShellProps) {
                         <span
                           className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${
                             user.emailVerified
-                              ? 'border-emerald-200 bg-emerald-100 text-emerald-800'
-                              : 'border-amber-200 bg-amber-100 text-amber-800'
+                              ? 'border-emerald-500/40 bg-emerald-500/20 text-emerald-300'
+                              : 'border-amber-500/40 bg-amber-500/20 text-amber-300'
                           }`}
                         >
                           {user.emailVerified ? '✓ Email Verified' : '● Verification Pending'}
@@ -938,36 +938,36 @@ export default function AppShell({ user, children }: AppShellProps) {
                 </div>
 
                 {profileFeedback && (
-                  <p className="mt-3 rounded-xl bg-emerald-50/90 px-3 py-2 text-xs font-bold text-emerald-800">
+                  <p className="mt-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 px-3 py-2 text-xs font-bold text-emerald-300">
                     {profileFeedback}
                   </p>
                 )}
 
                 {/* Account Metadata Grid */}
-                <div className="mt-4 grid grid-cols-1 gap-2.5 border-t border-white/60 pt-4 sm:grid-cols-2">
-                  <div className="rounded-xl bg-white/60 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#6e5a52]">
+                <div className="mt-4 grid grid-cols-1 gap-2.5 border-t border-white/10 pt-4 sm:grid-cols-2">
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       Account User ID
                     </p>
                     <div className="mt-0.5 flex items-center justify-between gap-2">
-                      <code className="truncate font-mono text-xs font-semibold text-[#1e1512]">
+                      <code className="truncate font-mono text-xs font-semibold text-cyan-300">
                         {user.id}
                       </code>
                       <button
                         type="button"
                         onClick={handleCopyUserId}
-                        className="shrink-0 rounded-md bg-white/85 px-2 py-0.5 text-[10px] font-bold text-[#1e1512] hover:bg-white"
+                        className="shrink-0 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold text-slate-200 hover:bg-white/20"
                       >
                         {copiedId ? 'Copied!' : 'Copy'}
                       </button>
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-white/60 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#6e5a52]">
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       Permitted Workspace Access
                     </p>
-                    <p className="mt-0.5 text-xs font-bold text-[#1e1512]">
+                    <p className="mt-0.5 text-xs font-bold text-white">
                       {allowedModules.length} of 15 System Modules Enabled
                     </p>
                   </div>
@@ -975,34 +975,34 @@ export default function AppShell({ user, children }: AppShellProps) {
               </div>
 
               {/* 2. Role Access Scope Description */}
-              <div className="liquid-droplet-pill rounded-2xl p-4 space-y-2">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 space-y-2 backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#5c4942]">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-cyan-300">
                     Assigned Role Scope ({roleInfo.label})
                   </h4>
                   {user.role === 'admin_engineer' ? (
                     <Link
                       href="/users"
                       onClick={() => setShowProfileModal(false)}
-                      className="text-xs font-bold text-[#c85a38] hover:underline"
+                      className="text-xs font-bold text-cyan-400 hover:text-cyan-300 hover:underline"
                     >
-                      Manage All Users & Roles →
+                      Manage All Users &amp; Roles →
                     </Link>
                   ) : (
-                    <span className="text-[11px] font-semibold text-[#6e5a52]">
+                    <span className="text-[11px] font-semibold text-slate-400">
                       Managed by Admin / Engineer
                     </span>
                   )}
                 </div>
-                <p className="text-xs leading-relaxed text-[#4a3a34]">
+                <p className="text-xs leading-relaxed text-slate-300">
                   {roleInfo.typicalAccess}
                 </p>
               </div>
 
               {/* 3. Role Capabilities & Permissions Matrix */}
               <div className="space-y-2.5">
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#5c4942]">
-                  Role Capabilities & Action Permissions
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">
+                  Role Capabilities &amp; Action Permissions
                 </h4>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {permissionItems.map((perm) => (
@@ -1010,16 +1010,16 @@ export default function AppShell({ user, children }: AppShellProps) {
                       key={perm.label}
                       className={`flex items-center justify-between rounded-xl border px-3 py-2 text-xs ${
                         perm.enabled
-                          ? 'border-emerald-200/80 bg-emerald-50/70 text-[#1e1512] font-semibold'
-                          : 'border-white/60 bg-white/40 text-[#7d6860]'
+                          ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-semibold'
+                          : 'border-white/10 bg-white/[0.02] text-slate-400'
                       }`}
                     >
                       <span className="truncate pr-2">{perm.label}</span>
                       <span
                         className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${
                           perm.enabled
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-black/10 text-[#6e5a52]'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                            : 'bg-white/10 text-slate-400'
                         }`}
                       >
                         {perm.enabled ? '✓ Allowed' : 'Restricted'}
@@ -1031,7 +1031,7 @@ export default function AppShell({ user, children }: AppShellProps) {
 
               {/* 4. Quick Links to Permitted Modules */}
               <div className="space-y-2.5">
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#5c4942]">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">
                   Your Allowed Modules ({allowedModules.length})
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -1040,7 +1040,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                       key={mod.id}
                       href={mod.href}
                       onClick={() => setShowProfileModal(false)}
-                      className="liquid-droplet-pill inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-[#1e1512] hover:bg-white"
+                      className="rounded-xl border border-white/10 bg-white/[0.05] hover:bg-white/[0.1] px-3 py-1.5 text-xs font-bold text-white transition"
                     >
                       <span>{mod.name}</span>
                     </Link>
@@ -1050,14 +1050,14 @@ export default function AppShell({ user, children }: AppShellProps) {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/60 px-6 py-4">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/10 px-6 py-4">
               <button
                 type="button"
                 onClick={() => {
                   setShowProfileModal(false)
                   setShowSignOutModal(true)
                 }}
-                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-red-200 bg-red-50/80 px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-100"
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/20 px-4 py-2 text-xs font-bold text-red-300 hover:bg-red-500/30"
               >
                 <span>Sign Out</span>
               </button>
@@ -1086,11 +1086,11 @@ export default function AppShell({ user, children }: AppShellProps) {
           }}
         >
           <div
-            className="liquid-glass-card w-full max-w-md rounded-3xl p-6 space-y-5"
+            className="liquid-glass-card w-full max-w-md rounded-3xl p-6 space-y-5 border border-white/10"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-4">
-              <div className="liquid-droplet-pill flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-red-600">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-500/20 border border-red-500/30 text-red-400">
                 <svg
                   className="h-6 w-6"
                   viewBox="0 0 24 24"
@@ -1106,26 +1106,26 @@ export default function AppShell({ user, children }: AppShellProps) {
                 </svg>
               </div>
               <div className="flex-1">
-                <h2 className="text-lg font-bold text-[#1e1512]">
+                <h2 className="text-lg font-extrabold text-white">
                   Sign out of ConstructMS?
                 </h2>
-                <p className="mt-1 text-xs text-[#5c4942] leading-relaxed">
+                <p className="mt-1 text-xs text-slate-300 leading-relaxed">
                   Are you sure you want to log out of your account? You can sign back in anytime
                   using Google or your email and password.
                 </p>
               </div>
             </div>
 
-            <div className="liquid-droplet-pill flex items-center justify-between rounded-2xl p-3.5">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#c85a38] text-sm font-bold text-white">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500 text-sm font-extrabold text-slate-950">
                   {initialLetter}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-bold text-[#1e1512]">
+                  <p className="truncate text-xs font-bold text-white">
                     {effectiveName}
                   </p>
-                  <p className="truncate text-[11px] text-[#5c4942]">{user.email}</p>
+                  <p className="truncate text-[11px] text-slate-400">{user.email}</p>
                 </div>
               </div>
               <span
@@ -1140,7 +1140,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                 type="button"
                 disabled={signingOut}
                 onClick={() => setShowSignOutModal(false)}
-                className="liquid-droplet-pill min-h-11 rounded-full px-4 py-2 text-xs font-bold text-[#1e1512] hover:bg-white/90 disabled:opacity-50"
+                className="min-h-11 rounded-full border border-white/10 bg-white/[0.05] hover:bg-white/10 px-4 py-2 text-xs font-bold text-slate-200 disabled:opacity-50 transition"
               >
                 Stay Signed In
               </button>
@@ -1153,7 +1153,7 @@ export default function AppShell({ user, children }: AppShellProps) {
                 <button
                   type="submit"
                   disabled={signingOut}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#c85a38] px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#b04628] disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full bg-red-600 px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-red-500 disabled:opacity-60 transition"
                 >
                   {signingOut ? (
                     <>
