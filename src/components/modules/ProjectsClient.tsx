@@ -190,7 +190,7 @@ export default function ProjectsClient({
                   <h3 className="text-lg font-bold text-gray-900">{p.name}</h3>
                   <p className="text-xs font-medium text-amber-700">{p.location}</p>
                 </div>
-                <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold uppercase text-amber-900">
+                <span className="inline-flex items-center whitespace-nowrap shrink-0 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 text-xs font-semibold uppercase shadow-xs">
                   {p.status}
                 </span>
               </div>
@@ -218,9 +218,9 @@ export default function ProjectsClient({
                   <span>Overall Progress</span>
                   <span>{p.progress}%</span>
                 </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800/90 border border-white/10 shadow-inner">
                   <div
-                    className="h-full rounded-full bg-amber-500 transition-all"
+                    className="h-full rounded-full bg-linear-to-r from-teal-400 via-cyan-400 to-emerald-400 shadow-[0_0_12px_rgba(34,211,238,0.4)] transition-all"
                     style={{ width: `${p.progress}%` }}
                   />
                 </div>
@@ -236,39 +236,44 @@ export default function ProjectsClient({
                 if (membersForProject.length === 0) return null
 
                 return (
-                  <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/40 p-3 space-y-2">
+                  <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-3.5 space-y-2.5 backdrop-blur-md shadow-inner">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-900">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                         Joined Project Team ({membersForProject.length})
                       </span>
-                      <span className="text-[10px] font-semibold text-emerald-800">
+                      <span className="text-[10px] font-medium text-emerald-300/80">
                         Lead Engineer: lacuatachristian01@gmail.com
                       </span>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       {membersForProject.map((m) => {
                         const roleLabel =
                           ROLES[m.requested_role]?.label || 'Contractor'
                         return (
                           <div
                             key={m.id}
-                            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-white px-2.5 py-2 text-[11px]"
+                            className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-white/10 bg-slate-900/90 p-3 text-xs shadow-xs backdrop-blur-md"
                           >
                             <div>
-                              <span className="font-bold text-gray-900">
-                                {m.full_name}
-                              </span>{' '}
-                              <span className="text-gray-500">({m.email})</span>
-                              <div className="mt-0.5 text-[10px] font-semibold text-amber-800">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="font-bold text-white text-xs">
+                                  {m.full_name || 'Project Member'}
+                                </span>
+                                <span className="text-slate-400 font-mono text-[11px]">
+                                  ({m.email})
+                                </span>
+                              </div>
+                              <div className="mt-1 text-[11px] font-semibold text-amber-300">
                                 Role: {roleLabel}
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-2">
                               <span
-                                className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                                className={`inline-flex items-center whitespace-nowrap shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                                   m.status === 'approved'
-                                    ? 'bg-emerald-100 text-emerald-800'
-                                    : 'bg-amber-100 text-amber-800'
+                                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-[0_0_10px_rgba(52,211,153,0.15)]'
+                                    : 'bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-[0_0_10px_rgba(245,158,11,0.15)]'
                                 }`}
                               >
                                 {m.status === 'approved'
@@ -280,7 +285,7 @@ export default function ProjectsClient({
                                   type="button"
                                   disabled={busyMemberId === m.id}
                                   onClick={() => handleApproveMember(m.id)}
-                                  className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-emerald-700 disabled:opacity-50"
+                                  className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-emerald-500 shadow-xs disabled:opacity-50 transition"
                                 >
                                   Approve
                                 </button>

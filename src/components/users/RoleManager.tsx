@@ -271,26 +271,30 @@ export default function RoleManager({
             cooperationRequests.map((req) => (
               <div
                 key={req.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-white p-3.5 text-xs"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-900/80 p-3.5 text-xs backdrop-blur-md shadow-xs"
               >
                 <div>
-                  <div className="font-bold text-gray-900">
-                    {req.full_name} ({req.email})
+                  <div className="font-bold text-white text-xs">
+                    {req.full_name}{' '}
+                    <span className="font-normal font-mono text-slate-400 text-[11px]">
+                      ({req.email})
+                    </span>
                   </div>
-                  <div className="mt-0.5 text-gray-600">
-                    Project: <strong>{req.project_name}</strong> • Role: <strong className="text-emerald-800">Contractor / Bidder</strong>
+                  <div className="mt-0.5 text-slate-300 text-[11px]">
+                    Project: <strong className="text-white">{req.project_name}</strong> • Role:{' '}
+                    <strong className="text-emerald-400">Contractor / Bidder</strong>
                   </div>
-                  <div className="mt-0.5 text-[11px] text-gray-500">{req.message}</div>
+                  <div className="mt-0.5 text-[11px] text-slate-400">{req.message}</div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                    className={`inline-flex items-center whitespace-nowrap shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                       req.status === 'approved'
-                        ? 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-xs'
                         : req.status === 'rejected'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-amber-100 text-amber-800'
+                        ? 'bg-red-500/20 text-red-300 border border-red-400/40 shadow-xs'
+                        : 'bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-xs'
                     }`}
                   >
                     {req.status === 'approved' ? 'Approved & Email Sent' : req.status}

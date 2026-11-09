@@ -179,9 +179,12 @@ body {
 /* ------------------------------------------------------------------ */
 
 /* Clean dark frosted cards for all module pages */
-.liquid-workspace .bg-white.rounded-2xl,
 .liquid-workspace .bg-white.rounded-3xl,
+.liquid-workspace .bg-white.rounded-2xl,
 .liquid-workspace .bg-white.rounded-xl,
+.liquid-workspace .bg-white.rounded-lg,
+.liquid-workspace .bg-white.rounded-md,
+.liquid-workspace div[class*="bg-white"]:not([class*="dark:"]):not(button):not(a),
 .liquid-workspace .liquid-glass-card {
   position: relative;
   background: rgba(18, 24, 38, 0.90) !important;
@@ -206,11 +209,20 @@ body {
 /* Secondary & inner panels inside modules */
 .liquid-workspace .bg-gray-50,
 .liquid-workspace [class*="bg-gray-50"],
-.liquid-workspace .bg-gray-100 {
-  background: rgba(255, 255, 255, 0.04) !important;
+.liquid-workspace .bg-gray-100,
+.liquid-workspace [class*="bg-gray-100"],
+.liquid-workspace .bg-emerald-50,
+.liquid-workspace [class*="bg-emerald-50"],
+.liquid-workspace .bg-amber-50,
+.liquid-workspace [class*="bg-amber-50"],
+.liquid-workspace .bg-blue-50,
+.liquid-workspace [class*="bg-blue-50"],
+.liquid-workspace .bg-indigo-50,
+.liquid-workspace [class*="bg-indigo-50"] {
+  background: rgba(15, 23, 42, 0.75) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   color: #f1f5f9 !important;
 }
 
@@ -369,14 +381,21 @@ body {
 .liquid-workspace .text-emerald-500,
 .liquid-workspace .text-emerald-600,
 .liquid-workspace .text-emerald-700,
+.liquid-workspace .text-emerald-800,
+.liquid-workspace .text-emerald-900,
 .liquid-workspace .text-green-600,
-.liquid-workspace .text-green-700 {
+.liquid-workspace .text-green-700,
+.liquid-workspace .text-green-800,
+.liquid-workspace .text-green-900 {
   color: #34d399 !important;
 }
 
+.liquid-workspace .text-red-400,
 .liquid-workspace .text-red-500,
 .liquid-workspace .text-red-600,
-.liquid-workspace .text-red-700 {
+.liquid-workspace .text-red-700,
+.liquid-workspace .text-red-800,
+.liquid-workspace .text-red-900 {
   color: #f87171 !important;
 }
 
