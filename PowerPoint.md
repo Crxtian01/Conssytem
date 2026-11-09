@@ -1,13 +1,10 @@
 # ConstructMS — Final Project Presentation & Teacher Demo Guide (`PowerPoint.md`)
 
-> **🎉 Live Presentation Ready:**
-> - **Ready-to-Open PowerPoint File:** [**`ConstructMS_Defense_Presentation.pptx`**](file:///c:/Users/christian/OneDrive/Desktop/ConstructionSystem/ConstructMS_Defense_Presentation.pptx) is already generated in the root directory! It has the exact **Deep Midnight Obsidian Blueprint Background (`#050811`)**, subtle architectural grid, frosted glass bento cards, neon accents, and embedded speaker notes for all 12 slides.
-> - **Re-generate Any Time:** Run `python scripts/generate_pptx.py` in your terminal.
->
 > **How to use this document:**
-> 1. **For Presenting Directly to Your Teacher:** Open `ConstructMS_Defense_Presentation.pptx` in Microsoft PowerPoint or Google Slides and follow the 12-slide walkthrough below. Every slide includes **"What to Say to Your Teacher"** (Speaker Notes) and **"Live Demo Action"** (exact clicks in your web prototype).
-> 2. **For AI Slide Generators (Claude / Gamma / Canva / PowerPoint Copilot):** Copy the text inside the prompt section at the bottom.
-> 3. **Grading Alignment:** Strictly follows the **CS PC 12 — Interactive Design and Prototyping Final Laboratory Project Rubric** (Problems, Personas, Flows, Screens, Usability Testing, and V1 → V2 Iteration).
+> 1. **Visual Theme Matching Your Web Project:** This presentation is specifically designed with your project's **Deep Midnight Obsidian Blueprint Background (`#050811`)**, subtle architectural blueprint grid, dark frosted glass bento cards, and high-contrast neon accents.
+> 2. **For Presenting Directly to Your Teacher:** Use the 12-slide walkthrough below. Every slide includes **"What to Say to Your Teacher"** (Speaker Notes) and **"Live Demo Action"** (exact clicks in your web prototype).
+> 3. **For AI Slide Generators (Claude / Gamma / Canva AI / PowerPoint Copilot):** Copy the ready-to-paste prompt at the bottom. It has the exact CSS color codes and background specifications so your exported deck matches your web app 1:1.
+> 4. **Grading Alignment:** Strictly follows the **CS PC 12 — Interactive Design and Prototyping Final Laboratory Project Rubric** (Problems, Personas, Flows, Screens, Usability Testing, and V1 → V2 Iteration).
 
 ---
 
@@ -17,8 +14,39 @@ CONSTRUCTMS: FINAL LABORATORY DEFENSE SLIDE DECK & LIVE DEMONSTRATION GUIDE
 Course: CS PC 12 — Interactive Design and Prototyping
 Project: ConstructMS — Construction Management & RA 12009 Procurement System
 Presenter: Christian Lacuata & Project Team
+Theme: Dark Liquid Obsidian Blueprint (Matching Web Prototype)
 ================================================================================
 ```
+
+---
+
+## Visual Theme & Slide Background Specifications (Matching ConstructMS)
+
+To make your PowerPoint or Google Slides look identical to your live web application, apply these visual specifications:
+
+- **Slide Background (Canvas):**
+  - **Base Hex:** Deep Midnight Obsidian (`#050811` or `#05070E`)
+  - **Grid Overlay:** Architectural Blueprint Grid (48px spacing, 1px lines in `rgba(255, 255, 255, 0.035)` or `#0C1322`)
+  - **Ambient Lighting:** Subtle radial glow orbs:
+    - Upper-Right: Electric Cyan (`rgba(6, 182, 212, 0.12)`)
+    - Lower-Left: Construction Amber (`rgba(245, 158, 11, 0.07)`)
+- **Card Containers (Bento Grid):**
+  - Fill: Dark Frosted Glass (`#101726` / `rgba(16, 23, 38, 0.85)`)
+  - Border: 1px subtle border (`rgba(255, 255, 255, 0.12)` or `#1E293B`) with active borders in Cyan (`#0E7490` / `#22D3EE`)
+  - Corner Radius: 12px – 16px rounded corners
+- **Typography & Semantic Colors:**
+  - **Slide Titles:** Bold Sans-serif `#FFFFFF` (24pt – 32pt)
+  - **Category Eyebrows / Tags:** Bold Uppercase `#22D3EE` (10pt – 11pt)
+  - **Subtitles & Card Headers:** `#38BDF8` (Sky Cyan) & `#FFFFFF`
+  - **Body Text:** Crisp High-Contrast `#E2E8F0` / `#F1F5F9` (11pt – 13pt)
+  - **Secondary / Meta:** `#94A3B8` (Muted Slate)
+  - **Status Accents:**
+    - Emerald Green (`#34D399`): Positive progress, approvals, active bids
+    - Construction Amber (`#F59E0B` / `#FBBF24`): Pending actions, under evaluation, deadlines
+    - Neon Rose (`#F87171`): Cost overruns, stockout warnings, locked permissions
+- **Layout Format:** 16:9 Widescreen (1920 × 1080) with fixed top category tag and bottom status footer.
+
+---
 
 ---
 
@@ -365,12 +393,22 @@ SYSTEM NAME: ConstructMS (Construction Management & RA 12009 Procurement System)
 PROJECT REPO: https://github.com/Crxtian01/Conssytem
 TECH STACK: Next.js 16 (App Router), React 19, TypeScript, Supabase, Tailwind CSS, Recharts
 
-DESIGN SYSTEM SPECIFICATION:
-- Theme: Dark Liquid Obsidian Glass with Neon Accents
-- Background: Deep Obsidian / Midnight Slate (#090D16, #0F172A)
-- Card Containers: Frosted Glass (rgba(18, 24, 38, 0.90), 1px solid rgba(255, 255, 255, 0.12), backdrop-blur 24px)
-- Primary Accents: Electric Cyan (#22D3EE), Construction Amber (#F59E0B), Emerald Glow (#34D399)
-- Typography: Bold high-contrast sans-serif headings with monospace numbers for financial KPIs
+DESIGN SYSTEM SPECIFICATION (EXACT WEB APP MATCH):
+- Slide Background Canvas: Deep Midnight Obsidian (#050811 / #05070E)
+- Background Texture: Subtle architectural blueprint grid overlay (48px spacing, 1px lines in rgba(255, 255, 255, 0.035) or #0C1322)
+- Ambient Lighting: Radial glow orbs (Electric Cyan rgba(6, 182, 212, 0.12) in upper-right, Construction Amber rgba(245, 158, 11, 0.07) in lower-left)
+- Card Containers: Dark Frosted Glass Bento Cards (#101726 / rgba(16, 23, 38, 0.85)) with 1px subtle borders (rgba(255, 255, 255, 0.12) or #1E293B) and 12px rounded corners
+- Typography & Hierarchy:
+  * Slide Main Title: Bold Sans-Serif #FFFFFF (26pt - 32pt)
+  * Eyebrow Category Tag: Bold Uppercase #22D3EE in glowing cyan capsule badge
+  * Subtitles & Card Headers: Sky Cyan #38BDF8 & Bold White #FFFFFF
+  * Body Text: Crisp High-Contrast #E2E8F0 / #F1F5F9 (11pt - 13pt)
+  * Secondary / Meta Text: Muted Slate #94A3B8
+- Semantic Accent Colors:
+  * Emerald Glow (#34D399): Positive milestones, approvals, active bids
+  * Construction Amber (#F59E0B / #FBBF24): Under evaluation, pending vouchers, deadlines
+  * Neon Rose (#F87171): Stockout warnings, cost overruns, locked actions
+- Slide Ratio: 16:9 Widescreen Layout (1920x1080)
 
 SLIDE OUTLINE TO GENERATE:
 Slide 1: Title Slide — ConstructMS: Interactive Construction Management & RA 12009 Bidding System (CS PC 12 Final Defense).
