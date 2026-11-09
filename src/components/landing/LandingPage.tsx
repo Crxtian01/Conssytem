@@ -477,13 +477,13 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
           <div className="mb-10 text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.2em] text-cyan-300 backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-              Live Interactive Workspace Preview
+              Live Admin &amp; Lead Engineer Command Center
             </span>
             <h3 className="mt-3 text-3xl font-black text-white sm:text-4xl">
-              One unified cockpit for every site &amp; asset.
+              One unified cockpit for every site, bid &amp; budget.
             </h3>
-            <p className="mx-auto mt-2 max-w-lg text-sm text-slate-400">
-              Interactive preview showing real-time asset telemetry, lifecycle curves, and automatic compliance verification.
+            <p className="mx-auto mt-2 max-w-xl text-sm text-slate-400">
+              Live executive telemetry showing verified S-Curve progress curves, RA 12009 public bidding packages, and real-time capital disbursement.
             </p>
           </div>
 
