@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import FabricSculpture from '@/components/landing/FabricSculpture'
+import ScatteredMaterialsBackdrop from '@/components/layout/ScatteredMaterialsBackdrop'
 
 interface LandingPageProps {
   isSignedIn?: boolean
@@ -261,11 +262,14 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
   }
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#f3efe8] font-sans text-[#111] selection:bg-amber-300/60">
+    <div className="relative min-h-screen overflow-x-hidden bg-[#05070e] font-sans text-white selection:bg-cyan-500/30">
+      {/* City night photography bokeh background based on the dashboard */}
+      <ScatteredMaterialsBackdrop />
+
       {/* ------------------------------ Navigation ------------------------------ */}
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          scrolled ? 'bg-[#f3efe8]/80 backdrop-blur-md' : 'bg-transparent'
+          scrolled ? 'bg-[#090d1a]/85 backdrop-blur-2xl border-b border-white/10 shadow-2xl' : 'bg-transparent'
         }`}
       >
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
@@ -277,16 +281,16 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
               className="h-9 w-auto object-contain"
             />
             <div className="leading-none">
-              <span className="block text-[16px] font-extrabold tracking-tight text-[#111]">
+              <span className="block text-[16px] font-extrabold tracking-tight text-white">
                 ConstructMS
               </span>
-              <span className="mt-0.5 block text-[8.5px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+              <span className="mt-0.5 block text-[8.5px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                 Construction Management
               </span>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-10 text-[13px] font-medium text-neutral-600 md:flex">
+          <nav className="hidden items-center gap-10 text-[13px] font-medium text-slate-300 md:flex">
             {[
               { id: 'modules', label: 'Modules' },
               { id: 'bidding', label: 'Bidding' },
@@ -296,10 +300,10 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                 key={item.id}
                 type="button"
                 onClick={() => scrollToId(item.id)}
-                className="group relative transition-colors hover:text-black"
+                className="group relative transition-colors hover:text-white"
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-black transition-all duration-500 group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-cyan-400 transition-all duration-500 group-hover:w-full" />
               </button>
             ))}
           </nav>
@@ -308,18 +312,18 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
             {isSignedIn ? (
               <Link
                 href="/"
-                className="rounded-full bg-[#111] px-5 py-2.5 font-semibold text-[#f3efe8] transition hover:bg-amber-700"
+                className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 font-bold text-slate-950 transition hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/25"
               >
                 Dashboard →
               </Link>
             ) : (
               <>
-                <Link href="/login" className="font-medium text-neutral-700 transition hover:text-black">
+                <Link href="/login" className="font-semibold text-slate-300 transition hover:text-white">
                   Log in
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-full bg-[#111] px-5 py-2.5 font-semibold text-[#f3efe8] transition hover:bg-amber-700"
+                  className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-2.5 font-bold text-slate-950 transition hover:from-cyan-400 hover:to-blue-500 shadow-md shadow-cyan-500/25"
                 >
                   Get started
                 </Link>
@@ -327,8 +331,8 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
             )}
           </div>
         </div>
-        <div className="h-px w-full bg-black/5">
-          <div className="h-full bg-amber-600 transition-[width] duration-150" style={{ width: `${progress}%` }} />
+        <div className="h-px w-full bg-white/10">
+          <div className="h-full bg-cyan-400 shadow-[0_0_8px_#06b6d4] transition-[width] duration-150" style={{ width: `${progress}%` }} />
         </div>
       </header>
 
@@ -342,7 +346,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
             transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
-          <FabricSculpture className="h-full w-full opacity-55 md:opacity-85 lg:opacity-100" />
+          <FabricSculpture className="h-full w-full opacity-45 md:opacity-75 lg:opacity-90" />
         </div>
 
         {/* Floating spheres */}
@@ -353,19 +357,19 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         {/* Hero content */}
         <div className="pointer-events-none relative z-20 mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-between px-6 pb-10 pt-32 lg:px-10">
           <div
-            className="cms-fade-in flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-500"
+            className="cms-fade-in flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300"
             style={{ animationDelay: '80ms' }}
           >
             <span>(01)</span>
-            <span className="h-px w-10 bg-neutral-400" />
+            <span className="h-px w-10 bg-cyan-400/40" />
             <span>Construction Management System — Philippines</span>
           </div>
 
-          <h1 className="my-10 text-[clamp(3.2rem,9.2vw,9.75rem)] font-black leading-[0.86] tracking-[-0.055em]">
+          <h1 className="my-10 text-[clamp(3.2rem,9.2vw,9.75rem)] font-black leading-[0.86] tracking-[-0.055em] text-white">
             <HeadlineLine delayMs={150}>Bid smarter.</HeadlineLine>
             <HeadlineLine delayMs={280}>
               Build{' '}
-              <span className="font-serif text-[1.04em] font-normal italic tracking-[-0.02em] text-amber-700">
+              <span className="font-serif text-[1.04em] font-normal italic tracking-[-0.02em] text-cyan-400">
                 with
               </span>
             </HeadlineLine>
@@ -374,7 +378,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
 
           <div className="grid items-end gap-10 md:grid-cols-12">
             <div className="cms-fade-in md:col-span-5" style={{ animationDelay: '650ms' }}>
-              <p className="max-w-md text-[15px] leading-relaxed text-neutral-600">
+              <p className="max-w-md text-[15px] leading-relaxed text-slate-300">
                 One quiet system for the engineering office, the jobsite, and the project owner — from
                 RA 12009 bid preparation to daily logs, inventory, attendance, and approvals.
               </p>
@@ -382,10 +386,10 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                 {isSignedIn ? (
                   <Link
                     href="/"
-                    className="group inline-flex items-center gap-3 rounded-full bg-[#111] py-3.5 pl-6 pr-3.5 text-sm font-semibold text-[#f3efe8] transition hover:bg-amber-700"
+                    className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 py-3.5 pl-6 pr-3.5 text-sm font-bold text-slate-950 transition hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25"
                   >
                     Open dashboard
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f3efe8] text-[#111] transition-transform duration-500 group-hover:translate-x-1">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-950 text-cyan-300 transition-transform duration-500 group-hover:translate-x-1">
                       →
                     </span>
                   </Link>
@@ -393,25 +397,25 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                   <>
                     <Link
                       href="/register"
-                      className="group inline-flex items-center gap-3 rounded-full bg-[#111] py-3.5 pl-6 pr-3.5 text-sm font-semibold text-[#f3efe8] transition hover:bg-amber-700"
+                      className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 py-3.5 pl-6 pr-3.5 text-sm font-bold text-slate-950 transition hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25"
                     >
                       Start a project
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f3efe8] text-[#111] transition-transform duration-500 group-hover:translate-x-1">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-950 text-cyan-300 transition-transform duration-500 group-hover:translate-x-1">
                         →
                       </span>
                     </Link>
                     <Link
                       href="/login"
-                      className="group relative text-sm font-semibold text-neutral-800"
+                      className="group relative text-sm font-bold text-slate-300 hover:text-white transition"
                     >
                       Sign in
-                      <span className="absolute -bottom-1 left-0 h-px w-full origin-left bg-neutral-800 transition-transform duration-500 group-hover:scale-x-0" />
+                      <span className="absolute -bottom-1 left-0 h-px w-full origin-left bg-cyan-400 transition-transform duration-500 group-hover:scale-x-100" />
                     </Link>
                   </>
                 )}
               </div>
               {isSignedIn && userEmail && (
-                <p className="mt-4 text-xs text-neutral-500">Signed in as {userEmail}</p>
+                <p className="mt-4 text-xs text-slate-400">Signed in as {userEmail}</p>
               )}
             </div>
 
@@ -425,17 +429,17 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
                 { k: 'RLS', v: 'Secured' },
               ].map((stat) => (
                 <div key={stat.v} className="text-right">
-                  <p className="text-3xl font-black tracking-tight">{stat.k}</p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-neutral-500">{stat.v}</p>
+                  <p className="text-3xl font-black tracking-tight text-white">{stat.k}</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-slate-400">{stat.v}</p>
                 </div>
               ))}
               <button
                 type="button"
                 onClick={() => scrollToId('modules')}
-                className="pointer-events-auto flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-neutral-500 hover:text-black"
+                className="pointer-events-auto flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-slate-400 hover:text-cyan-300 transition"
               >
-                <span className="relative h-12 w-px overflow-hidden bg-neutral-300">
-                  <span className="cms-scroll-cue absolute inset-x-0 top-0 h-1/2 bg-neutral-900" />
+                <span className="relative h-12 w-px overflow-hidden bg-white/20">
+                  <span className="cms-scroll-cue absolute inset-x-0 top-0 h-1/2 bg-cyan-400 shadow-[0_0_8px_#06b6d4]" />
                 </span>
                 Scroll
               </button>
@@ -445,34 +449,34 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </section>
 
       {/* -------------------------------- Marquee ------------------------------- */}
-      <div className="relative z-10 overflow-hidden border-y border-black/10 bg-[#f3efe8] py-5">
+      <div className="relative z-10 overflow-hidden border-y border-white/10 bg-[#090d1a]/75 backdrop-blur-xl py-5 text-white">
         <div className="cms-marquee flex w-max gap-12 whitespace-nowrap text-[clamp(1.2rem,2.4vw,2rem)] font-semibold tracking-tight">
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, idx) => (
             <span key={idx} className="flex items-center gap-12">
-              <span className={idx % 2 ? 'font-serif font-normal italic text-amber-700' : ''}>{item}</span>
-              <span className="h-2 w-2 rounded-full bg-neutral-400" />
+              <span className={idx % 2 ? 'font-serif font-normal italic text-cyan-300' : 'text-white'}>{item}</span>
+              <span className="h-2 w-2 rounded-full bg-cyan-400/50 shadow-[0_0_6px_#06b6d4]" />
             </span>
           ))}
         </div>
       </div>
 
       {/* -------------------------------- Modules ------------------------------- */}
-      <section id="modules" className="relative z-10 scroll-mt-20 bg-[#f3efe8] py-28 lg:py-40">
+      <section id="modules" className="relative z-10 scroll-mt-20 py-28 lg:py-40">
         <div className="mx-auto grid max-w-[1400px] gap-16 px-6 lg:grid-cols-12 lg:px-10">
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-32">
               <ScrollReveal>
-                <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-500">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
                   (02) — Modules
                 </p>
-                <h2 className="mt-6 text-[clamp(2.6rem,5.4vw,5.25rem)] font-black leading-[0.92] tracking-[-0.045em]">
+                <h2 className="mt-6 text-[clamp(2.6rem,5.4vw,5.25rem)] font-black leading-[0.92] tracking-[-0.045em] text-white">
                   Fifteen modules.
                   <br />
-                  <span className="font-serif font-normal italic tracking-[-0.02em] text-amber-700">
+                  <span className="font-serif font-normal italic tracking-[-0.02em] text-cyan-400">
                     One quiet system.
                   </span>
                 </h2>
-                <p className="mt-8 max-w-sm text-[15px] leading-relaxed text-neutral-600">
+                <p className="mt-8 max-w-sm text-[15px] leading-relaxed text-slate-300">
                   Designed for a phone on the scaffolding and a wide monitor in the engineering office.
                   Everything connected, nothing in the way.
                 </p>
@@ -483,20 +487,20 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
           <div className="lg:col-span-7">
             {MODULES.map((mod, idx) => (
               <ScrollReveal key={mod.title} delayMs={idx * 60}>
-                <div className="group grid grid-cols-[3.5rem_1fr] gap-4 border-t border-black/10 py-9 last:border-b">
-                  <span className="pt-1.5 font-mono text-xs text-neutral-400">
+                <div className="group grid grid-cols-[3.5rem_1fr] gap-4 border-t border-white/10 py-9 last:border-b text-white transition hover:border-cyan-400/40">
+                  <span className="pt-1.5 font-mono text-xs text-slate-500">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
                   <div>
                     <div className="flex flex-wrap items-baseline justify-between gap-3">
-                      <h3 className="text-[clamp(1.5rem,2.6vw,2.25rem)] font-bold tracking-[-0.03em] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-3">
+                      <h3 className="text-[clamp(1.5rem,2.6vw,2.25rem)] font-bold tracking-[-0.03em] text-white transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-3 group-hover:text-cyan-300">
                         {mod.title}
                       </h3>
-                      <span className="rounded-full border border-black/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-600 transition-colors duration-500 group-hover:border-amber-600 group-hover:text-amber-700">
+                      <span className="rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300 transition-colors duration-500 group-hover:border-cyan-400 group-hover:bg-cyan-500/20">
                         {mod.tag}
                       </span>
                     </div>
-                    <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-neutral-600">
+                    <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-slate-300">
                       {mod.description}
                     </p>
                   </div>
@@ -508,7 +512,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </section>
 
       {/* -------------------------------- Bidding ------------------------------- */}
-      <section id="bidding" className="relative z-10 scroll-mt-20 overflow-hidden bg-[#0f0f0f] py-28 text-[#f3efe8] lg:py-40">
+      <section id="bidding" className="relative z-10 scroll-mt-20 overflow-hidden border-y border-white/10 bg-[#0b101c]/90 backdrop-blur-3xl py-28 text-white lg:py-40">
         <div aria-hidden="true" className="pointer-events-none absolute -right-24 top-16 h-72 w-72 opacity-90">
           <div
             className="cms-float h-full w-full rounded-full"
@@ -524,16 +528,16 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
 
         <div className="relative mx-auto max-w-[1400px] px-6 lg:px-10">
           <ScrollReveal>
-            <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-500">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
               (03) — RA 12009 Bidding
             </p>
-            <h2 className="mt-6 max-w-5xl text-[clamp(2.6rem,6vw,6rem)] font-black leading-[0.92] tracking-[-0.045em]">
+            <h2 className="mt-6 max-w-5xl text-[clamp(2.6rem,6vw,6rem)] font-black leading-[0.92] tracking-[-0.045em] text-white">
               From invitation to award,{' '}
-              <span className="font-serif font-normal italic tracking-[-0.02em] text-amber-400">
+              <span className="font-serif font-normal italic tracking-[-0.02em] text-cyan-400">
                 in one flow.
               </span>
             </h2>
-            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-neutral-400">
+            <p className="mt-8 max-w-xl text-[15px] leading-relaxed text-slate-300">
               A guided beginner mode walks first-time bidders through every stage, while seasoned
               engineers move straight from estimate to approval.
             </p>
@@ -543,10 +547,10 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
             {BIDDING_STATS.map((stat, idx) => (
               <ScrollReveal key={stat.value} delayMs={idx * 120}>
                 <div className="group h-full py-10 pr-8 transition-colors duration-700 sm:border-r sm:border-white/10 sm:pl-6 lg:first:pl-0 lg:last:border-r-0">
-                  <p className="text-[clamp(3rem,5vw,4.75rem)] font-black leading-none tracking-[-0.05em] transition-colors duration-700 group-hover:text-amber-400">
+                  <p className="text-[clamp(3rem,5vw,4.75rem)] font-black leading-none tracking-[-0.05em] text-white transition-colors duration-700 group-hover:text-cyan-300">
                     {stat.value}
                   </p>
-                  <p className="mt-6 max-w-[16rem] text-sm leading-relaxed text-neutral-400">
+                  <p className="mt-6 max-w-[16rem] text-sm leading-relaxed text-slate-400">
                     {stat.caption}
                   </p>
                 </div>
@@ -557,21 +561,21 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </section>
 
       {/* --------------------------------- Roles -------------------------------- */}
-      <section id="roles" className="relative z-10 scroll-mt-20 bg-[#f3efe8] py-28 lg:py-40">
+      <section id="roles" className="relative z-10 scroll-mt-20 py-28 lg:py-40">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <ScrollReveal className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-7">
-              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
                 (04) — Access
               </p>
-              <h2 className="mt-6 text-[clamp(2.6rem,5.4vw,5.25rem)] font-black leading-[0.92] tracking-[-0.045em]">
+              <h2 className="mt-6 text-[clamp(2.6rem,5.4vw,5.25rem)] font-black leading-[0.92] tracking-[-0.045em] text-white">
                 Four roles.{' '}
-                <span className="font-serif font-normal italic tracking-[-0.02em] text-amber-700">
+                <span className="font-serif font-normal italic tracking-[-0.02em] text-cyan-400">
                   Nothing more.
                 </span>
               </h2>
             </div>
-            <p className="self-end text-[15px] leading-relaxed text-neutral-600 lg:col-span-5">
+            <p className="self-end text-[15px] leading-relaxed text-slate-300 lg:col-span-5">
               Every person sees only the modules their role allows — enforced in the navigation, on
               every route, in the API, and in the database itself.
             </p>
@@ -580,17 +584,17 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
           <div className="mt-20">
             {ROLES.map((r, idx) => (
               <ScrollReveal key={r.role} delayMs={idx * 90}>
-                <div className="group grid items-baseline gap-4 border-t border-black/10 py-8 last:border-b md:grid-cols-12">
+                <div className="group grid items-baseline gap-4 border-t border-white/10 py-8 last:border-b text-white md:grid-cols-12 transition hover:border-cyan-400/40">
                   <div className="flex items-center gap-4 md:col-span-5">
                     <span className={`h-2.5 w-2.5 rounded-full ${r.dot} transition-transform duration-500 group-hover:scale-150`} />
-                    <h3 className="text-[clamp(1.6rem,3vw,2.6rem)] font-bold tracking-[-0.035em]">
+                    <h3 className="text-[clamp(1.6rem,3vw,2.6rem)] font-bold tracking-[-0.035em] text-white group-hover:text-cyan-300 transition">
                       {r.role}
                     </h3>
                   </div>
-                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-neutral-500 md:col-span-2">
+                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-cyan-300 md:col-span-2">
                     {r.count}
                   </p>
-                  <p className="text-[15px] leading-relaxed text-neutral-600 md:col-span-5">
+                  <p className="text-[15px] leading-relaxed text-slate-300 md:col-span-5">
                     {r.description}
                   </p>
                 </div>
@@ -601,7 +605,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </section>
 
       {/* -------------------------------- Closing ------------------------------- */}
-      <section className="relative z-10 overflow-hidden border-t border-black/10 bg-[#f3efe8] py-32 lg:py-44">
+      <section className="relative z-10 overflow-hidden border-t border-white/10 bg-[#070a14]/90 backdrop-blur-2xl py-32 lg:py-44 text-white">
         <div aria-hidden="true" className="pointer-events-none absolute left-[12%] top-14 h-20 w-20">
           <div className="cms-float h-full w-full rounded-full" style={{ background: SPHERE_GRADIENTS.ink, animationDuration: '10s' }} />
         </div>
@@ -610,17 +614,17 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         </div>
 
         <ScrollReveal className="relative mx-auto max-w-[1400px] px-6 text-center lg:px-10">
-          <h2 className="text-[clamp(2.8rem,7.5vw,7.5rem)] font-black leading-[0.9] tracking-[-0.05em]">
+          <h2 className="text-[clamp(2.8rem,7.5vw,7.5rem)] font-black leading-[0.9] tracking-[-0.05em] text-white">
             Built for the jobsite.
             <br />
-            <span className="font-serif font-normal italic tracking-[-0.02em] text-amber-700">
+            <span className="font-serif font-normal italic tracking-[-0.02em] text-cyan-400">
               Designed for the office.
             </span>
           </h2>
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="group mt-14 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-neutral-600 hover:text-black"
+            className="group mt-14 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-400 hover:text-white transition"
           >
             Back to top
             <span className="transition-transform duration-500 group-hover:-translate-y-1">↑</span>
@@ -629,8 +633,8 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </section>
 
       {/* -------------------------------- Footer -------------------------------- */}
-      <footer className="relative z-10 border-t border-black/10 bg-[#f3efe8]">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-6 py-8 text-xs text-neutral-500 sm:flex-row lg:px-10">
+      <footer className="relative z-10 border-t border-white/10 bg-[#05070e] text-slate-400">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-6 py-8 text-xs sm:flex-row lg:px-10">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -638,7 +642,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
               alt="ConstructMS Logo"
               className="h-7 w-auto object-contain"
             />
-            <span className="font-bold text-neutral-900">ConstructMS</span>
+            <span className="font-bold text-white">ConstructMS</span>
             <span>— Construction Management &amp; RA 12009 Bidding</span>
           </div>
           <p>© 2026 ConstructMS. All rights reserved.</p>

@@ -149,15 +149,15 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading || success}
-            className="w-full rounded-2xl bg-gradient-to-r from-[#cc5c3b] to-[#94361d] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#94361d]/25 transition hover:from-[#b54829] hover:to-[#7c2b15] disabled:opacity-60"
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:from-cyan-400 hover:to-blue-500 disabled:opacity-60"
           >
             {loading ? 'Updating Password…' : 'Update Password'}
           </button>
         </form>
 
-        <p className="text-center text-sm font-medium text-[#5c4942]">
+        <p className="text-center text-sm font-medium text-slate-400">
           Remembered your password?{' '}
-          <Link href="/login" className="font-bold text-[#c85a38] hover:underline">
+          <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
             Back to Sign In
           </Link>
         </p>

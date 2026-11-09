@@ -129,11 +129,11 @@ export default function LoginForm() {
       <GoogleSignInButton />
 
       <div className="relative flex items-center py-1">
-        <div className="flex-grow border-t border-white/70" />
+        <div className="flex-grow border-t border-white/10" />
         <span className="mx-3 flex-shrink text-[11px] font-bold uppercase tracking-widest text-slate-400">
           or sign in with email
         </span>
-        <div className="flex-grow border-t border-white/70" />
+        <div className="flex-grow border-t border-white/10" />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -181,7 +181,7 @@ export default function LoginForm() {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-xs font-bold text-amber-600 hover:text-amber-700"
+              className="text-xs font-bold text-cyan-400 hover:text-cyan-300"
             >
               Forgot password?
             </button>
@@ -195,13 +195,13 @@ export default function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="block w-full rounded-xl border border-white/80 bg-white/60 px-3.5 py-2.5 pr-11 text-sm text-slate-900 shadow-sm backdrop-blur-md focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              className="block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2.5 pr-11 text-sm text-white shadow-sm backdrop-blur-md focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-[#6e5a52] transition hover:text-[#1e1512]"
+              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 transition hover:text-white"
             >
               {showPassword ? (
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -223,15 +223,15 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-2xl bg-gradient-to-r from-[#cc5c3b] to-[#94361d] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#94361d]/25 transition hover:from-[#b54829] hover:to-[#7c2b15] disabled:opacity-60"
+          className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:from-cyan-400 hover:to-blue-500 disabled:opacity-60"
         >
           {loading ? 'Signing in…' : 'Sign In'}
         </button>
       </form>
 
-      <p className="text-center text-sm font-medium text-[#5c4942]">
+      <p className="text-center text-sm font-medium text-slate-400">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="font-bold text-[#c85a38] hover:underline">
+        <Link href="/register" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
           Create account
         </Link>
       </p>

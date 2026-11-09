@@ -331,7 +331,7 @@ export default function ProjectCooperationWidget({
               <button
                 type="button"
                 onClick={() => setExpanded(true)}
-                className="w-full rounded-xl border border-[#c85a38]/40 bg-[#c85a38]/12 px-3 py-2 text-xs font-bold text-[#94361d] transition hover:bg-[#c85a38]/20"
+                className="w-full rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-3 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
               >
                 Request Project Cooperation from Admin / Engineer
               </button>
@@ -341,7 +341,7 @@ export default function ProjectCooperationWidget({
                   type="button"
                   disabled={submitting}
                   onClick={() => handleSubmitCooperationRequest(false)}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-[#cc5c3b] to-[#94361d] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:from-[#b54829] hover:to-[#7c2b15] disabled:opacity-60"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-3 py-2 text-xs font-bold text-slate-950 shadow-sm transition hover:from-cyan-400 hover:to-blue-500 disabled:opacity-60"
                 >
                   {submitting ? 'Sending Request…' : 'Send Request to Engineer'}
                 </button>
@@ -349,7 +349,7 @@ export default function ProjectCooperationWidget({
                   type="button"
                   disabled={submitting}
                   onClick={() => handleSubmitCooperationRequest(true)}
-                  className="rounded-xl border border-white/80 bg-white/75 px-3 py-2 text-xs font-semibold text-[#5c4942] transition hover:bg-white"
+                  className="rounded-xl border border-white/10 bg-white/[0.06] hover:bg-white/[0.12] px-3 py-2 text-xs font-semibold text-slate-200 transition"
                 >
                   Open Email App (with Approve Link)
                 </button>
@@ -360,25 +360,25 @@ export default function ProjectCooperationWidget({
       )}
 
       {activeReq && activeReq.status === 'pending' && (
-        <div className="rounded-xl border border-amber-300/80 bg-amber-50/85 p-3 text-xs text-amber-950 space-y-2.5">
+        <div className="rounded-xl border border-cyan-500/40 bg-cyan-950/40 p-3 text-xs text-white space-y-2.5 backdrop-blur-md">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-amber-900">
+            <span className="font-bold text-cyan-300">
               Email Request Sent to Lead Engineer
             </span>
-            <span className="rounded-full bg-amber-200/80 px-2 py-0.5 text-[10px] font-bold text-amber-900">
+            <span className="rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
               Pending Approval
             </span>
           </div>
-          <p className="text-[11px] leading-relaxed text-amber-900/90">
-            Sent to <strong>lacuatachristian01@gmail.com</strong> for project{' '}
-            <strong>{activeReq.project_name}</strong> ({activeReq.email}). Click the <strong>Approve Link</strong> inside the email (or click below) to accept:
+          <p className="text-[11px] leading-relaxed text-slate-300">
+            Sent to <strong className="text-white">lacuatachristian01@gmail.com</strong> for project{' '}
+            <strong className="text-white">{activeReq.project_name}</strong> ({activeReq.email}). Click the <strong className="text-cyan-300">Approve Link</strong> inside the email (or click below) to accept:
           </p>
-          <div className="flex flex-col gap-1.5 pt-1 border-t border-amber-200/70">
+          <div className="flex flex-col gap-1.5 pt-1 border-t border-white/10">
             <button
               type="button"
               disabled={approving}
               onClick={handleEngineerAcceptRequest}
-              className="w-full rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700 disabled:opacity-60"
+              className="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 px-3 py-2 text-xs font-bold text-slate-950 shadow-sm transition disabled:opacity-60"
             >
               {approving
                 ? 'Approving & Creating Contractor Account…'
@@ -386,7 +386,7 @@ export default function ProjectCooperationWidget({
             </button>
             <a
               href={buildMailtoHref(activeReq.id)}
-              className="w-full rounded-xl border border-amber-300 bg-white/80 px-3 py-1.5 text-center text-[11px] font-semibold text-amber-900 hover:bg-white"
+              className="w-full rounded-xl border border-white/10 bg-white/[0.05] hover:bg-white/[0.1] px-3 py-1.5 text-center text-[11px] font-semibold text-cyan-300"
             >
               Open Email in Gmail with Clickable Approve Link
             </a>
