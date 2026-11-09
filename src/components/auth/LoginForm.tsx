@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
 import GoogleSignInButton from './GoogleSignInButton'
-import ProjectCooperationWidget from './ProjectCooperationWidget'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -109,19 +108,19 @@ export default function LoginForm() {
   return (
     <div className="space-y-5">
       {verified === '1' && (
-        <div className="rounded-xl border border-emerald-300/70 bg-emerald-50/75 p-3.5 text-sm font-medium text-emerald-800 backdrop-blur-md">
+        <div className="rounded-xl border border-emerald-400/30 bg-emerald-950/60 p-3.5 text-sm font-medium text-emerald-200 backdrop-blur-md">
           Email confirmed! You can now sign in.
         </div>
       )}
 
       {resetSent && (
-        <div className="rounded-xl border border-emerald-300/70 bg-emerald-50/75 p-3.5 text-sm font-medium text-emerald-800 backdrop-blur-md">
+        <div className="rounded-xl border border-emerald-400/30 bg-emerald-950/60 p-3.5 text-sm font-medium text-emerald-200 backdrop-blur-md">
           {resetSent}
         </div>
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-300/70 bg-red-50/75 p-3.5 text-sm font-medium text-red-700 backdrop-blur-md">
+        <div className="rounded-xl border border-red-500/30 bg-red-950/60 p-3.5 text-sm font-medium text-red-200 backdrop-blur-md">
           {error}
         </div>
       )}
@@ -138,7 +137,7 @@ export default function LoginForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+          <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
             Email address
           </label>
           <input
@@ -149,12 +148,12 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="mt-1.5 block w-full rounded-xl border border-white/80 bg-white/60 px-3.5 py-2.5 text-sm text-slate-900 shadow-sm backdrop-blur-md focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+            className="mt-1.5 block w-full rounded-xl border border-white/20 bg-slate-900/80 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 shadow-sm backdrop-blur-md focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>
 
         <div>
-          <label htmlFor="loginRole" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+          <label htmlFor="loginRole" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
             Sign in role
           </label>
           <select
@@ -163,10 +162,10 @@ export default function LoginForm() {
             onChange={(e) =>
               setRole(e.target.value as 'contractor' | 'client' | 'assistant' | 'admin_engineer')
             }
-            className="mt-1.5 block w-full rounded-xl border border-white/80 bg-white/75 px-3.5 py-2.5 text-sm font-semibold text-[#1e1512] shadow-sm backdrop-blur-md focus:border-[#c85a38] focus:outline-none"
+            className="mt-1.5 block w-full rounded-xl border border-white/20 bg-slate-900/90 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm backdrop-blur-md focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           >
             {roleOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
                 {opt.label}
               </option>
             ))}
@@ -175,7 +174,7 @@ export default function LoginForm() {
 
         <div>
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+            <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-slate-300">
               Password
             </label>
             <button
@@ -229,19 +228,17 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <p className="text-center text-sm font-medium text-slate-400">
-        Don&apos;t have an account?{' '}
-        <Link href="/register" className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline">
-          Create account
-        </Link>
-      </p>
-
-      {/* Project Cooperation & Automatic Contractor Account Flow */}
-      <ProjectCooperationWidget
-        email={email}
-        password={password}
-        role={role}
-      />
+      <div className="pt-2 text-center">
+        <p className="text-sm font-medium text-slate-400">
+          Don&apos;t have an account?{' '}
+          <Link
+            href="/register"
+            className="font-bold text-cyan-400 transition hover:text-cyan-300 hover:underline"
+          >
+            Create account or join a project →
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

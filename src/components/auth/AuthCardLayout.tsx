@@ -54,17 +54,6 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
         </div>
 
         {children}
-
-        {/* Bottom Return Link */}
-        <div className="mt-6 border-t border-white/10 pt-4 text-center">
-          <Link
-            href="/welcome"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 transition hover:text-cyan-300"
-          >
-            <span>←</span>
-            <span>Return to ConstructMS Overview</span>
-          </Link>
-        </div>
       </div>
     </main>
   )

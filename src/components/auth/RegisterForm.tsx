@@ -350,19 +350,6 @@ export default function RegisterForm() {
         defaultExpanded={true}
         hideHeaderToggle={true}
       />
-
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-        <p className="text-xs text-slate-300">
-          Need a direct personal/corporate account instead?
-        </p>
-        <button
-          type="button"
-          onClick={() => setRegisterMode('create_account')}
-          className="mt-1 text-xs font-bold text-cyan-300 hover:text-cyan-200 underline"
-        >
-          ← Create Standard Account
-        </button>
-      </div>
     </div>
   )}
 
