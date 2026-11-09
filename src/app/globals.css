@@ -453,8 +453,17 @@ body {
 }
 
 /* ================================================================== */
-/* STATUS BADGES: VIVID NEON CONTRAST                                 */
+/* STATUS BADGES: VIVID NEON CONTRAST & PREVENT CAPSULE BREAKING      */
 /* ================================================================== */
+
+/* Ensure all pills and badges never wrap into broken sliced capsules */
+.liquid-workspace span[class*="rounded-full"],
+.liquid-workspace [class*="rounded-full"]:not(div) {
+  display: inline-flex !important;
+  white-space: nowrap !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
 
 .liquid-workspace .bg-blue-100 {
   background: rgba(14, 165, 233, 0.2) !important;

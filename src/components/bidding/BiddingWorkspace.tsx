@@ -297,7 +297,7 @@ export default function BiddingWorkspace({
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-900">
+                <span className="inline-flex items-center whitespace-nowrap rounded-full border border-amber-300 bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-900">
                   Contractor Bidding Portal
                 </span>
                 <span className="text-xs text-gray-500">RA 12009 Compliant</span>
@@ -352,11 +352,11 @@ export default function BiddingWorkspace({
                     </span>
                     <div className="flex items-center gap-2">
                       {myExisting && (
-                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
-                          ✓ Bid Submitted ({myExisting.status})
+                        <span className="inline-flex items-center whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                          ✓ Bid Submitted ({myExisting.status.replace('_', ' ')})
                         </span>
                       )}
-                      <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-800">
+                      <span className="inline-flex items-center whitespace-nowrap rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-800">
                         Open for Bids
                       </span>
                     </div>
@@ -551,9 +551,9 @@ export default function BiddingWorkspace({
                       {formatPHP(p.bid_amount)}
                     </td>
                     <td className="py-3 px-3 text-gray-500">{p.submitted_at.slice(0, 10)}</td>
-                    <td className="py-3 pl-3">
+                    <td className="py-3 pl-3 whitespace-nowrap">
                       <span
-                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase ${
+                        className={`inline-flex items-center whitespace-nowrap shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase ${
                           p.status === 'awarded'
                             ? 'bg-emerald-100 text-emerald-800'
                             : p.status === 'not_selected'
@@ -588,7 +588,7 @@ export default function BiddingWorkspace({
                 Bidding Management (RA 12009)
               </h1>
               <span
-                className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${
+                className={`inline-flex items-center whitespace-nowrap rounded-full border px-3 py-0.5 text-xs font-semibold ${
                   isAdminEngineer
                     ? 'bg-purple-100 text-purple-800 border-purple-200'
                     : 'bg-blue-100 text-blue-800 border-blue-200'
@@ -973,7 +973,7 @@ export default function BiddingWorkspace({
                     {b.reference_no}
                   </span>
                   <span
-                    className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase ${
+                    className={`inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase ${
                       STAGE_BADGE[b.status]
                     }`}
                   >
@@ -1030,7 +1030,7 @@ export default function BiddingWorkspace({
                       {selectedBid.reference_no}
                     </span>
                     <span
-                      className={`rounded-full border px-3 py-0.5 text-xs font-semibold uppercase ${
+                      className={`inline-flex items-center whitespace-nowrap rounded-full border px-3 py-0.5 text-xs font-semibold uppercase ${
                         STAGE_BADGE[selectedBid.status]
                       }`}
                     >
@@ -1258,7 +1258,7 @@ export default function BiddingWorkspace({
                         </p>
                       </div>
                       {!isAdminEngineer && (
-                        <span className="rounded-full border border-purple-300 bg-purple-100 px-3 py-1 text-xs font-bold text-purple-900">
+                        <span className="inline-flex items-center whitespace-nowrap rounded-full border border-purple-300 bg-purple-100 px-3 py-1 text-xs font-bold text-purple-900">
                           🔒 Locked for Assistant Role
                         </span>
                       )}
@@ -1422,7 +1422,7 @@ export default function BiddingWorkspace({
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold uppercase text-amber-900">
+                                    <span className="inline-flex items-center whitespace-nowrap rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold uppercase text-amber-900">
                                       {p.status}
                                     </span>
                                     <button
@@ -1672,7 +1672,7 @@ export default function BiddingWorkspace({
                         Ineligible&rdquo; rating during bid opening.
                       </p>
                     </div>
-                    <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">
+                    <span className="inline-flex items-center whitespace-nowrap rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">
                       {checklistPct}% Ready
                     </span>
                   </div>
@@ -1865,7 +1865,7 @@ export default function BiddingWorkspace({
                       </p>
                     </div>
                     {!isAdminEngineer && (
-                      <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800">
+                      <span className="inline-flex items-center whitespace-nowrap rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800">
                         🔒 Read-Only for Assistant
                       </span>
                     )}
