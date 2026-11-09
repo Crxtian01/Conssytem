@@ -14,27 +14,16 @@ export default function AuthCardLayout({ title, subtitle, children }: AuthCardLa
       {/* Exact city night photography bokeh background from the dashboard */}
       <ScatteredMaterialsBackdrop />
 
-      {/* Top-Left Logo (Replaces 'Back to Landing Page' button) */}
+      {/* Top-Left Floating Navigation: Back to Landing Page */}
       <div className="fixed top-5 left-5 z-20 sm:top-7 sm:left-8">
         <Link
           href="/welcome"
-          className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-3.5 py-2 shadow-xl backdrop-blur-2xl transition-all hover:border-cyan-400/40 hover:bg-white/[0.09]"
-          aria-label="ConstructMS Home"
+          className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-semibold text-slate-200 shadow-xl backdrop-blur-2xl transition-all hover:border-cyan-400/40 hover:bg-white/10 hover:text-white"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/constructms-sculpture.png"
-            alt="ConstructMS Logo"
-            className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-          />
-          <div className="leading-tight">
-            <span className="block text-sm font-extrabold tracking-tight text-white group-hover:text-cyan-300 transition">
-              ConstructMS
-            </span>
-            <span className="block text-[8.5px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-              Workspace
-            </span>
-          </div>
+          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 text-[11px] transition-transform group-hover:-translate-x-0.5">
+            ←
+          </span>
+          <span>Back to Landing Page</span>
         </Link>
       </div>
 
