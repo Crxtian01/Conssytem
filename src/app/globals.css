@@ -205,7 +205,7 @@ body {
 
 /* Secondary & inner panels inside modules (e.g. gray-50 / gray-100 items) */
 .liquid-workspace .bg-gray-50,
-.liquid-workspace .bg-gray-50\/50,
+.liquid-workspace [class*="bg-gray-50"],
 .liquid-workspace .bg-gray-100 {
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(14px);
@@ -215,10 +215,7 @@ body {
 }
 
 .liquid-workspace .bg-amber-50,
-.liquid-workspace .bg-amber-50\/40,
-.liquid-workspace .bg-amber-50\/50,
-.liquid-workspace .bg-amber-50\/60,
-.liquid-workspace .bg-amber-50\/70 {
+.liquid-workspace [class*="bg-amber-50"] {
   background: rgba(245, 158, 11, 0.12) !important;
   border-color: rgba(245, 158, 11, 0.3) !important;
   color: #fef3c7 !important;
@@ -236,8 +233,8 @@ body {
 .liquid-workspace h5,
 .liquid-workspace .text-gray-900,
 .liquid-workspace .text-slate-900,
-.liquid-workspace .text-[#1e1512],
-.liquid-workspace .text-[#2b1f1c] {
+.liquid-workspace [class*="text-[#1e1512]"],
+.liquid-workspace [class*="text-[#2b1f1c]"] {
   color: #ffffff !important;
   font-weight: 700;
 }
@@ -257,7 +254,7 @@ body {
 .liquid-workspace .text-gray-500,
 .liquid-workspace .text-slate-600,
 .liquid-workspace .text-slate-500,
-.liquid-workspace .text-[#6e5a52] {
+.liquid-workspace [class*="text-[#6e5a52]"] {
   color: #cbd5e1 !important;
 }
 
@@ -271,7 +268,7 @@ body {
 .liquid-workspace .text-amber-700,
 .liquid-workspace .text-amber-800,
 .liquid-workspace .text-amber-900,
-.liquid-workspace .text-[#c85a38] {
+.liquid-workspace [class*="text-[#c85a38]"] {
   color: #38bdf8 !important;
 }
 
