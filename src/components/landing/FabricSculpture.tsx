@@ -83,33 +83,33 @@ void main() {
 
   vec3 col = vec3(0.2);
 
-  // Material 0: Matte Architectural Charcoal-Black (#222428)
+  // Material 0: Matte Architectural Obsidian Titanium (#0d1322)
   if (vMat < 0.5) {
-    vec3 base = vec3(0.145, 0.152, 0.168);
-    float diff = 0.34 + ndlKey * 0.62 + ndlFill * 0.22 + ndlRim * 0.14;
-    float spec = pow(max(dot(N, HKey), 0.0), 28.0) * 0.20;
+    vec3 base = vec3(0.065, 0.088, 0.135);
+    float diff = 0.32 + ndlKey * 0.60 + ndlFill * 0.24 + ndlRim * 0.20;
+    float spec = pow(max(dot(N, HKey), 0.0), 32.0) * 0.28;
     float edge = smoothstep(0.0, 0.035, vUv.x) * smoothstep(1.0, 0.965, vUv.x)
                * smoothstep(0.0, 0.035, vUv.y) * smoothstep(1.0, 0.965, vUv.y);
-    col = base * diff + vec3(0.85, 0.78, 0.68) * spec + vec3(0.035) * (1.0 - edge) + fresnel * 0.05;
+    col = base * diff + vec3(0.35, 0.75, 0.95) * spec + vec3(0.02, 0.15, 0.25) * (1.0 - edge) + vec3(0.0, 0.72, 0.90) * fresnel * 0.16;
   }
-  // Material 1: Brushed Architectural Brass / Gold (#c59e5e)
+  // Material 1: Anodized Architectural Cyan-Cobalt Metallic (#06b6d4)
   else if (vMat < 1.5) {
-    vec3 goldLight = vec3(0.86, 0.72, 0.46);
-    vec3 goldDeep  = vec3(0.54, 0.40, 0.20);
+    vec3 cyanLight = vec3(0.22, 0.84, 0.98);
+    vec3 cyanDeep  = vec3(0.03, 0.36, 0.58);
     float diff = clamp(ndlKey * 0.78 + ndlFill * 0.32 + 0.18, 0.0, 1.0);
-    vec3 base = mix(goldDeep, goldLight, diff);
-    float spec = pow(max(dot(N, HKey), 0.0), 42.0) * 0.52
-               + pow(max(dot(N, HFill), 0.0), 24.0) * 0.18;
-    col = base + vec3(1.0, 0.94, 0.78) * spec + vec3(0.95, 0.80, 0.50) * fresnel * 0.14;
+    vec3 base = mix(cyanDeep, cyanLight, diff);
+    float spec = pow(max(dot(N, HKey), 0.0), 44.0) * 0.58
+               + pow(max(dot(N, HFill), 0.0), 24.0) * 0.24;
+    col = base + vec3(0.75, 0.95, 1.0) * spec + vec3(0.0, 0.85, 1.0) * fresnel * 0.28;
   }
-  // Material 2: Graduated Brushed-Brass T-Square Ruler Blade (with tick marks)
+  // Material 2: Graduated Brushed Titanium T-Square Blade (with glowing cyan ticks)
   else if (vMat < 2.5) {
-    vec3 brassLight = vec3(0.84, 0.68, 0.42);
-    vec3 brassDeep  = vec3(0.50, 0.36, 0.18);
+    vec3 bladeLight = vec3(0.18, 0.30, 0.44);
+    vec3 bladeDeep  = vec3(0.06, 0.12, 0.20);
     float diff = clamp(ndlKey * 0.80 + ndlFill * 0.30 + 0.20, 0.0, 1.0);
-    vec3 base = mix(brassDeep, brassLight, diff);
+    vec3 base = mix(bladeDeep, bladeLight, diff);
 
-    // Anti-aliased ruler graduation ticks along both long edges of the top blade face
+    // Anti-aliased ruler graduation ticks along both long edges
     if (vUv.x > 0.04 && vUv.x < 0.96) {
       float scaleCoord = vUv.x * 56.0;
       float distToLine = abs(fract(scaleCoord + 0.5) - 0.5);
@@ -118,43 +118,43 @@ void main() {
       float idx = floor(scaleCoord + 0.5);
       bool isMajor = mod(idx, 5.0) < 0.5;
       float edgeDist = min(vUv.y, 1.0 - vUv.y);
-      float maxLen = isMajor ? 0.30 : 0.17;
+      float maxLen = isMajor ? 0.32 : 0.18;
       float inTick = (1.0 - smoothstep(maxLen - 0.02, maxLen + 0.02, edgeDist)) * tickLine;
 
-      vec3 tickColor = vec3(0.24, 0.16, 0.07);
-      base = mix(base, tickColor, inTick * 0.75);
+      vec3 tickColor = vec3(0.12, 0.92, 1.0);
+      base = mix(base, tickColor, inTick * 0.85);
     }
 
     float spec = pow(max(dot(N, HKey), 0.0), 48.0) * 0.55;
-    col = base + vec3(1.0, 0.95, 0.80) * spec;
+    col = base + vec3(0.65, 0.92, 1.0) * spec + vec3(0.0, 0.8, 1.0) * fresnel * 0.20;
   }
-  // Material 3: Glossy Amber / Gold Sphere (#eb9619)
+  // Material 3: Luminous Electric Cyan Sphere (#06b6d4)
   else if (vMat < 3.5) {
-    vec3 amberTop = vec3(0.99, 0.72, 0.18);
-    vec3 amberMid = vec3(0.90, 0.48, 0.05);
-    vec3 amberBot = vec3(0.46, 0.20, 0.02);
+    vec3 cyanTop = vec3(0.35, 0.94, 1.0);
+    vec3 cyanMid = vec3(0.04, 0.58, 0.88);
+    vec3 cyanBot = vec3(0.01, 0.22, 0.42);
     float wrap = clamp((dot(N, keyLight) + 0.35) / 1.35, 0.0, 1.0);
-    vec3 base = mix(amberBot, mix(amberMid, amberTop, wrap), wrap);
-    float spec = pow(max(dot(N, HKey), 0.0), 64.0) * 0.78;
-    col = base + vec3(1.0, 0.97, 0.88) * spec + vec3(1.0, 0.78, 0.35) * fresnel * 0.22;
+    vec3 base = mix(cyanBot, mix(cyanMid, cyanTop, wrap), wrap);
+    float spec = pow(max(dot(N, HKey), 0.0), 64.0) * 0.85;
+    col = base + vec3(0.85, 0.98, 1.0) * spec + vec3(0.15, 0.88, 1.0) * fresnel * 0.32;
   }
-  // Material 4: Matte Charcoal Sphere (#1d1f22)
+  // Material 4: Matte Graphite Sphere (#0b1120)
   else if (vMat < 4.5) {
-    vec3 darkTop = vec3(0.28, 0.29, 0.32);
-    vec3 darkBot = vec3(0.07, 0.075, 0.085);
+    vec3 darkTop = vec3(0.18, 0.24, 0.36);
+    vec3 darkBot = vec3(0.04, 0.06, 0.10);
     float wrap = clamp((dot(N, keyLight) + 0.30) / 1.30, 0.0, 1.0);
     vec3 base = mix(darkBot, darkTop, wrap);
-    float spec = pow(max(dot(N, HKey), 0.0), 36.0) * 0.34;
-    col = base + vec3(0.95, 0.95, 1.0) * spec + vec3(0.35) * fresnel * 0.14;
+    float spec = pow(max(dot(N, HKey), 0.0), 36.0) * 0.38;
+    col = base + vec3(0.55, 0.85, 1.0) * spec + vec3(0.1, 0.6, 0.85) * fresnel * 0.22;
   }
-  // Material 5: Warm Pearl / Ivory Sphere (#f4ede1)
+  // Material 5: Frosted Diamond Glass Sphere (#e0f7fa)
   else {
-    vec3 pearlTop = vec3(0.99, 0.97, 0.93);
-    vec3 pearlBot = vec3(0.74, 0.68, 0.59);
+    vec3 pearlTop = vec3(0.88, 0.96, 1.0);
+    vec3 pearlBot = vec3(0.52, 0.68, 0.82);
     float wrap = clamp((dot(N, keyLight) + 0.40) / 1.40, 0.0, 1.0);
     vec3 base = mix(pearlBot, pearlTop, wrap);
-    float spec = pow(max(dot(N, HKey), 0.0), 52.0) * 0.48;
-    col = base + vec3(1.0) * spec + vec3(1.0, 0.96, 0.88) * fresnel * 0.18;
+    float spec = pow(max(dot(N, HKey), 0.0), 56.0) * 0.62;
+    col = base + vec3(1.0) * spec + vec3(0.40, 0.90, 1.0) * fresnel * 0.26;
   }
 
   gl_FragColor = vec4(col, 1.0);

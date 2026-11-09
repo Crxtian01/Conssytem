@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import FabricSculpture from '@/components/landing/FabricSculpture'
 import ScatteredMaterialsBackdrop from '@/components/layout/ScatteredMaterialsBackdrop'
+import DashboardShowcase from '@/components/landing/DashboardShowcase'
 
 interface LandingPageProps {
   isSignedIn?: boolean
@@ -72,14 +73,14 @@ function HeadlineLine({ children, delayMs }: { children: React.ReactNode; delayM
 /* Floating spheres with mouse parallax                                */
 /* ------------------------------------------------------------------ */
 
-type SphereTone = 'amber' | 'ink' | 'pearl'
+type SphereTone = 'cyan' | 'ink' | 'pearl'
 
 const SPHERE_GRADIENTS: Record<SphereTone, string> = {
-  amber:
-    'radial-gradient(circle at 32% 28%, #fff6e0 0%, #fbbf24 20%, #d97706 58%, #7c2d12 100%)',
-  ink: 'radial-gradient(circle at 32% 28%, #a1a1aa 0%, #3f3f46 22%, #18181b 62%, #000 100%)',
+  cyan:
+    'radial-gradient(circle at 32% 28%, #e0faff 0%, #38bdf8 20%, #06b6d4 58%, #0369a1 100%)',
+  ink: 'radial-gradient(circle at 32% 28%, #94a3b8 0%, #334155 25%, #0f172a 65%, #020617 100%)',
   pearl:
-    'radial-gradient(circle at 32% 28%, #ffffff 0%, #f6f0e6 30%, #d8ccbb 70%, #a6978a 100%)',
+    'radial-gradient(circle at 32% 28%, #ffffff 0%, #e2e8f0 30%, #94a3b8 70%, #475569 100%)',
 }
 
 interface SphereSpec {
@@ -115,9 +116,9 @@ function FloatingSphere({ size, top, left, depth, tone, duration, delay, hideOnM
           animationDelay: `${delay}s`,
           boxShadow: `0 ${Math.round(size * 0.4)}px ${Math.round(size * 0.7)}px -${Math.round(
             size * 0.3
-          )}px rgba(60, 38, 16, 0.38), inset -${Math.round(size * 0.08)}px -${Math.round(
+          )}px rgba(6, 182, 212, 0.35), inset -${Math.round(size * 0.08)}px -${Math.round(
             size * 0.1
-          )}px ${Math.round(size * 0.22)}px rgba(0,0,0,0.18)`,
+          )}px ${Math.round(size * 0.22)}px rgba(0,0,0,0.22)`,
         }}
       />
     </div>
@@ -125,11 +126,11 @@ function FloatingSphere({ size, top, left, depth, tone, duration, delay, hideOnM
 }
 
 const HERO_SPHERES: SphereSpec[] = [
-  { size: 132, top: '14%', left: '50%', depth: 26, tone: 'amber', duration: 10, delay: 0 },
+  { size: 132, top: '14%', left: '50%', depth: 26, tone: 'cyan', duration: 10, delay: 0 },
   { size: 58, top: '70%', left: '44%', depth: 44, tone: 'ink', duration: 8, delay: 1.2 },
   { size: 34, top: '22%', left: '90%', depth: 62, tone: 'pearl', duration: 7, delay: 0.6 },
   { size: 196, top: '60%', left: '80%', depth: 14, tone: 'pearl', duration: 12, delay: 2, hideOnMobile: true },
-  { size: 22, top: '84%', left: '62%', depth: 72, tone: 'amber', duration: 6, delay: 0.3 },
+  { size: 22, top: '84%', left: '62%', depth: 72, tone: 'cyan', duration: 6, delay: 0.3 },
   { size: 76, top: '7%', left: '74%', depth: 36, tone: 'ink', duration: 11, delay: 1.6, hideOnMobile: true },
 ]
 
@@ -448,6 +449,48 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         </div>
       </section>
 
+      {/* --------------------- Trust & Compliance Standards --------------------- */}
+      <div className="relative z-20 border-y border-white/10 bg-[#070b16]/90 backdrop-blur-2xl py-6 text-slate-300">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-around gap-6 px-6 text-xs font-bold tracking-wider lg:px-10">
+          <div className="flex items-center gap-2 text-cyan-300">
+            <span className="text-base">⚖️</span>
+            <span>Philippine RA 12009 Procurement Compliant</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-200">
+            <span className="text-base">🛡️</span>
+            <span>Automated ABC Ceiling &amp; NFCC Calculation</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-200">
+            <span className="text-base">🔒</span>
+            <span>Row-Level Security (RLS) Across 4 Roles</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-200">
+            <span className="text-base">📱</span>
+            <span>Field-Ready Mobile Daily Logs &amp; Photos</span>
+          </div>
+        </div>
+      </div>
+
+      {/* --------------------------- Product Showcase --------------------------- */}
+      <section className="relative z-20 -mt-2 px-6 py-20 lg:px-10 lg:py-28 overflow-hidden">
+        <ScrollReveal>
+          <div className="mb-10 text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.2em] text-cyan-300 backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+              Live Interactive Workspace Preview
+            </span>
+            <h3 className="mt-3 text-3xl font-black text-white sm:text-4xl">
+              One unified cockpit for every site &amp; asset.
+            </h3>
+            <p className="mx-auto mt-2 max-w-lg text-sm text-slate-400">
+              Interactive preview showing real-time asset telemetry, lifecycle curves, and automatic compliance verification.
+            </p>
+          </div>
+
+          <DashboardShowcase />
+        </ScrollReveal>
+      </section>
+
       {/* -------------------------------- Marquee ------------------------------- */}
       <div className="relative z-10 overflow-hidden border-y border-white/10 bg-[#090d1a]/75 backdrop-blur-xl py-5 text-white">
         <div className="cms-marquee flex w-max gap-12 whitespace-nowrap text-[clamp(1.2rem,2.4vw,2rem)] font-semibold tracking-tight">
@@ -516,7 +559,7 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
         <div aria-hidden="true" className="pointer-events-none absolute -right-24 top-16 h-72 w-72 opacity-90">
           <div
             className="cms-float h-full w-full rounded-full"
-            style={{ background: SPHERE_GRADIENTS.amber, animationDuration: '13s' }}
+            style={{ background: SPHERE_GRADIENTS.cyan, animationDuration: '13s' }}
           />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute bottom-20 left-[8%] h-16 w-16">
@@ -605,22 +648,61 @@ export default function LandingPage({ isSignedIn = false, userEmail }: LandingPa
       </section>
 
       {/* -------------------------------- Closing ------------------------------- */}
-      <section className="relative z-10 overflow-hidden border-t border-white/10 bg-[#070a14]/90 backdrop-blur-2xl py-32 lg:py-44 text-white">
+      <section className="relative z-10 overflow-hidden border-t border-white/10 bg-[#070a14]/90 backdrop-blur-2xl py-32 lg:py-40 text-white">
         <div aria-hidden="true" className="pointer-events-none absolute left-[12%] top-14 h-20 w-20">
           <div className="cms-float h-full w-full rounded-full" style={{ background: SPHERE_GRADIENTS.ink, animationDuration: '10s' }} />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute bottom-16 right-[14%] h-32 w-32">
-          <div className="cms-float h-full w-full rounded-full" style={{ background: SPHERE_GRADIENTS.amber, animationDuration: '12s', animationDelay: '1.5s' }} />
+          <div className="cms-float h-full w-full rounded-full" style={{ background: SPHERE_GRADIENTS.cyan, animationDuration: '12s', animationDelay: '1.5s' }} />
         </div>
 
         <ScrollReveal className="relative mx-auto max-w-[1400px] px-6 text-center lg:px-10">
-          <h2 className="text-[clamp(2.8rem,7.5vw,7.5rem)] font-black leading-[0.9] tracking-[-0.05em] text-white">
+          <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.2em] text-cyan-300 backdrop-blur-md">
+            Ready to Streamline Your Sites?
+          </span>
+          <h2 className="mt-6 text-[clamp(2.8rem,7.5vw,7.5rem)] font-black leading-[0.9] tracking-[-0.05em] text-white">
             Built for the jobsite.
             <br />
             <span className="font-serif font-normal italic tracking-[-0.02em] text-cyan-400">
               Designed for the office.
             </span>
           </h2>
+          <p className="mx-auto mt-6 max-w-xl text-base text-slate-300 leading-relaxed">
+            Eliminate fragmented spreadsheets and bid miscalculations. Get complete RA 12009 compliance, live site logs, and real-time expense approvals in one unified workspace.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-5">
+            {isSignedIn ? (
+              <Link
+                href="/"
+                className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-4 text-sm font-black text-slate-950 shadow-xl shadow-cyan-500/30 transition hover:from-cyan-300 hover:to-blue-400 hover:scale-105"
+              >
+                Go to Dashboard
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950 text-cyan-300 transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/register"
+                  className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-4 text-sm font-black text-slate-950 shadow-xl shadow-cyan-500/30 transition hover:from-cyan-300 hover:to-blue-400 hover:scale-105"
+                >
+                  Start a Project Free
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950 text-cyan-300 transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-7 py-4 text-sm font-bold text-white backdrop-blur-xl transition hover:border-cyan-400/50 hover:bg-white/10"
+                >
+                  Sign in to Workspace
+                </Link>
+              </>
+            )}
+          </div>
+
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
